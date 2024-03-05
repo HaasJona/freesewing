@@ -18,10 +18,26 @@ function draftUmbraFront({
   sa,
   Snippet,
   snippets,
+  utils,
+  options,
   expand,
   macro,
   part,
 }) {
+  /*
+   * Calculate stretch for easy access
+   */
+  const stretch = {
+    x: utils.stretchToScale(options.xStretch),
+    y: utils.stretchToScale(options.yStretch),
+  }
+
+  let point = new Point(0, 305 * stretch.y + 25)
+  point.addCircle(25, 'lining dotted')
+  points.hole = point
+
+  console.log(store.get('backCurveParts'))
+
   if (store.get('bulge'))
     paths.seamBase = new Path()
       .move(points.cfBulgeSplit)
@@ -30,14 +46,9 @@ function draftUmbraFront({
   else {
     paths.seamBase = new Path().move(points.cfBackGussetBulge)
   }
-  paths.seamBase
+  paths.seamBase = paths.seamBase
     .line(points.backGussetSplitBulge)
-    .curve(
-      points.gussetBackSplitCpBottomBulge,
-      points.gussetBackSplitCpTopBulge,
-      points.sideMiddleBulge
-    )
-    .curve(points.gussetFrontCpBulge, points.sideLegCp, points.sideLeg)
+    .join(paths.elasticLegFront)
     .line(points.sideWaistband)
     ._curve(points.cfWaistbandDipCp, points.cfWaistbandDip)
     .hide()
@@ -64,12 +75,7 @@ function draftUmbraFront({
     paths.saBase = new Path()
       .move(points.cfBackGussetBulge)
       .line(points.backGussetSplitBulge)
-      .curve(
-        points.gussetBackSplitCpBottomBulge,
-        points.gussetBackSplitCpTopBulge,
-        points.sideMiddleBulge
-      )
-      .curve(points.gussetFrontCpBulge, points.sideLegCp, points.sideLeg)
+      .join(paths.elasticLegFront)
       .line(points.sideWaistband)
       ._curve(points.cfWaistbandDipCp, points.cfWaistbandDip)
       .hide()

@@ -14,6 +14,28 @@ function draftUmbraBase({
   units,
   part,
 }) {
+  function rotatePath(path, angle, rotationOrigin) {
+    const newPath = new Path()
+
+    for (const op of path.ops) {
+      if (op.type === 'move') {
+        const to = op.to.rotate(angle, rotationOrigin)
+        newPath.move(to)
+      } else if (op.type === 'line') {
+        const to = op.to.rotate(angle, rotationOrigin)
+        newPath.line(to)
+      } else if (op.type === 'curve') {
+        const cp1 = op.cp1.rotate(angle, rotationOrigin)
+        const cp2 = op.cp2.rotate(angle, rotationOrigin)
+        const to = op.to.rotate(angle, rotationOrigin)
+
+        newPath.curve(cp1, cp2, to)
+      }
+    }
+
+    return newPath
+  }
+
   /*
    * Calculate stretch for easy access
    */
@@ -21,14 +43,6 @@ function draftUmbraBase({
     x: utils.stretchToScale(options.xStretch),
     y: utils.stretchToScale(options.yStretch),
   }
-  const gussetLength = (measurements.crossSeam / 2) * stretch.y
-
-  /*
-   * Back exposure as used for calculating paths should never be below
-   * 0.25. If it's lower than that, we'll do a specific on the back
-   * part after splitting the curves
-   */
-  const minBackExposure = options.backExposure < 0.25 ? 0.25 : options.backExposure
 
   /*
    * Create points
@@ -57,13 +71,15 @@ function draftUmbraBase({
 
   /*
    * The absolute middle
-   * The gusset can shift backwards/forwards, but this point remains stable
    */
   let waistToMiddle = measurements.crossSeam / 2
 
   points.cfMiddle = new Point(0, stretch.y * waistToMiddle)
   points.sideMiddle = new Point(waistToMiddle * options.gussetWidth * stretch.x, points.cfMiddle.y)
 
+  /*
+   * This path plots the width of the body from the waist to the seat to position the waistband according to height
+   */
   paths.bodySide = new Path()
     .move(points.sideWaist)
     .line(points.sideHips)
@@ -74,7 +90,15 @@ function draftUmbraBase({
    * Waistband line
    */
   points.cfWaistband = points.cfSeat.shiftFractionTowards(points.cfHips, options.rise)
-  points.sideWaistband = paths.bodySide.intersectsY(points.cfWaistband.y)[0]
+  let intersection = paths.bodySide.intersectsY(points.cfWaistband.y)
+  if (intersection == null || intersection.length === 0) {
+    // If the waistband is somehow above the waistline, continue to use the waist measurement
+    // This is mostly to prevent errors when the user entered an abnormally low distance between waist and hips
+    // together with a very high rise
+    points.sideWaistband = new Point(points.sideWaist.x, points.cfWaistband.y)
+  } else {
+    points.sideWaistband = intersection[0]
+  }
 
   /*
    * Dip the waistband at the front
@@ -97,7 +121,7 @@ function draftUmbraBase({
   points.sideLegCp = points.sideLeg.shift(dipAngle, points.sideMiddle.dx(points.sideLeg) / 3)
 
   /*
-   * Determine gusset split position
+   * Determine crotch seam split position
    */
   points.cfMaxGusset = new Point(0, 2 * stretch.y * waistToMiddle - points.sideLegCp.y)
   points.cfBackGusset = points.cfMiddle.shiftFractionTowards(
@@ -109,7 +133,7 @@ function draftUmbraBase({
    * If the back exposure is very high (more than 80%) we need to draft a thong style
    * and that requires narrowing the gusset as we make our way from front to back
    */
-  const thongFactor = minBackExposure > 0.8 ? 1 - (minBackExposure - 0.8) * 4 : 1
+  const thongFactor = options.backExposure > 0.8 ? 1 - (options.backExposure - 0.8) * 4 : 1
 
   /*
    * Now add the front gusset control point
@@ -119,7 +143,8 @@ function draftUmbraBase({
     .shift(0, (1 - thongFactor) * 0.25 * waistToMiddle * options.gussetWidth)
 
   /*
-   * Now extend the gusset into the back part
+   * Flip front side waistband positions to back
+   * TODO: Allow repositioning the side seams more towards the front
    */
   for (const flip of ['cfWaist', 'cfWaistband', 'sideWaistband', 'sideLeg']) {
     points[`${flip}Back`] = points[flip].flipY(points.cfMiddle)
@@ -134,23 +159,27 @@ function draftUmbraBase({
     points.cfWaistbandDipBack.y
   )
 
+  let backExposureForCp = Math.max(0.25, options.backExposure - 0.25)
+  let backExtraExposure = Math.max(-0.9, (options.backExposure - 0.3) * 0.85)
+  let backCenterFactor = Math.min(options.backExposure, 0.5) * 2
+
   /*
-   * We curve at the same angle as the back waitband dip here.
+   * We curve at the same angle as the back waistband dip here.
    * Not doing so would mean that when the back exposure is high,
    * and thus the fabric at the side gets narrow,
    * Both curves would not be parallel which looks messy.
    */
   const dipAngleBack = points.sideWaistbandBack.angle(points.cfWaistbandDipCpBack)
-  points.sideLegCpBack = points.sideLegBack.shift(
+  points.sideLegCp1Back = points.sideLegBack.shift(
     dipAngleBack,
-    points.sideMiddle.dx(points.sideLegBack) * minBackExposure
+    points.sideMiddle.dx(points.sideLegBack) * backExposureForCp
   )
 
   /*
    * Now add the back gusset control point
    */
-  points.gussetBackCp = points.sideMiddle
-    .shift(90, points.sideLegCpBack.dy(points.sideMiddle) * minBackExposure)
+  points.gussetBackCp2 = points.sideMiddle
+    .shift(90, points.sideLegCp1Back.dy(points.sideMiddle) * backExposureForCp)
     .shift(180, points.sideMiddle.x * (1 - thongFactor))
 
   /*
@@ -161,7 +190,7 @@ function draftUmbraBase({
   if (thongFactor !== 1) {
     points.sideMiddle = utils.beamIntersectsY(
       points.gussetFrontCp,
-      points.gussetBackCp,
+      points.gussetBackCp2,
       points.sideMiddle.y
     )
   }
@@ -171,124 +200,82 @@ function draftUmbraBase({
    */
   store.set('bulge', options.bulge >= 2)
 
+  paths.simpleBackCurve = new Path()
+    .move(points.sideLegBack)
+    .curve(points.sideLegCp1Back, points.gussetBackCp2, points.sideMiddle)
+    .hide()
+
+  let center = paths.simpleBackCurve.shiftFractionAlong(0.6)
+  let testA = paths.simpleBackCurve.shiftFractionAlong(0.59)
+  let testB = paths.simpleBackCurve.shiftFractionAlong(0.61)
+
+  let shiftAmount =
+    points.sideLegBack.dist(points.sideMiddle) * Math.max(0.1, (1 - options.backExposure) / 8)
+  points.sideFullnessBack = points.sideLegBack
+    .shiftFractionTowards(points.sideMiddle, 0.5)
+    .shiftFractionTowards(points.cfMaxGusset, backExtraExposure)
+    .shiftFractionTowards(center, backCenterFactor)
+  let shiftAngle = Math.max(90, Math.min(135, testA.angle(testB)))
+  points.sideLegCp2Back = points.sideFullnessBack.shift(shiftAngle, -shiftAmount)
+  points.gussetBackCp1 = points.sideFullnessBack.shift(shiftAngle, shiftAmount * 2)
+
+  points.gussetBackCp2 = points.sideMiddle.shift(
+    90,
+    points.sideFullnessBack.dy(points.sideMiddle) / 2
+  )
+  //.shift(180, points.sideMiddle.x * (1 - thongFactor))
+
+  points.gussetFrontCp = points.sideMiddle.shift(
+    90,
+    points.sideLegCp.dy(points.sideMiddle) * options.frontExposure
+  )
+  //.shift(180, (1 - thongFactor) * waistToMiddle / points.sideLegCp1Back.dy(points.sideFullnessBack) /2 * points.sideMiddle.x)
   /*
    * First split at the back
    */
-  let intersectsY = utils.curveIntersectsY(
-    points.sideLegBack,
-    points.sideLegCpBack,
-    points.gussetBackCp,
-    points.sideMiddle,
-    points.cfBackGusset.y
-  )
   paths.backCurve = new Path()
     .move(points.sideLegBack)
-    .curve(points.sideLegCpBack, points.gussetBackCp, points.sideMiddle)
+    .curve(points.sideLegCp1Back, points.sideLegCp2Back, points.sideFullnessBack)
+    .curve(points.gussetBackCp1, points.gussetBackCp2, points.sideMiddle)
     .hide()
+
+  let intersectsY = paths.backCurve.intersectsY(points.cfBackGusset.y)[0]
 
   let backCurveParts = []
   if (intersectsY && !Array.isArray(intersectsY)) {
     points.backGussetSplit = intersectsY
     backCurveParts = paths.backCurve.split(points.backGussetSplit)
   }
-  if (backCurveParts && backCurveParts.length > 1 && backCurveParts[0].ops) {
-    /*
-     * Add the controls points of the split path to the part points
-     */
-    points.backGussetSplitCpBottom = backCurveParts[0].ops[1].cp1
-    points.backGussetSplitCpTop = backCurveParts[0].ops[1].cp2
-
-    points.gussetBackSplitCpTop = backCurveParts[1].ops[1].cp2
-    points.gussetBackSplitCpBottom = backCurveParts[1].ops[1].cp1
-  } else {
+  if (!(backCurveParts && backCurveParts.length > 1)) {
     points.backGussetSplit = points.sideMiddle
-    points.backGussetSplitCpBottom = points.backGussetSplit
-    points.backGussetSplitCpTop = points.backGussetSplit
-    points.gussetBackSplitCpTop = points.backGussetSplit
-    points.gussetBackSplitCpBottom = points.backGussetSplit
-
     backCurveParts = [paths.backCurve]
   }
+
+  store.set('backCurveParts', backCurveParts)
 
   /*
    * If people want to max out the back exposure, we need to flare
    * out the back part, which requires some more splits
    */
-  if (options.backExposure < 0.25) {
-    paths.backCurve = new Path()
-      .move(points.backGussetSplit)
-      .curve(points.backGussetSplitCpTop, points.backGussetSplitCpBottom, points.sideLegBack)
-      .addClass('stroke-xl lining')
-      .hide()
-    const fraction = 0.05
-    points.backCurveGussetSplit = paths.backCurve.shiftFractionAlong(fraction)
-    points.backCurveBackSplit = paths.backCurve.reverse().shiftFractionAlong(fraction)
-    const angle = points.backCurveGussetSplit.angle(points.backCurveBackSplit)
-    const dist = points.backCurveGussetSplit.dist(points.backCurveBackSplit)
-    const shift = points.sideMiddle.x * 2 * (0.25 - options.backExposure)
-    points.backCurveBump = points.backCurveGussetSplit
-      .shiftFractionTowards(points.backCurveBackSplit, 0.5)
-      .shift(angle + 90, shift)
-    points.backCurveBumpCp1 = points.backCurveBump.shift(angle, dist / 4)
-    points.backCurveBumpCp2 = points.backCurveBump.shift(angle, dist / -4)
+  paths.elasticLegBack = backCurveParts[0].hide()
 
-    let parts = paths.backCurve.split(points.backCurveBackSplit)
-    paths.backCurveBackRest = parts[0].hide()
-    paths.backCurveBack = parts[1].hide()
-    parts = paths.backCurve.split(points.backCurveGussetSplit)
-    paths.backCurveGusset = parts[0].hide()
-    paths.backCurveGussetRest = parts[1].hide()
+  paths.back = new Path()
+    .move(points.cfWaistbandDipBack)
+    .curve_(points.cfWaistbandDipCpBack, points.sideWaistbandBack)
+    .join(paths.elasticLegBack)
+    .line(points.cfBackGusset)
+    .hide()
 
-    points.backCurveGussetCp = points.backCurveGussetSplit.shiftTowards(
-      paths.backCurveBackRest.ops[1].cp1,
-      shift
-    )
-    points.backCurveBackCp = points.backCurveBackSplit.shiftTowards(
-      paths.backCurveGussetRest.ops[1].cp1,
-      shift
-    )
-    paths.bump = new Path()
-      .move(points.backCurveBackSplit)
-      .curve(points.backCurveBackCp, points.backCurveBumpCp1, points.backCurveBump)
-      .smurve(points.backCurveGussetCp, points.backCurveGussetSplit)
-      .hide()
-
-    paths.elasticLegBack = new Path()
-      .move(points.sideLegBack)
-      .join(paths.backCurveBack.reverse())
-      .join(paths.bump)
-      .join(paths.backCurveGusset.reverse())
-      .hide()
-
-    paths.back = new Path()
-      .move(points.cfWaistbandDipBack)
-      .curve_(points.cfWaistbandDipCpBack, points.sideWaistbandBack)
-      .join(paths.elasticLegBack)
-      .line(points.cfBackGusset)
-      .hide()
-  } else {
-    paths.elasticLegBack = backCurveParts[0].hide()
-
-    paths.back = new Path()
-      .move(points.cfWaistbandDipBack)
-      .curve_(points.cfWaistbandDipCpBack, points.sideWaistbandBack)
-      .join(paths.elasticLegBack)
-      .line(points.cfBackGusset)
-      .addClass('note')
-  }
-
-  points.cfBulgeSplit = points.cfMiddle.shiftFractionTowards(points.cfWaistband, 0.33)
+  points.cfBulgeSplit = points.cfMiddle.shiftFractionTowards(points.cfHips, 0.5)
 
   points.rotationOrigin = points.cfBulgeSplit.shiftFractionTowards(points.sideSeat, 0.15)
 
   for (const pid of [
-    'gussetFrontCp',
     'backGussetSplit',
     'cfMiddle',
     'cfBackGusset',
-    'gussetBackSplitCpBottom',
-    'gussetBackSplitCpTop',
     'sideMiddle',
+    'gussetFrontCp',
   ]) {
     if (store.get('bulge'))
       points[`${pid}Bulge`] = points[pid].rotate(options.bulge, points.rotationOrigin)
@@ -299,7 +286,12 @@ function draftUmbraBase({
 
   points.cfMiddleBulgeCp = points.cfMiddleBulge.shiftFractionTowards(points.cfBackGussetBulge, -0.8)
 
-  for (const pid of ['gussetFrontCp', 'bulgeCp']) {
+  points.gussetFrontCpBulge = points.gussetFrontCpBulge.shiftFractionTowards(
+    points.sideMiddleBulge,
+    options.bulge / 200
+  )
+
+  for (const pid of ['bulgeCp']) {
     if (store.get('bulge'))
       points[`${pid}Bulge`] = points[pid].rotate(options.bulge, points.rotationOrigin)
     else points[`${pid}Bulge`] = points[pid]
@@ -309,15 +301,22 @@ function draftUmbraBase({
     .shiftFractionTowards(points.bulgeCp, options.bulgeFullness)
     .shiftFractionTowards(points.cfBulgeSplit, 0.5)
 
-  paths.elasticLegFront = new Path()
-    .move(points.backGussetSplitBulge)
-    .curve(
-      points.gussetBackSplitCpBottomBulge,
-      points.gussetBackSplitCpTopBulge,
-      points.sideMiddleBulge
-    )
-    .curve(points.gussetFrontCpBulge, points.sideLegCp, points.sideLeg)
-    .hide()
+  let rotatedPath
+  if (backCurveParts.length <= 1) {
+    rotatedPath = null
+  } else if (store.get('bulge')) {
+    rotatedPath = rotatePath(backCurveParts[1], options.bulge, points.rotationOrigin)
+  } else {
+    rotatedPath = backCurveParts[1]
+  }
+
+  paths.elasticLegFront = new Path().move(points.backGussetSplitBulge)
+
+  if (rotatedPath) {
+    paths.elasticLegFront = paths.elasticLegFront.join(rotatedPath)
+  }
+
+  paths.elasticLegFront.curve(points.gussetFrontCpBulge, points.sideLegCp, points.sideLeg).hide()
 
   /**
    * Construct pockets if desired
@@ -474,7 +473,7 @@ export const base = {
      * The gusset width, based on the crossSeam measurement
      */
     gussetWidth: {
-      pct: 10,
+      pct: 12,
       min: 3,
       max: 20,
       menu: 'fit',
@@ -485,7 +484,7 @@ export const base = {
     /*
      * splitPosition allows you to shift the split towards the front or back
      */
-    splitPosition: { pct: 11, min: 0, max: 80, menu: 'fit' },
+    splitPosition: { pct: 11, min: 0, max: 45, menu: 'fit' },
 
     /*
      * The bulge option allows you to create room in the front
@@ -540,7 +539,7 @@ export const base = {
      * backExposure determines how much skin is on display at the back
      * Note that backDip will also influence this
      */
-    backExposure: { pct: 30, min: 0, max: 115, menu: 'style' },
+    backExposure: { pct: 30, min: 15, max: 115, menu: 'style' },
 
     pockets: {
       dflt: 'none',

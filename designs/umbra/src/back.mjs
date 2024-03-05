@@ -1,4 +1,5 @@
 import { base } from './base.mjs'
+import { options } from '@freesewing/shared/prebuild/data/design-options.mjs'
 
 export const back = {
   name: 'umbra.back',
@@ -43,27 +44,31 @@ function draftUmbraBack({
      * Expand is on, show the entire part
      */
 
-    /*
-     * We need the flip these points to construct the left half
-     */
-    for (const pid of toFlip) {
-      // Flip new points along X-axis and Y-axis
-      points[`${pid}Flipped`] = points[pid].flipX().flipY()
-      // Flip existing points along Y-axis
-      points[pid] = points[pid].flipY()
+    if (options.flipBack) {
+      /*
+       * We need the flip these points to construct the left half
+       */
+      for (const pid of toFlip) {
+        // Flip existing points along Y-axis
+        points[pid] = points[pid].flipY()
+      }
+      // Also Y-flip these central points
+      points.cfWaistbandDipBack = points.cfWaistbandDipBack.flipY()
+      points.cfBackGusset = points.cfBackGusset.flipY()
     }
-    // Also Y-flip these central points
-    points.cfWaistbandDipBack = points.cfWaistbandDipBack.flipY()
-    points.cfBackGusset = points.cfBackGusset.flipY()
 
     /*
      * Draw the path
      */
-    macro('mirror', {
-      mirror: [new Point(0, 0), new Point(100, 0)],
-      paths: ['back'],
-      clone: true,
-    })
+    if (options.flipBack) {
+      macro('mirror', {
+        mirror: [new Point(0, 0), new Point(100, 0)],
+        paths: ['back'],
+        clone: true,
+      })
+    } else {
+      paths.mirroredBack = paths.back
+    }
     macro('mirror', {
       mirror: [new Point(0, 0), new Point(0, 100)],
       paths: ['mirroredBack'],
@@ -87,46 +92,29 @@ function draftUmbraBack({
       from: new Point(0, points.backGussetSplit.y),
       to: points.cfWaistbandDipBack,
     })
-
-    /*
-     * Dimensions
-     */
-    macro('hd', {
-      id: 'wAtBottom',
-      from: points.backGussetSplitFlipped,
-      to: points.backGussetSplit,
-      y: points.backGussetSplit.y + sa + 15,
-    })
-    macro('hd', {
-      id: 'wAtLeg',
-      from: points.sideLegBackFlipped,
-      to: points.sideLegBack,
-      y: points.backGussetSplit.y + sa + 30,
-    })
-    macro('hd', {
-      id: 'wAtWaistband',
-      from: points.sideWaistbandBackFlipped,
-      to: points.sideWaistbandBack,
-      y: points.sideWaistbandBack.y - sa - 15,
-    })
   } else {
-    /*
-     * Expand is off, cut on fold
-     */
-    for (const pid of toFlip) {
-      // Flip existing points along Y-axis
-      points[pid] = points[pid].flipY()
+    if (options.flipBack) {
+      /*
+       * Expand is off, cut on fold
+       */
+      for (const pid of toFlip) {
+        // Flip existing points along Y-axis
+        points[pid] = points[pid].flipY()
+      }
+      // Also Y-flip these central points
+      points.cfWaistbandDipBack = points.cfWaistbandDipBack.flipY()
+      points.cfBackGusset = points.cfBackGusset.flipY()
+
+      macro('mirror', {
+        mirror: [new Point(0, 0), new Point(100, 0)],
+        paths: ['back'],
+        clone: true,
+      })
+      paths.mirroredBack.hide()
+      paths.saBase = paths.mirroredBack.reverse().hide()
+    } else {
+      paths.saBase = paths.back
     }
-    // Also Y-flip these central points
-    points.cfWaistbandDipBack = points.cfWaistbandDipBack.flipY()
-    points.cfBackGusset = points.cfBackGusset.flipY()
-    macro('mirror', {
-      mirror: [new Point(0, 0), new Point(100, 0)],
-      paths: ['back'],
-      clone: true,
-    })
-    paths.mirroredBack.hide()
-    paths.saBase = paths.mirroredBack.reverse().hide()
 
     paths.seam = paths.saBase
       .clone()
@@ -223,8 +211,7 @@ function draftUmbraBack({
    * Title
    */
   points.title = points.cfWaistbandDipBack
-    .shiftFractionTowards(points.backGussetSplitCpBottom, 0.3)
-    .shiftFractionTowards(points.backGussetSplitCpTop, 0.3)
+
   macro('title', {
     at: points.title,
     nr: 2,
