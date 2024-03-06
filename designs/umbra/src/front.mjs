@@ -32,12 +32,6 @@ function draftUmbraFront({
     y: utils.stretchToScale(options.yStretch),
   }
 
-  let point = new Point(0, 305 * stretch.y + 25)
-  point.addCircle(25, 'lining dotted')
-  points.hole = point
-
-  console.log(store.get('backCurveParts'))
-
   if (store.get('bulge'))
     paths.seamBase = new Path()
       .move(points.cfBulgeSplit)

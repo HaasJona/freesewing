@@ -109,7 +109,12 @@ function draftUmbraBase({
   /*
    * Start of the leg opening
    */
-  points.sideLeg = points.sideSeat.shiftFractionTowards(points.sideWaistband, options.legRise)
+  let defaultSideLeg = points.sideSeat.shiftFractionTowards(points.sideHips, options.legRise)
+  let alternativeSideLeg = points.sideSeat.shiftFractionTowards(
+    points.sideWaistband,
+    options.legRise
+  )
+  points.sideLeg = defaultSideLeg.y > alternativeSideLeg.y ? defaultSideLeg : alternativeSideLeg
 
   /*
    * We curve at the same angle as the front waistband dip here.
@@ -212,7 +217,7 @@ function draftUmbraBase({
   let shiftAmount =
     points.sideLegBack.dist(points.sideMiddle) * Math.max(0.1, (1 - options.backExposure) / 8)
   points.sideFullnessBack = points.sideLegBack
-    .shiftFractionTowards(points.sideMiddle, 0.5)
+    .shiftFractionTowards(points.sideMiddle, 0.6)
     .shiftFractionTowards(points.cfMaxGusset, backExtraExposure)
     .shiftFractionTowards(center, backCenterFactor)
   let shiftAngle = Math.max(90, Math.min(135, testA.angle(testB)))
@@ -322,9 +327,12 @@ function draftUmbraBase({
    * Construct pockets if desired
    */
   if (options.pockets !== 'none') {
-    points.sidePocketHem = points.sideWaistband.shiftFractionTowards(
+    points.sidePocketHem = points.sideWaistband.shiftTowards(
       points.sideLeg,
-      options.pocketHem
+      Math.min(
+        options.pocketHem * points.cfHips.dist(points.cfSeat),
+        points.sideWaistband.dist(points.sideLeg) / 3
+      )
     )
     points.cfPocketHem = points.cfWaistbandDip.shiftTowards(
       points.cfMiddle,
@@ -347,9 +355,10 @@ function draftUmbraBase({
     paths.pocketPilotPath = new Path()
       .move(points.pocketSeamTop)
       .curve_(
-        points.pocketSeamTop.shift(-80, measurements.crossSeam / 3),
-        points.pocketSeamTop.shift(-40, measurements.crossSeam / 2)
+        points.pocketSeamTop.shift(-80, measurements.crossSeam / 4),
+        points.sideMiddleBulge.shiftFractionTowards(points.sideSeat, 0.5)
       )
+      .setClass('mark')
       .hide()
 
     let intersects = paths.elasticLegFront.intersects(paths.pocketPilotPath)
@@ -522,7 +531,7 @@ export const base = {
     /*
      * Front dip dips the front waistband
      */
-    frontDip: { pct: 5, min: -5, max: 15, menu: 'style' },
+    frontDip: { pct: 0, min: -5, max: 15, menu: 'style' },
 
     /*
      * frontExposure determines how much skin is on display at the front
@@ -533,13 +542,13 @@ export const base = {
     /*
      * Front dip dips the back waistband
      */
-    backDip: { pct: -5, min: -15, max: 10, menu: 'style' },
+    backDip: { pct: 0, min: -15, max: 10, menu: 'style' },
 
     /*
      * backExposure determines how much skin is on display at the back
      * Note that backDip will also influence this
      */
-    backExposure: { pct: 30, min: 15, max: 115, menu: 'style' },
+    backExposure: { pct: 10, min: 5, max: 115, menu: 'style' },
 
     pockets: {
       dflt: 'none',
@@ -550,7 +559,7 @@ export const base = {
 
     pocketGap: {
       pct: 25,
-      min: 0,
+      min: 15,
       max: 35,
       menu: 'style',
       toAbs: (val, { measurements }, mergedOptions) =>
@@ -558,9 +567,9 @@ export const base = {
     },
 
     pocketHem: {
-      pct: 33,
-      min: 20,
-      max: 45,
+      pct: 20,
+      min: 10,
+      max: 30,
       menu: 'style',
     },
   },
