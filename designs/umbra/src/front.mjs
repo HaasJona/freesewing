@@ -24,14 +24,6 @@ function draftUmbraFront({
   macro,
   part,
 }) {
-  /*
-   * Calculate stretch for easy access
-   */
-  const stretch = {
-    x: utils.stretchToScale(options.xStretch),
-    y: utils.stretchToScale(options.yStretch),
-  }
-
   if (store.get('bulge'))
     paths.seamBase = new Path()
       .move(points.cfBulgeSplit)
