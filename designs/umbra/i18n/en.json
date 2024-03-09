@@ -5,33 +5,40 @@
     "back": "Back",
     "elastic": "Elastic",
     "front": "Front",
-    "gusset": "Gusset",
     "base": "Base"
   },
   "s": {
-    "legElasticLength.t": "You need 2x {{{ length }}} elastic to finish the legs",
-    "legElasticLength.d": "You need two times {{{ length }}} of elastic to finish the legs.\n\nFold-over elastic is recommended for this.",
+    "legElasticLength.t": "You need 2x {{{ length }}} elastic to finish the legs (optional)",
+    "legElasticLength.d": "If you want to add elastic to your legs, you need two times {{{ length }}}.",
     "waistbandElasticLength.t": "You need 1x {{{ length }}} elastic to finish the waistband",
-    "waistbandElasticLength.d": "You need {{{ length }}} of elastic to finish the leg opening.\n\nEither fold-over or regular elastic can be used for this.",
+    "waistbandElasticLength.d": "You need {{{ length }}} of elastic to finish the waistband opening.",
     "minStretch.t": "You need fabric with a minimum stretch of {{ pct }}",
-    "minStretch.d": "Your waistband and fabric needs a minimum stretch of {{ pct }} so that you can comfortably fit through the waistband opening."
+    "minStretch.d": "Your waistband and fabric needs a minimum stretch of {{ pct }} so that you can comfortably fit through the waistband opening.",
+    "flipback.true.t": "Yes",
+    "flipback.false.t": "No",
+    "pockets.none.t": "No Pockets",
+    "pockets.none.d": "Create the desing without any pockets (default)",
+    "pockets.inside.t": "Inside Pockets",
+    "pockets.inside.d": "Create two secret pockets on the insides and a center front pouch",
+    "pockets.zipper.t": "Front pockets with zippers",
+    "pockets.zipper.d": "Create two front pockets with zippers"
   },
   "o": {
     "bulge": {
       "t": "Bulge",
       "d": "Increase the bugle angle to create more room in the front pouch. Doesn't kick in below 2 degrees."
     },
+    "bulgeFullness": {
+      "t": "Bulge Fullness",
+      "d": "Determines the roundness of the bulge. Doesn't have an effect if the bulge is disabled."
+    },
+    "splitPosition": {
+      "t": "Crotch seam",
+      "d": "Determines the position of the crotch seam"
+    },
     "gussetWidth": {
       "t": "Gusset width",
-      "d": "Controls the width of the gusset"
-    },
-    "gussetLength": {
-      "t": "Gusset length",
-      "d": "Controls the length of the gusset"
-    },
-    "gussetPosition": {
-      "t": "Gusset position",
-      "d": "This option allows you to shift the gusset more to the front or back. It is ignored when bulge is active"
+      "d": "Controls the minimum width in the crotch area"
     },
     "xStretch": {
       "t": "Horizontal fabric stretch",
@@ -43,7 +50,7 @@
     },
     "rise": {
       "t": "Rise",
-      "d": "Controls the height of the waist"
+      "d": "Controls the height of the waist. A value of 100% puts the waistband onto the measured hip line."
     },
     "legRise": {
       "t": "Leg rise",
@@ -61,9 +68,25 @@
       "t": "Front exposure",
       "d": "Controls the amount of exposed skin on the front"
     },
+    "frontReduction": {
+      "t": "Front narrowing",
+      "d": "Controls by how much the front part is slimmer than the back part"
+    },
+    "pocketHem": {
+      "t": "Pocket hem",
+      "d": "Controls how much of the lining is used to form the pocket hem. Increasing this option results in shorter pockets. Only has an effect with pockets enabled."
+    },
+    "pocketGap": {
+      "t": "Pocket gap",
+      "d": "Controls how much space is left in the front between both pockets. Only has an effect with pockets enabled."
+    },
     "backExposure": {
       "t": "Back exposure",
       "d": "Controls the amount of exposed skin on the back"
+    },
+    "flipBack": {
+      "t": "Flip back",
+      "d": "Determines if the back part should be rendered upside down"
     }
   }
 }

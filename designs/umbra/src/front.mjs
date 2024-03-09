@@ -1,5 +1,4 @@
 import { base } from './base.mjs'
-import { Snippet } from '@freesewing/core'
 
 export const front = {
   name: 'umbra.front',
@@ -25,19 +24,19 @@ function draftUmbraFront({
   macro,
   part,
 }) {
-  if (store.get('bulge'))
+  if (store.get('bulge')) {
     paths.seamBase = new Path()
       .move(points.cfBulgeSplit)
       .curve(points.bulgeCpBottom, points.cfMiddleBulgeCp, points.cfMiddleBulge)
       .line(points.cfBackGussetBulge)
-  else {
+  } else {
     paths.seamBase = new Path().move(points.cfBackGussetBulge)
   }
   paths.seamBase = paths.seamBase
     .line(points.backGussetSplitBulge)
     .join(paths.elasticLegFront)
-    .line(points.sideWaistband)
-    ._curve(points.cfWaistbandDipCp, points.cfWaistbandDip)
+    .line(points.sideWaistbandFront)
+    ._curve(points.cfWaistbandDipCpFront, points.cfWaistbandDipFront)
     .hide()
   if (expand) {
     macro('mirror', {
@@ -63,8 +62,8 @@ function draftUmbraFront({
       .move(points.cfBackGussetBulge)
       .line(points.backGussetSplitBulge)
       .join(paths.elasticLegFront)
-      .line(points.sideWaistband)
-      ._curve(points.cfWaistbandDipCp, points.cfWaistbandDip)
+      .line(points.sideWaistbandFront)
+      ._curve(points.cfWaistbandDipCpFront, points.cfWaistbandDipFront)
       .hide()
       .hide()
 
@@ -83,90 +82,101 @@ function draftUmbraFront({
         .line(new Point(0, points.cfBackGussetBulge.y))
         .line(points.cfBulgeSplit)
         .reverse()
-        .line(points.cfWaistbandDip)
+        .line(points.cfWaistbandDipFront)
         .setClass('fabric sa')
         .unhide()
     }
   }
-  store.cutlist.setCut({ cut: 1, from: 'fabric', onFold: true })
-  store.cutlist.addCut({ cut: 1, from: 'lining', onFold: true })
-  points.title = points.cfWaistbandDip
-    .shiftFractionTowards(points.sideLeg, 0.14)
+  store.cutlist.setCut({ cut: 1, from: 'fabric', onFold: !expand })
+  store.cutlist.addCut({ cut: 1, from: 'lining', onFold: !expand })
+  points.title = points.cfWaistbandDipFront
+    .shiftFractionTowards(points.sideLegFront, 0.14)
     .shiftFractionTowards(points.cfMiddle, 0.25)
   if (!expand) {
     macro('cutonfold', {
       to: store.get('bulge') ? points.cfBulgeSplit : points.cfBackGusset,
-      from: points.cfWaistbandDip,
+      from: points.cfWaistbandDipFront,
       grainline: true,
     })
   } else {
     macro('grainline', {
       to: store.get('bulge') ? points.cfBulgeSplit : points.cfBackGusset,
-      from: points.cfWaistbandDip,
+      from: points.cfWaistbandDipFront,
     })
   }
   macro('hd', {
     id: 'wAtWaistband',
-    from: points.cfWaistbandDip,
-    to: points.sideWaistband,
-    y: points.sideWaistband.y - sa - 15,
+    from: points.cfWaistbandDipFront,
+    to: points.sideWaistbandFront,
+    y: points.sideWaistbandFront.y - sa - 15,
   })
 
   macro('vd', {
     id: 'grainline',
-    from: points.cfWaistbandDip,
+    from: points.cfWaistbandDipFront,
     to: points.cfBackGussetBulge,
     x: -30,
   })
 
-  if (store.get('bulge'))
+  if (store.get('bulge')) {
     macro('vd', {
       id: 'grainline2',
-      from: points.cfWaistbandDip,
+      from: points.cfWaistbandDipFront,
       to: points.cfBulgeSplit,
       x: -15,
     })
+  }
 
   macro('ld', {
     from: points.cfBulgeSplit,
     to: new Path()
       .move(points.sideMiddleBulge)
-      .curve(points.gussetFrontCpBulge, points.sideLegCp, points.sideLeg)
+      .curve(points.gussetFrontCpBulge, points.sideLegCpFront, points.sideLegFront)
       .intersectsY(points.cfBulgeSplit.y)[0],
     y: points.cfBulgeSplit.y,
   })
 
   macro('vd', {
     id: 'outer',
-    from: points.sideWaistband,
-    to: points.sideLeg,
+    from: points.sideWaistbandFront,
+    to: points.sideLegFront,
     x: points.sideSeat.x + 15,
   })
 
-  macro('vd', {
-    id: 'outer2',
-    from: points.cfWaistbandDip,
-    to: points.sideLeg,
-    x: points.sideSeat.x,
-  })
+  if (options.frontDip !== 0) {
+    macro('vd', {
+      id: 'outer2',
+      from: points.cfWaistbandDipFront,
+      to: points.sideLegFront,
+      x: points.sideSeat.x,
+    })
+  }
 
   macro('vd', {
-    from: points.cfWaistbandDip,
-    to: points.sideWaistband,
+    from: points.cfWaistbandDipFront,
+    to: points.sideWaistbandFront,
     x: -15,
   })
 
   macro('vd', {
-    from: points.cfWaistbandDip,
+    from: points.cfWaistbandDipFront,
     to: points.backGussetSplitBulge,
     x: points.backGussetSplitBulge.x,
   })
 
   macro('hd', {
     from: points.backGussetSplitBulge,
-    to: points.sideLeg,
+    to: points.sideLegFront,
     y: points.backGussetSplitBulge.y,
   })
+
+  if (options.bulge >= 2) {
+    macro('hd', {
+      from: points.cfBulgeSplit,
+      to: points.cfBackGussetBulge,
+      y: points.cfBackGussetBulge.y + 15,
+    })
+  }
 
   macro('hd', {
     id: 'backGusset',

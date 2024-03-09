@@ -1,5 +1,4 @@
 import { base } from './base.mjs'
-import { options } from '@freesewing/shared/prebuild/data/design-options.mjs'
 
 export const back = {
   name: 'umbra.back',
@@ -117,12 +116,13 @@ function draftUmbraBack({
       .unhide()
       .addClass('fabric')
 
-    if (sa)
+    if (sa) {
       paths.sa = new Path()
         .move(points.cfBackGusset)
         .join(paths.saBase.offset(sa))
         .line(paths.saBase.end())
         .addClass('fabric sa')
+    }
 
     /*
      * Set the cutlist info
@@ -176,12 +176,14 @@ function draftUmbraBack({
     to: points.cfWaistbandDipBack,
     x: points.sideLegBack.x + sa + 30,
   })
-  macro('vd', {
-    id: 'hToSideWaistband',
-    from: points.backGussetSplit,
-    to: points.sideWaistbandBack,
-    x: points.sideLegBack.x + sa + 45,
-  })
+  if (options.backDip !== 0) {
+    macro('vd', {
+      id: 'hToSideWaistband',
+      from: points.backGussetSplit,
+      to: points.sideWaistbandBack,
+      x: points.sideLegBack.x + sa + 45,
+    })
+  }
 
   /*
    * Clean up paths from base
@@ -198,13 +200,9 @@ function draftUmbraBack({
   delete paths.zipperCut
 
   /*
-   * Remaining annotations
-   */
-
-  /*
    * Title
    */
-  points.title = points.cfWaistbandDipBack
+  points.title = points.cfWaistbandDipBack.shift(0, 20).shift(-90, 50)
 
   macro('title', {
     at: points.title,

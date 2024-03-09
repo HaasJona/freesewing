@@ -1,4 +1,4 @@
-import { Snippet, stretchToScale } from '@freesewing/core'
+import { stretchToScale } from '@freesewing/core'
 import { formatPercentage } from '@freesewing/shared/utils.mjs'
 
 function draftUmbraBase({
@@ -8,7 +8,7 @@ function draftUmbraBase({
   points,
   paths,
   measurements,
-  snippets,
+  complete,
   store,
   utils,
   expand,
@@ -73,7 +73,7 @@ function draftUmbraBase({
   /*
    * The absolute middle
    */
-  let waistToMiddle = measurements.crossSeam / 2
+  const waistToMiddle = measurements.crossSeam / 2
 
   points.cfMiddle = new Point(0, stretch.y * waistToMiddle)
   points.sideMiddle = new Point(waistToMiddle * options.gussetWidth * stretch.x, points.cfMiddle.y)
@@ -91,45 +91,30 @@ function draftUmbraBase({
    * Waistband line
    */
   points.cfWaistband = points.cfSeat.shiftFractionTowards(points.cfHips, options.rise)
-  let intersection = paths.bodySide.intersectsY(points.cfWaistband.y)
+  const intersection = paths.bodySide.intersectsY(points.cfWaistband.y)
   if (intersection == null || intersection.length === 0) {
     // If the waistband is somehow above the waistline, continue to use the waist measurement
     // This is mostly to prevent errors when the user entered an abnormally low distance between waist and hips
     // together with a very high rise
-    points.sideWaistband = new Point(points.sideWaist.x, points.cfWaistband.y)
+    points.sideWaistbandBase = new Point(points.sideWaist.x, points.cfWaistband.y)
   } else {
-    points.sideWaistband = intersection[0]
+    points.sideWaistbandBase = intersection[0]
   }
-
-  /*
-   * Dip the waistband at the front
-   */
-  points.cfWaistbandDip = points.cfWaistband.shift(-90, waistToMiddle * options.frontDip)
-  points.cfWaistbandDipCp = new Point(points.sideWaistband.x / 2, points.cfWaistbandDip.y)
 
   /*
    * Start of the leg opening
    */
-  let defaultSideLeg = points.sideSeat.shiftFractionTowards(points.sideHips, options.legRise)
-  let alternativeSideLeg = points.sideSeat.shiftFractionTowards(
-    points.sideWaistband,
+  const defaultSideLeg = points.sideSeat.shiftFractionTowards(points.sideHips, options.legRise)
+  const alternativeSideLeg = points.sideSeat.shiftFractionTowards(
+    points.sideWaistbandBase,
     options.legRise
   )
-  points.sideLeg = defaultSideLeg.y > alternativeSideLeg.y ? defaultSideLeg : alternativeSideLeg
-
-  /*
-   * We curve at the same angle as the front waistband dip here.
-   * Not doing so would mean that when the front exposure is high,
-   * and thus the fabric at the side gets narrow,
-   * Both curves would not be parallel which looks messy.
-   */
-  const dipAngle = points.sideWaistband.angle(points.cfWaistbandDipCp)
-  points.sideLegCp = points.sideLeg.shift(dipAngle, points.sideMiddle.dx(points.sideLeg) / 3)
+  points.sideLegBase = defaultSideLeg.y > alternativeSideLeg.y ? defaultSideLeg : alternativeSideLeg
 
   /*
    * Determine crotch seam split position
    */
-  points.cfMaxGusset = new Point(0, 2 * stretch.y * waistToMiddle - points.sideLegCp.y)
+  points.cfMaxGusset = new Point(0, 2 * stretch.y * waistToMiddle - points.sideLegBase.y)
   points.cfBackGusset = points.cfMiddle.shiftFractionTowards(
     points.cfMaxGusset,
     options.splitPosition
@@ -145,16 +130,41 @@ function draftUmbraBase({
    * Now add the front gusset control point
    */
   points.gussetFrontCp = points.sideMiddle
-    .shift(90, points.sideLegCp.dy(points.sideMiddle) * options.frontExposure)
+    .shift(90, points.sideLegBase.dy(points.sideMiddle) * options.frontExposure)
     .shift(0, (1 - thongFactor) * 0.25 * waistToMiddle * options.gussetWidth)
 
   /*
    * Flip front side waistband positions to back
-   * TODO: Allow repositioning the side seams more towards the front
    */
-  for (const flip of ['cfWaist', 'cfWaistband', 'sideWaistband', 'sideLeg']) {
+  for (const flip of ['cfWaist', 'cfWaistband', 'sideWaistbandBase', 'sideLegBase']) {
     points[`${flip}Back`] = points[flip].flipY(points.cfMiddle)
   }
+
+  // Make the front smaller by options.frontReduction
+  points.sideWaistbandFront = new Point(
+    points.sideWaistbandBase.x * (1 - options.frontReduction),
+    points.sideWaistbandBase.y
+  )
+  points.sideLegFront = new Point(
+    points.sideLegBase.x * (1 - options.frontReduction),
+    points.sideLegBase.y
+  )
+
+  // Add the reduced distance to the back part
+  points.sideWaistbandBack = points.sideWaistbandBaseBack.shift(
+    0,
+    points.sideWaistbandFront.dist(points.sideWaistbandBase)
+  )
+  points.sideLegBack = points.sideLegBaseBack.shift(0, points.sideLegFront.dist(points.sideLegBase))
+
+  /*
+   * Dip the waistband at the front
+   */
+  points.cfWaistbandDipFront = points.cfWaistband.shift(-90, waistToMiddle * options.frontDip)
+  points.cfWaistbandDipCpFront = new Point(
+    points.sideWaistbandFront.x / 2,
+    points.cfWaistbandDipFront.y
+  )
 
   /*
    * Dip the waistband at the back
@@ -165,9 +175,22 @@ function draftUmbraBase({
     points.cfWaistbandDipBack.y
   )
 
-  let backExposureForCp = Math.max(0.25, options.backExposure - 0.25)
-  let backExtraExposure = Math.max(-0.9, (options.backExposure - 0.3) * 0.85)
-  let backCenterFactor = Math.min(options.backExposure, 0.5) * 2
+  const backExposureForCp = Math.max(0.25, options.backExposure - 0.25)
+  const backExtraExposure = Math.max(-0.9, (options.backExposure - 0.3) * 0.85)
+  const backCenterFactor = Math.min(options.backExposure, 0.5) * 2
+
+  /*
+   * We curve at the same angle as the front waistband dip here.
+   * Not doing so would mean that when the front exposure is high,
+   * and thus the fabric at the side gets narrow,
+   * Both curves would not be parallel which looks messy.
+   */
+  const dipAngle = points.sideWaistbandFront.angle(points.cfWaistbandDipCpFront)
+  console.log(dipAngle)
+  points.sideLegCpFront = points.sideLegFront.shift(
+    dipAngle,
+    (points.sideMiddle.dx(points.sideLegFront) / 3) * (1 - options.frontReduction)
+  )
 
   /*
    * We curve at the same angle as the back waistband dip here.
@@ -193,38 +216,50 @@ function draftUmbraBase({
    */
   store.set('bulge', options.bulge >= 2)
 
+  /*
+   * Construct the control points for the back curve.
+   * First create a simple back curve that mimics the one from Uma
+   */
   paths.simpleBackCurve = new Path()
     .move(points.sideLegBack)
     .curve(points.sideLegCp1Back, points.gussetBackCp2, points.sideMiddle)
     .hide()
 
-  let center = paths.simpleBackCurve.shiftFractionAlong(0.6)
-  let testA = paths.simpleBackCurve.shiftFractionAlong(0.59)
-  let testB = paths.simpleBackCurve.shiftFractionAlong(0.61)
+  /*
+   * Determine a point on the line that will be used as additional curve point (which might be shifted outwards)
+   * Also determine two test points that will be used to determine the curve angle at that point
+   */
+  const center = paths.simpleBackCurve.shiftFractionAlong(0.6)
+  const testA = paths.simpleBackCurve.shiftFractionAlong(0.59)
+  const testB = paths.simpleBackCurve.shiftFractionAlong(0.61)
 
-  let shiftAmount =
+  /* How much to shift the point outwards */
+  const shiftAmount =
     points.sideLegBack.dist(points.sideMiddle) * Math.max(0.2, (1 - options.backExposure) / 8)
+
+  /* This is the additional point */
   points.sideFullnessBack = points.sideLegBack
     .shiftFractionTowards(points.sideMiddle, 0.6)
     .shiftFractionTowards(points.cfMaxGusset, backExtraExposure)
     .shiftFractionTowards(center, backCenterFactor)
-  let shiftAngle = Math.max(90, Math.min(135, testA.angle(testB)))
+
+  /* Determine the angle for the line at that point */
+  const shiftAngle = Math.max(90, Math.min(135, testA.angle(testB)))
+
+  /* Determine control points */
   points.sideLegCp2Back = points.sideFullnessBack.shift(shiftAngle, -shiftAmount)
   points.gussetBackCp1 = points.sideFullnessBack.shift(shiftAngle, shiftAmount)
-
   points.gussetBackCp2 = points.sideMiddle.shift(
     90,
     points.sideFullnessBack.dy(points.sideMiddle) / 4
   )
-  //.shift(180, points.sideMiddle.x * (1 - thongFactor))
-
   points.gussetFrontCp = points.sideMiddle.shift(
     90,
-    points.sideLegCp.dy(points.sideMiddle) * options.frontExposure
+    points.sideLegCpFront.dy(points.sideMiddle) * options.frontExposure
   )
-  //.shift(180, (1 - thongFactor) * waistToMiddle / points.sideLegCp1Back.dy(points.sideFullnessBack) /2 * points.sideMiddle.x)
+
   /*
-   * First split at the back
+   * Construct leg curve for the back part
    */
   paths.backCurve = new Path()
     .move(points.sideLegBack)
@@ -232,7 +267,10 @@ function draftUmbraBase({
     .curve(points.gussetBackCp1, points.gussetBackCp2, points.sideMiddle)
     .hide()
 
-  let intersectsY = paths.backCurve.intersectsY(points.cfBackGusset.y)[0]
+  /*
+   * Determine split point for crotch seam
+   */
+  const intersectsY = paths.backCurve.intersectsY(points.cfBackGusset.y)[0]
 
   let backCurveParts = []
   if (intersectsY && !Array.isArray(intersectsY)) {
@@ -244,11 +282,8 @@ function draftUmbraBase({
     backCurveParts = [paths.backCurve]
   }
 
-  store.set('backCurveParts', backCurveParts)
-
   /*
-   * If people want to max out the back exposure, we need to flare
-   * out the back part, which requires some more splits
+   * This is the part of the back curve that will be used for the back part
    */
   paths.elasticLegBack = backCurveParts[0].hide()
 
@@ -270,9 +305,11 @@ function draftUmbraBase({
     'sideMiddle',
     'gussetFrontCp',
   ]) {
-    if (store.get('bulge'))
+    if (store.get('bulge')) {
       points[`${pid}Bulge`] = points[pid].rotate(options.bulge, points.rotationOrigin)
-    else points[`${pid}Bulge`] = points[pid]
+    } else {
+      points[`${pid}Bulge`] = points[pid]
+    }
   }
 
   points.bulgeCp = points.cfBulgeSplit.shift(-90, points.cfWaist.dy(points.cfMiddleBulge) * 0.25)
@@ -284,10 +321,13 @@ function draftUmbraBase({
     options.bulge / 200
   )
 
-  for (const pid of ['bulgeCp']) {
-    if (store.get('bulge'))
-      points[`${pid}Bulge`] = points[pid].rotate(options.bulge, points.rotationOrigin)
-    else points[`${pid}Bulge`] = points[pid]
+  /*
+   * Rotate control points and bottom part of the back curve around the rotationOrigin to create the bulge
+   */
+  if (store.get('bulge')) {
+    points[`bulgeCpBulge`] = points['bulgeCp'].rotate(options.bulge, points.rotationOrigin)
+  } else {
+    points[`bulgeCpBulge`] = points['bulgeCp']
   }
 
   points.bulgeCpBottom = points.bulgeCpBulge
@@ -309,22 +349,24 @@ function draftUmbraBase({
     paths.elasticLegFront = paths.elasticLegFront.join(rotatedPath)
   }
 
-  paths.elasticLegFront.curve(points.gussetFrontCpBulge, points.sideLegCp, points.sideLeg).hide()
+  paths.elasticLegFront
+    .curve(points.gussetFrontCpBulge, points.sideLegCpFront, points.sideLegFront)
+    .hide()
 
-  /**
+  /*
    * Construct pockets if desired
    */
   if (options.pockets !== 'none') {
-    points.sidePocketHem = points.sideWaistband.shiftTowards(
-      points.sideLeg,
+    points.sidePocketHem = points.sideWaistbandFront.shiftTowards(
+      points.sideLegFront,
       Math.min(
         options.pocketHem * points.cfHips.dist(points.cfSeat),
-        points.sideWaistband.dist(points.sideLeg) / 3
+        points.sideWaistbandFront.dist(points.sideLegFront) / 3
       )
     )
-    points.cfPocketHem = points.cfWaistbandDip.shiftTowards(
+    points.cfPocketHem = points.cfWaistbandDipFront.shiftTowards(
       points.cfMiddle,
-      points.sidePocketHem.dist(points.sideWaistband)
+      points.sidePocketHem.dist(points.sideWaistbandFront)
     )
     points.cfPocketHemCp = new Point(points.sidePocketHem.x / 2, points.cfPocketHem.y)
     paths.pocketHem = new Path()
@@ -334,10 +376,10 @@ function draftUmbraBase({
       .addClass('help')
       .addText('fold lining', 'center help')
 
-    let pocketSeamX = points.sideWaistband.x * options.pocketGap
+    const pocketSeamX = points.sideWaistbandFront.x * options.pocketGap
     points.pocketSeamTop = new Path()
-      .move(points.sideWaistband)
-      ._curve(points.cfWaistbandDipCp, points.cfWaistbandDip)
+      .move(points.sideWaistbandFront)
+      ._curve(points.cfWaistbandDipCpFront, points.cfWaistbandDipFront)
       .intersectsX(pocketSeamX)[0]
 
     paths.pocketPilotPath = new Path()
@@ -349,7 +391,7 @@ function draftUmbraBase({
       .setClass('mark')
       .hide()
 
-    let intersects = paths.elasticLegFront.intersects(paths.pocketPilotPath)
+    const intersects = paths.elasticLegFront.intersects(paths.pocketPilotPath)
     if (intersects.length > 0) {
       points.pocketSeamBottom = intersects[0]
       paths.pocketPilotPath2 = new Path()
@@ -363,36 +405,44 @@ function draftUmbraBase({
         (points.pocketSeamBottom.y * 2 + points.pocketSeamMiddle.y) / 3
       )
 
-      paths.pocketShape = new Path()
-        .move(points.pocketSeamTop)
-        .line(points.pocketSeamMiddle)
-        .curve_(points.pocketSeamBottomCp, points.pocketSeamBottom)
-        .addClass('mark dashed')
-        .addText('pocketseam', 'center mark')
+      if (complete) {
+        paths.pocketShape = new Path()
+          .move(points.pocketSeamTop)
+          .line(points.pocketSeamMiddle)
+          .curve_(points.pocketSeamBottomCp, points.pocketSeamBottom)
+          .addClass('mark dashed')
+          .addText('pocketseam', 'center mark')
+      }
 
       if (options.pockets === 'zipper') {
-        // Construct zipper path. This uses absolute mm values as zippers are standardized.
-        let zipperLeft = pocketSeamX + 10
-        let zipperRight = Math.min(points.sidePocketHem.x - 10, zipperLeft + measurements.hips / 10)
-        let a = paths.pocketHem.intersectsX(zipperLeft)[0]
-        let b = paths.pocketHem.intersectsX(zipperRight)[0]
+        // Construct zipper path. This uses some absolute mm values as zipper widths are standardized.
+        // Let's assume a 5 mm zipper.
+        const zipperLeft = pocketSeamX + 10
+        const zipperRight = Math.min(
+          points.sidePocketHem.x - 10,
+          zipperLeft + measurements.hips / 10
+        )
+        const a = paths.pocketHem.intersectsX(zipperLeft)[0]
+        const b = paths.pocketHem.intersectsX(zipperRight)[0]
 
-        let angle = a.angle(b)
+        const angle = a.angle(b)
 
         points.leftZipperTop = a.shift(angle + 90, 2.5)
         points.leftZipperBottom = points.leftZipperTop.shift(angle - 90, 5)
         points.rightZipperTop = b.shift(angle + 90, 2.5)
         points.rightZipperBottom = points.rightZipperTop.shift(angle - 90, 5)
 
-        paths.zipper = new Path()
-          .move(points.leftZipperBottom)
-          .line(points.rightZipperBottom)
-          .line(points.rightZipperTop)
-          .line(points.leftZipperTop)
-          .close()
-          .reverse()
-          .addClass('mark dashed')
-          .addText('zipper', 'mark')
+        if (complete) {
+          paths.zipper = new Path()
+            .move(points.leftZipperBottom)
+            .line(points.rightZipperBottom)
+            .line(points.rightZipperTop)
+            .line(points.leftZipperTop)
+            .close()
+            .reverse()
+            .addClass('mark dashed')
+            .addText('zipper', 'mark')
+        }
         paths.zipperCut = new Path()
           .move(points.leftZipperBottom)
           .line(points.leftZipperTop)
@@ -406,13 +456,16 @@ function draftUmbraBase({
     }
   }
 
+  // Compute elastic lengths
   store.set(
     'waistbandElasticLength',
     new Path()
       .move(points.cfWaistbandDipBack)
       .curve_(points.cfWaistbandDipCpBack, points.sideWaistbandBack)
+      .move(points.cfWaistbandDipFront)
+      .curve_(points.cfWaistbandDipCpFront, points.sideWaistbandFront)
       .hide()
-      .length() * 4
+      .length() * 2
   )
 
   store.set('legElasticLength', paths.elasticLegBack.length() + paths.elasticLegFront.length())
@@ -420,8 +473,11 @@ function draftUmbraBase({
   /*
    * Also flag this to the user, as well as the expand possibility
    */
-  if (!expand) store.flag.preset('expandIsOff')
-  else store.flag.preset('expandIsOn')
+  if (!expand) {
+    store.flag.preset('expandIsOff')
+  } else {
+    store.flag.preset('expandIsOn')
+  }
   store.flag.note({
     msg: `umbra:waistbandElasticLength`,
     replace: { length: units(store.get('waistbandElasticLength')) },
@@ -450,7 +506,7 @@ export const base = {
     /*
      * xStretch is for the horizontal fabric stretch
      */
-    xStretch: { pct: 30, min: 0, max: 50, menu: 'fit' },
+    xStretch: { pct: 15, min: 0, max: 50, menu: 'fit' },
 
     /*
      * yStretch is for the vertical fabric stretch
@@ -488,10 +544,16 @@ export const base = {
     // Style options
 
     /*
+     * frontReduction determines how much less wide the front part is compared to the back part
+     * This can improve fit and make the appearance slimmer, but potentially reduces the size of pockets
+     */
+    frontReduction: { pct: 10, min: 0, max: 20, menu: 'style' },
+
+    /*
      * Rise controls the waist height
      */
     rise: {
-      pct: 100,
+      pct: 120,
       min: 30,
       max: 200,
       menu: 'style',
@@ -527,14 +589,14 @@ export const base = {
      * backExposure determines how much skin is on display at the back
      * Note that backDip will also influence this
      */
-    backExposure: { pct: 10, min: 5, max: 115, menu: 'style' },
+    backExposure: { pct: 15, min: 5, max: 115, menu: 'style' },
 
     flipBack: {
       dflt: 'true',
       list: ['true', 'false'],
       menu: 'advanced',
       extraNote:
-        'Select if the back part should be flipped into upright orientation, set to false for easier development',
+        'Select if the back part should be flipped into upright orientation, set to false for development and easier debugging of control points',
     },
 
     pockets: {
