@@ -1,4 +1,5 @@
 import { base } from './base.mjs'
+import { Snippet } from '@freesewing/core'
 
 export const front = {
   name: 'umbra.front',
@@ -180,6 +181,21 @@ function draftUmbraFront({
     to: points.sideMiddleBulge,
     y: points.sideMiddleBulge.y,
   })
+
+  if (points.pocketSeamTop) {
+    snippets.pocketTop = new Snippet('notch', points.pocketSeamTop)
+    snippets.pocketBottom = new Snippet('notch', points.pocketSeamBottom)
+    if (expand) {
+      snippets.pocketTopMirrored = new Snippet(
+        'notch',
+        new Point(-points.pocketSeamTop.x, points.pocketSeamTop.y)
+      )
+      snippets.pocketBottomMirrored = new Snippet(
+        'notch',
+        new Point(-points.pocketSeamBottom.x, points.pocketSeamBottom.y)
+      )
+    }
+  }
 
   /*
    * Clean up paths from base

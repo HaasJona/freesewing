@@ -1,4 +1,5 @@
 import { Snippet, stretchToScale } from '@freesewing/core'
+import { formatPercentage } from '@freesewing/shared/utils.mjs'
 
 function draftUmbraBase({
   options,
@@ -188,19 +189,6 @@ function draftUmbraBase({
     .shift(180, points.sideMiddle.x * (1 - thongFactor))
 
   /*
-   * Force the sideMiddle point to lie on the line between front and back
-   * control points. This only kicks in when backExposure > 80 and thus
-   * thongFactor is not 1
-   */
-  if (thongFactor !== 1) {
-    points.sideMiddle = utils.beamIntersectsY(
-      points.gussetFrontCp,
-      points.gussetBackCp2,
-      points.sideMiddle.y
-    )
-  }
-
-  /*
    * Make checking for bulge easy
    */
   store.set('bulge', options.bulge >= 2)
@@ -215,18 +203,18 @@ function draftUmbraBase({
   let testB = paths.simpleBackCurve.shiftFractionAlong(0.61)
 
   let shiftAmount =
-    points.sideLegBack.dist(points.sideMiddle) * Math.max(0.1, (1 - options.backExposure) / 8)
+    points.sideLegBack.dist(points.sideMiddle) * Math.max(0.2, (1 - options.backExposure) / 8)
   points.sideFullnessBack = points.sideLegBack
     .shiftFractionTowards(points.sideMiddle, 0.6)
     .shiftFractionTowards(points.cfMaxGusset, backExtraExposure)
     .shiftFractionTowards(center, backCenterFactor)
   let shiftAngle = Math.max(90, Math.min(135, testA.angle(testB)))
   points.sideLegCp2Back = points.sideFullnessBack.shift(shiftAngle, -shiftAmount)
-  points.gussetBackCp1 = points.sideFullnessBack.shift(shiftAngle, shiftAmount * 2)
+  points.gussetBackCp1 = points.sideFullnessBack.shift(shiftAngle, shiftAmount)
 
   points.gussetBackCp2 = points.sideMiddle.shift(
     90,
-    points.sideFullnessBack.dy(points.sideMiddle) / 2
+    points.sideFullnessBack.dy(points.sideMiddle) / 4
   )
   //.shift(180, points.sideMiddle.x * (1 - thongFactor))
 
@@ -273,7 +261,7 @@ function draftUmbraBase({
 
   points.cfBulgeSplit = points.cfMiddle.shiftFractionTowards(points.cfHips, 0.5)
 
-  points.rotationOrigin = points.cfBulgeSplit.shiftFractionTowards(points.sideSeat, 0.15)
+  points.rotationOrigin = points.cfBulgeSplit.shiftFractionTowards(points.sideSeat, 0.7)
 
   for (const pid of [
     'backGussetSplit',
@@ -375,19 +363,6 @@ function draftUmbraBase({
         (points.pocketSeamBottom.y * 2 + points.pocketSeamMiddle.y) / 3
       )
 
-      snippets.pocketTop = new Snippet('notch', points.pocketSeamTop)
-      snippets.pocketBottom = new Snippet('notch', points.pocketSeamBottom)
-      if (expand) {
-        snippets.pocketTopMirrored = new Snippet(
-          'notch',
-          new Point(-points.pocketSeamTop.x, points.pocketSeamTop.y)
-        )
-        snippets.pocketBottomMirrored = new Snippet(
-          'notch',
-          new Point(-points.pocketSeamBottom.x, points.pocketSeamBottom.y)
-        )
-      }
-
       paths.pocketShape = new Path()
         .move(points.pocketSeamTop)
         .line(points.pocketSeamMiddle)
@@ -454,6 +429,10 @@ function draftUmbraBase({
   store.flag.note({
     msg: `umbra:legElasticLength`,
     replace: { length: units(store.get('legElasticLength')) },
+  })
+  store.flag.note({
+    msg: `umbra:minStretch`,
+    replace: { pct: formatPercentage(measurements.seat / store.get('waistbandElasticLength') - 1) },
   })
 
   /*
@@ -549,6 +528,14 @@ export const base = {
      * Note that backDip will also influence this
      */
     backExposure: { pct: 10, min: 5, max: 115, menu: 'style' },
+
+    flipBack: {
+      dflt: 'true',
+      list: ['true', 'false'],
+      menu: 'advanced',
+      extraNote:
+        'Select if the back part should be flipped into upright orientation, set to false for easier development',
+    },
 
     pockets: {
       dflt: 'none',

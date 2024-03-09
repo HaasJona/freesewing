@@ -19,6 +19,7 @@ function draftUmbraBack({
   sa,
   Snippet,
   snippets,
+  options,
   expand,
   macro,
   part,
@@ -26,14 +27,7 @@ function draftUmbraBack({
   /*
    * We'll use this list later
    */
-  const toFlip = [
-    'cfWaistbandDipCpBack',
-    'sideWaistbandBack',
-    'sideLegBack',
-    'backGussetSplitCpTop',
-    'backGussetSplitCpBottom',
-    'backGussetSplit',
-  ]
+  const toFlip = ['cfWaistbandDipCpBack', 'sideWaistbandBack', 'sideLegBack', 'backGussetSplit']
 
   /*
    * Depending on the expand setting, we'll draw a full back
@@ -44,7 +38,7 @@ function draftUmbraBack({
      * Expand is on, show the entire part
      */
 
-    if (options.flipBack) {
+    if (options.flipBack === 'true') {
       /*
        * We need the flip these points to construct the left half
        */
@@ -60,7 +54,7 @@ function draftUmbraBack({
     /*
      * Draw the path
      */
-    if (options.flipBack) {
+    if (options.flipBack === 'true') {
       macro('mirror', {
         mirror: [new Point(0, 0), new Point(100, 0)],
         paths: ['back'],

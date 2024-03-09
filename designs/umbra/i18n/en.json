@@ -12,7 +12,9 @@
     "legElasticLength.t": "You need 2x {{{ length }}} elastic to finish the legs",
     "legElasticLength.d": "You need two times {{{ length }}} of elastic to finish the legs.\n\nFold-over elastic is recommended for this.",
     "waistbandElasticLength.t": "You need 1x {{{ length }}} elastic to finish the waistband",
-    "waistbandElasticLength.d": "You need {{{ length }}} of elastic to finish the leg opening.\n\nEither fold-over or regular elastic can be used for this."
+    "waistbandElasticLength.d": "You need {{{ length }}} of elastic to finish the leg opening.\n\nEither fold-over or regular elastic can be used for this.",
+    "minStretch.t": "You need fabric with a minimum stretch of {{ pct }}",
+    "minStretch.d": "Your waistband and fabric needs a minimum stretch of {{ pct }} so that you can comfortably fit through the waistband opening."
   },
   "o": {
     "bulge": {
