@@ -93,7 +93,7 @@ If your elastic has a decorative edge, make sure that you line up the plain edge
 
 Pin the elastic to the waist opening of the fabric on the selected side, ensuring that you line up the quarter markings. It can be very helpful to stitch it on by hand so your elastic is kept in place properly for the next step.
 
-Sew the elastic to the garment using a zigzag stitch. You will have to stretch the elastic slightly as you sew to make it lay flat against the fabric. Avoid stretching the fabric itself.
+Sew the elastic to the garment using an elastic stitch. You will have to stretch the elastic slightly as you sew to make it lay flat against the fabric. Avoid stretching the fabric itself.
 
 ![Sew elastic to the outside of the garment](step09.svg)
 
@@ -101,7 +101,7 @@ Trim away any excess fabric that causes bulk or sticks out from the elastic.
 
 ### Step 10: Fold the elastic in and sew it down again
 
-Fold the elastic and fabric to the other side, enclosing the raw edge of the fabric under the elastic. Sew again using a zigzag stitch.
+Fold the elastic and fabric to the other side, enclosing the raw edge of the fabric under the elastic. Sew again using an elastic stitch.
 
 ![Fold the elastic in and sew it down again](step10.svg)
 
