@@ -1,6 +1,6 @@
 ---
-title: "Verjüngung zum Zwickel"
+title: "Vordere Freilegung"
 ---
 
-Steuert, wie stark sich die Vorderseite nach innen wölbt, um auf den Zwickel zu treffen.
+Steuert, wie viel Haut an der Vorderseite bedeckt wird.
 

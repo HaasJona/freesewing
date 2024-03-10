@@ -79,25 +79,23 @@ You can also use elastic bias tape, in which case you should trim all seam allow
 
 Overlap the edges of each piece of your waistband elastic by your seam allowance and stitch together.
 
-To ensure that you stretch the elastic evenly, divide the elastic into four quarters and mark the points with pins or chalk.
+To ensure that you stretch the elastic evenly, divide the waistband opening and your elastic into four quarters and mark the points with pins or chalk.
 
-![Prepare elastic](step08.png)
-
-![Quarter the openings](step08b.png)
+![Prepare elastic](step08.svg)
 
 ### Step 9: Sew elastic to the outside of the garment
 
-Choose if you want to have the elastic later on the inside or on the outside. Smaller elastic bands should typically go on the inside, larger ones on the outside.
+Choose if you want to have the elastic later on the inside or on the outside. Smaller elastic bands should typically go on the inside, larger ones on the outside. The following pictures assume you want the elastic on the outside.
 
-If you want to have the elastic on the outside, pin to the bad side of the fabric. If you want to have the elastic on the outside, choose the good side.
-
-Pin the elastic to the waist opening of the fabric on the selected side, ensuring that you line up the quarter markings.
+If you want to have the elastic on the outside, pin the bad side to the bad side of the fabric. If you want to have the elastic on the inside, join the good sides.
 
 If your elastic has a decorative edge, make sure that you line up the plain edge (not the decorative edge) of the elastic to the edge of the fabric. The decorative edge should be pointing towards the garment, not away from it.
 
+Pin the elastic to the waist opening of the fabric on the selected side, ensuring that you line up the quarter markings. It can be very helpful to stitch it on by hand so your elastic is kept in place properly for the next step.
+
 Sew the elastic to the garment using a zigzag stitch. You will have to stretch the elastic slightly as you sew to make it lay flat against the fabric. Avoid stretching the fabric itself.
 
-![Sew elastic to the outside of the garment](step09.png)
+![Sew elastic to the outside of the garment](step09.svg)
 
 Trim away any excess fabric that causes bulk or sticks out from the elastic.
 
@@ -105,6 +103,6 @@ Trim away any excess fabric that causes bulk or sticks out from the elastic.
 
 Fold the elastic and fabric to the other side, enclosing the raw edge of the fabric under the elastic. Sew again using a zigzag stitch.
 
-![Fold the elastic in and sew it down again](step10.png)
+![Fold the elastic in and sew it down again](step10.svg)
 
 You did it!

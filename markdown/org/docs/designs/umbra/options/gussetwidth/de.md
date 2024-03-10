@@ -2,5 +2,5 @@
 title: "Zwickelbreite"
 ---
 
-Diese Option steuert die Breite des Zwickels.
+Diese Option steuert die minimale Breite im Schritt.
 

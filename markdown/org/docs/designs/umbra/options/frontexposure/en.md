@@ -1,6 +1,6 @@
 ---
-title: "Taper to gusset"
+title: "Front Exposure"
 ---
 
-Controls how much the front will curve inwards to meet the gusset.
+Controls how much skin on the front will be covered.
 
