@@ -45,7 +45,6 @@
   "dependencies": {
     "html-react-parser": "^5.0.7"
   },
-  "devDependencies": {},
   "files": [
     "dist/*",
     "README.md"

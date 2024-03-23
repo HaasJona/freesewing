@@ -51,14 +51,13 @@
   "peerDependencies": {
     "@freesewing/core": "3.2.0"
   },
-  "dependencies": {},
   "devDependencies": {
-    "mocha": "10.3.0",
-    "chai": "5.1.0",
     "@freesewing/plugin-annotations": "3.2.0",
     "@freesewing/plugin-mirror": "3.2.0",
     "@freesewing/plugin-round": "3.2.0",
-    "@freesewing/plugin-sprinkle": "3.2.0"
+    "@freesewing/plugin-sprinkle": "3.2.0",
+    "chai": "5.1.0",
+    "mocha": "10.3.0"
   },
   "files": [
     "dist/*",

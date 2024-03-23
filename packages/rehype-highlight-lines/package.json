@@ -33,11 +33,9 @@
     "tips": "node ../../scripts/help.mjs",
     "lint": "npx eslint 'src/*.mjs'"
   },
-  "peerDependencies": {},
   "dependencies": {
     "unist-util-remove": "4.0.0"
   },
-  "devDependencies": {},
   "files": [
     "dist/*",
     "README.md"
