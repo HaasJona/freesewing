@@ -2061,6 +2061,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@freesewing/lily@workspace:designs/lily":
+  version: 0.0.0-use.local
+  resolution: "@freesewing/lily@workspace:designs/lily"
+  dependencies:
+    "@freesewing/models": "npm:3.2.0"
+    "@freesewing/plugin-timing": "npm:3.2.0"
+    chai: "npm:5.1.0"
+    mocha: "npm:10.3.0"
+  peerDependencies:
+    "@freesewing/core": 3.2.0
+  languageName: unknown
+  linkType: soft
+
 "@freesewing/lucy@workspace:designs/lucy":
   version: 0.0.0-use.local
   resolution: "@freesewing/lucy@workspace:designs/lucy"

@@ -27,6 +27,7 @@ import { Hortensia as hortensia } from '@freesewing/hortensia'
 import { Huey as huey } from '@freesewing/huey'
 import { Hugo as hugo } from '@freesewing/hugo'
 import { Jaeger as jaeger } from '@freesewing/jaeger'
+import { Lily as lily } from '@freesewing/lily'
 import { Lucy as lucy } from '@freesewing/lucy'
 import { Lumina as lumina } from '@freesewing/lumina'
 import { Lumira as lumira } from '@freesewing/lumira'
@@ -85,6 +86,7 @@ const designs = {
   huey,
   hugo,
   jaeger,
+  lily,
   lucy,
   lumina,
   lumira,
