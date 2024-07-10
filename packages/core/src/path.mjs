@@ -200,6 +200,24 @@ Path.prototype.bbox = function () {
   return __bbbbox(bbs)
 }
 
+Path.prototype.arc = function (deg, origin) {
+  const radius = this.end().dist(origin)
+  const steps = Math.round(Math.abs(deg / 120)) + 1
+  const stepAngle = deg / steps
+  const stepAngleRad = (stepAngle / 180) * Math.PI
+  let distance = radius * (4.0 / 3.0) * Math.tan(stepAngleRad / 4)
+  for (let i = 0; i < steps; i++) {
+    const startPoint = this.end()
+    const endPoint = startPoint.rotate(stepAngle, origin)
+    const startAngle = startPoint.angle(origin) - 90
+    const endAngle = endPoint.angle(origin) + 90
+    const cp1 = startPoint.shift(startAngle, distance)
+    const cp2 = endPoint.shift(endAngle, distance)
+    this.curve(cp1, cp2, endPoint)
+  }
+  return this
+}
+
 /**
  * Returns this after cleaning out in-place path operations
  *
