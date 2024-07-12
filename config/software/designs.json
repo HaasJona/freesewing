@@ -868,6 +868,21 @@
       "ribbing"
     ]
   },
+  "taliesin": {
+    "code": "Jonathan Haas",
+    "description": "A FreeSewing pattern for a historical tunic",
+    "design": "Mariska",
+    "difficulty": 1,
+    "lab": true,
+    "org": true,
+    "tags": [
+      "tops",
+      "historical"
+    ],
+    "techniques": [
+      "curvedSeam"
+    ]
+  },
   "tamiko": {
     "code": "Joost De Cock",
     "description": "A FreeSewing pattern for a zero-waste top",
