@@ -119,7 +119,7 @@ function taliesinSleeve({
 
   macro('title', {
     nr: 2,
-    title: 'Sleeve',
+    title: 'sleeve',
     at: new Point(40, 100),
     notes: [],
   })

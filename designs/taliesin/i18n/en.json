@@ -2,9 +2,13 @@
   "t": "Taliesin tunic",
   "d": "Taliesin is a medieval style tunic.",
   "p": {
-    "sleeve": "Sleeve"
+    "gusset": "Gusset",
+    "body": "Body",
+    "sleeve": "Sleeve",
+    "facing": "Facing"
   },
   "s": {
+    "noSeamAllowance": "Cut without seam allowance."
   },
   "o": {
   }

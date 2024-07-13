@@ -199,7 +199,7 @@ function taliesinBody({
 
   macro('title', {
     nr: 1,
-    title: 'Body',
+    title: 'body',
     at: new Point(40, 100),
     notes: [],
   })
