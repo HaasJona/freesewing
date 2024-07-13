@@ -101,6 +101,11 @@ function taliesinGusset({
     x: -sa - 15,
   })
 
+  macro('grainline', {
+    from: points.topLeft.translate(5, 0),
+    to: points.bottomLeft.translate(5, 0),
+  })
+
   macro('title', {
     nr: 3,
     title: 'gusset',

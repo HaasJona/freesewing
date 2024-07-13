@@ -30,7 +30,7 @@ export const body = {
         determineAdjustedLength(mergedOptions, data.measurements) -
         determineLength(mergedOptions, data.measurements),
     },
-    splitPosition: { pct: 10, min: 0, max: 100, menu: 'fit' },
+    splitPosition: { pct: 30, min: -10, max: 100, menu: 'fit' },
   },
   draft: taliesinBody,
 }
@@ -93,16 +93,19 @@ function taliesinBody({
   points.sideHem = new Point(width, length)
   points.centerHem = new Point(0, length)
 
+  points.centerFloor = new Point(0, measurements.hpsToWaistBack + measurements.waistToFloor)
   points.armpit = new Point(width, ((1 + options.armpitEase) * measurements.biceps) / 2)
   points.splitPosition = new Point(
     width,
     measurements.hpsToWaistBack +
       measurements.waistToHips +
-      (measurements.waistToUpperLeg - measurements.waistToHips) * options.splitPosition
+      ((measurements.waistToUpperLeg + measurements.waistToKnee) / 2 - measurements.waistToHips) *
+        options.splitPosition
   )
 
   store.set('armpitDistance', points.sideShoulder.dist(points.armpit))
   store.set('splitDistance', points.splitPosition.dist(points.sideHem))
+  store.set('splitToFloor', points.splitPosition.dy(points.centerFloor))
   store.set('bodyWidth', width)
 
   if (expand) {

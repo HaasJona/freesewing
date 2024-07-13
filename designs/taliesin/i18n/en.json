@@ -5,10 +5,11 @@
     "gusset": "Gusset",
     "body": "Body",
     "sleeve": "Sleeve",
-    "facing": "Facing"
+    "facing": "Facing",
+    "godet": "Godet"
   },
   "s": {
-    "noSeamAllowance": "Cut without seam allowance."
+    "noSeamAllowance": "without seam allowance"
   },
   "o": {
   }

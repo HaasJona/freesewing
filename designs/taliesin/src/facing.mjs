@@ -4,15 +4,15 @@ export const facing = {
   name: 'taliesin.facing',
   options: {
     neckEase: {
-      pct: 10,
+      pct: 20,
       min: -20,
       max: 110,
       menu: 'fit',
     },
     headEase: {
-      pct: 5,
-      min: -20,
-      max: 110,
+      pct: 10,
+      min: 0,
+      max: 30,
       menu: 'fit',
     },
   },
@@ -118,6 +118,26 @@ function taliesinFacing({
   })
 
   store.cutlist.setCut({ cut: 1, from: 'fabric' })
+
+  macro('vd', {
+    id: 'height',
+    from: paths.innerCircle.start(),
+    to: paths.innerCircle.end(),
+    x: innerRadius + facingWidth + 15,
+  })
+
+  macro('vd', {
+    id: 'front',
+    from: points.bottom,
+    to: points.front,
+    x: innerRadius + facingWidth + 15,
+  })
+  macro('vd', {
+    id: 'width',
+    from: paths.innerCircle.end(),
+    to: paths.outerCircle.end(),
+    x: innerRadius + facingWidth + 15,
+  })
 
   macro('title', {
     nr: 4,

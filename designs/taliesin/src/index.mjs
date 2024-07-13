@@ -5,12 +5,13 @@ import { facing } from './facing.mjs'
 import { gusset } from './gusset.mjs'
 import { body } from './body.mjs'
 import { sleeve } from './sleeve.mjs'
+import { godet } from './godet.mjs'
 
 // Setup our new design
 const Taliesin = new Design({
   data,
-  parts: [sleeve, body, facing, gusset],
+  parts: [sleeve, body, facing, gusset, godet],
 })
 
 // Named exports
-export { body, sleeve, facing, gusset, Taliesin, i18n }
+export { body, sleeve, facing, gusset, godet, Taliesin, i18n }
