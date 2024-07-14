@@ -7,7 +7,7 @@ export const sleeve = {
       pct: 100,
       min: 20,
       max: 110,
-      menu: 'fit',
+      menu: 'style',
     },
     wristEase: {
       pct: 80,

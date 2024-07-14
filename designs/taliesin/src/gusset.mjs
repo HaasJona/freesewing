@@ -3,6 +3,12 @@ import { body } from './body.mjs'
 
 export const gusset = {
   name: 'taliesin.gusset',
+  options: {
+    gusset: {
+      bool: true,
+      menu: 'fit',
+    },
+  },
   after: body,
   draft: taliesinGusset,
 }
@@ -24,9 +30,13 @@ function taliesinGusset({
   part,
   utils,
 }) {
+  if (!options.gusset) {
+    return part.hide()
+  }
+
   // The gusset is a square that's about 13cm wide for an adult.
 
-  const gussetWidth = store.get('armpitDistance') * 0.45
+  const gussetWidth = store.get('armpitDistance') * 0.55
 
   points.topLeft = new Point(0, 0)
   points.topRight = new Point(gussetWidth, 0)
@@ -110,6 +120,7 @@ function taliesinGusset({
     nr: 3,
     title: 'gusset',
     at: new Point(15, 60),
+    scale: 0.5,
     notes: [],
   })
 

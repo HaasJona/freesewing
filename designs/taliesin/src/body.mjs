@@ -19,13 +19,13 @@ export const body = {
     length: {
       dflt: 'thigh',
       list: ['thigh', 'knee', 'calf', 'floor'],
-      menu: 'fit',
+      menu: 'style',
     },
     lengthBonus: {
       pct: 0,
       min: -20,
       max: 20,
-      menu: 'fit',
+      menu: 'style',
       toAbs: (val, data, mergedOptions) =>
         determineAdjustedLength(mergedOptions, data.measurements) -
         determineLength(mergedOptions, data.measurements),

@@ -1,4 +1,5 @@
 import { body } from './body.mjs'
+import { capitalize } from '@freesewing/core'
 
 export const godet = {
   name: 'taliesin.godet',
@@ -7,11 +8,11 @@ export const godet = {
       pct: 0,
       min: -50,
       max: 100,
-      menu: 'fit',
+      menu: (settings, mergedOptions) => (mergedOptions?.godet ? 'fit' : false),
     },
     godet: {
       bool: false,
-      menu: 'fit',
+      menu: 'style',
     },
   },
   after: body,
@@ -32,6 +33,8 @@ function taliesinGodet({
   snippets,
   Snippet,
   part,
+  units,
+  expand,
   utils,
 }) {
   if (!options.godet) {
@@ -55,7 +58,35 @@ function taliesinGodet({
 
   const slope = points.floorSide.y / points.floorSide.x
 
-  points.hemSide = new Point((length / slope) * (1 + options.hemEase), length)
+  const width = (length / slope) * (1 + options.hemEase)
+
+  if (expand) {
+    store.flag.preset('expandIsOn')
+  } else {
+    // Expand is off, do not draw the part but flag this to the user
+    const extraSa = sa ? 2 * sa : 0
+    store.flag.note({
+      msg: `taliesin:cut${capitalize(part.name.split('.')[1])}`,
+      notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
+      replace: {
+        w: units(2 * width + extraSa),
+        l: units(length + extraSa),
+      },
+      suggest: {
+        text: 'flag:show',
+        icon: 'expand',
+        update: {
+          settings: ['expand', 1],
+        },
+      },
+    })
+    // Also hint about expand
+    store.flag.preset('expandIsOff')
+
+    return part.hide()
+  }
+
+  points.hemSide = new Point(width, length)
 
   paths.godet = new Path()
     .move(points.hemCenter)
@@ -69,11 +100,13 @@ function taliesinGodet({
       .move(points.hemCenter)
       .line(points.hemCenter.translate(0, hemAllowance))
       .line(points.hemSide.translate(sa, hemAllowance))
+      .line(points.hemSide.translate(sa, 0))
       .join(new Path().move(points.hemSide).line(points.split).offset(sa))
+      .line(points.split.translate(sa, 0))
       .line(points.split.translate(sa, -hemAllowance))
       .line(points.split.translate(0, -hemAllowance))
       .line(points.split)
-      .close()
+      .trim()
       .addClass('fabric sa')
   }
 
@@ -87,6 +120,8 @@ function taliesinGodet({
   // Grainline
   macro('cutonfold', {
     grainline: true,
+    margin: 0.2,
+    offset: 10,
     from: points.split,
     to: points.hemCenter,
   })
@@ -106,11 +141,12 @@ function taliesinGodet({
   })
 
   // Title
-  points.title = points.hemCenter.translate(40, -40)
+  points.title = points.hemCenter.translate(10, -20)
   macro('title', {
     nr: 5,
     title: 'godet',
     at: points.title,
+    scale: 0.5,
     notes: [],
   })
 

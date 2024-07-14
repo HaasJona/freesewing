@@ -9,7 +9,13 @@
     "godet": "Godet"
   },
   "s": {
-    "noSeamAllowance": "without seam allowance"
+    "noSeamAllowance": "without seam allowance",
+    "cutBody.t": "The body is not shown",
+    "cutBody.d": "The **Body** (1) is a rectangle that is {{{ w }}} wide and {{{ l }}} long.",
+    "cutGusset.t": "The gusset is not shown",
+    "cutGusset.d": "The **Gusset** (3) is a square with a side length of {{{ l }}}.",
+    "cutGodet.t": "The godet is not shown",
+    "cutGodet.d": "The **Godet** (5) is a isosceles triangle that is {{{ w }}} wide at the base and {{{ l }}} high."
   },
   "o": {
   }

@@ -79,11 +79,11 @@ function taliesinFacing({
     .offset(-stitchDistCircle)
     .hide()
 
-  points.shoulerCenter = new Point(0, shoulderOffset)
+  points.shoulderCenter = new Point(0, shoulderOffset)
   points.shoulder = paths.outerCircle.intersectsY(shoulderOffset)[0]
   if (complete)
     paths.shoulder = new Path()
-      .move(points.shoulerCenter)
+      .move(points.shoulderCenter)
       .line(points.shoulder)
       .addClass('contrast stroke-sm')
 
@@ -93,7 +93,7 @@ function taliesinFacing({
   paths.keyhole = new Path().move(points.front).line(points.bottom).addClass('fabric')
   paths.facing = new Path()
     .move(points.outerBottom)
-    .circleSegment(90, points.bottom)
+    .move(points.outerBottom.translate(facingWidth, 0))
     .line(points.outerCorner)
     .join(paths.outerCircle.split(points.outerCorner)[1])
     .addClass('fabric')
@@ -131,6 +131,18 @@ function taliesinFacing({
     from: points.bottom,
     to: points.front,
     x: innerRadius + facingWidth + 15,
+  })
+  macro('vd', {
+    id: 'radius',
+    from: points.front,
+    to: points.center,
+    x: -innerRadius - facingWidth - 15,
+  })
+  macro('vd', {
+    id: 'shoulderOffset',
+    from: points.center,
+    to: points.shoulderCenter,
+    x: -innerRadius - facingWidth - 15,
   })
   macro('vd', {
     id: 'width',
