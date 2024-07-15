@@ -1,3 +1,4 @@
+import { capitalize } from '@freesewing/core'
 import { body } from './body.mjs'
 
 export const sleeve = {
@@ -35,6 +36,8 @@ function taliesinSleeve({
   Snippet,
   part,
   utils,
+  units,
+  expand,
 }) {
   // The sleeve is a trapezoid which we draft on the fold.
   // We need the following dimensions:
@@ -45,13 +48,12 @@ function taliesinSleeve({
   const wristToWrist = measurements.shoulderToShoulder + 2 * measurements.shoulderToWrist
   const length = wristToWrist / 2 - store.get('bodyWidth')
   const wristWidth = (1 + options.wristEase) * measurements.wrist
-
   const hemAllowance = sa * 2.5
-
-  const armpitDistance = store.get('armpitDistance')
+  const armpitWidth = store.get('armpitDistance')
+  const flatLength = measurements.shoulderToWrist / 3
 
   points.shoulder = new Point(0, 0)
-  points.armpit = new Point(armpitDistance, 0)
+  points.armpit = new Point(armpitWidth, 0)
   points.wristCenter = new Point(0, length)
   points.wristSide = new Point(wristWidth / 2, length)
   points.cuffCenter = points.wristCenter.shiftFractionTowards(
@@ -59,7 +61,35 @@ function taliesinSleeve({
     1 - options.sleeveLength
   )
   points.cuffSide = points.wristSide.shiftFractionTowards(points.armpit, 1 - options.sleeveLength)
-  points.forearm = points.cuffSide.translate(0, measurements.shoulderToWrist / -3)
+  points.forearm = points.cuffSide.translate(0, -flatLength)
+
+  if (expand) {
+    store.flag.preset('expandIsOn')
+  } else {
+    // Expand is off, do not draw the part but flag this to the user
+    const extraSa = sa ? 2 * sa : 0
+    store.flag.note({
+      msg: `taliesin:cut${capitalize(part.name.split('.')[1])}`,
+      notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
+      replace: {
+        wt: units(2 * armpitWidth + extraSa),
+        wb: units(2 * points.cuffSide.x + extraSa),
+        l: units(points.cuffCenter.y + extraSa),
+        fl: units(flatLength + extraSa / 2),
+      },
+      suggest: {
+        text: 'flag:show',
+        icon: 'expand',
+        update: {
+          settings: ['expand', 1],
+        },
+      },
+    })
+    // Also hint about expand
+    store.flag.preset('expandIsOff')
+
+    return part.hide()
+  }
 
   const sideLine = new Path().move(points.cuffSide).line(points.forearm).line(points.armpit)
 
