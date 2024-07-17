@@ -36,7 +36,7 @@ function taliesinGusset({
 
   // The gusset is a square that's about 13cm wide for an adult.
 
-  const gussetWidth = store.get('armpitDistance') * 0.55
+  const gussetWidth = store.get('armpitDistance') * 0.42
 
   points.topLeft = new Point(0, 0)
   points.topRight = new Point(gussetWidth, 0)

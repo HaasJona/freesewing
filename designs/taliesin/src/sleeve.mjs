@@ -6,7 +6,7 @@ export const sleeve = {
   options: {
     sleeveLength: {
       pct: 100,
-      min: 20,
+      min: 30,
       max: 110,
       menu: 'style',
     },
@@ -50,7 +50,6 @@ function taliesinSleeve({
   const wristWidth = (1 + options.wristEase) * measurements.wrist
   const hemAllowance = sa * 2.5
   const armpitWidth = store.get('armpitDistance')
-  const flatLength = measurements.shoulderToWrist / 3
 
   points.shoulder = new Point(0, 0)
   points.armpit = new Point(armpitWidth, 0)
@@ -61,6 +60,7 @@ function taliesinSleeve({
     1 - options.sleeveLength
   )
   points.cuffSide = points.wristSide.shiftFractionTowards(points.armpit, 1 - options.sleeveLength)
+  const flatLength = points.cuffSide.y / 3
   points.forearm = points.cuffSide.translate(0, -flatLength)
 
   if (expand) {

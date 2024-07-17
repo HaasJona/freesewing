@@ -14,7 +14,7 @@ export const body = {
   ],
   options: {
     chestEase: { pct: 15, min: 5, max: 25, menu: 'fit' },
-    seatEase: { pct: 15, min: 5, max: 25, menu: 'fit' },
+    seatEase: { pct: 15, min: 5, max: 50, menu: 'fit' },
     armpitEase: { pct: 33, min: 15, max: 50, menu: 'fit' },
     length: {
       dflt: 'thigh',
@@ -80,7 +80,7 @@ function taliesinBody({
   // width: based on the largest body measurement
   // length: length from hps to the middle of the upper leg
 
-  const topWidth = (measurements.chest / 4) * (1 + options.chestEase)
+  const topWidth = ((measurements.chest + measurements.biceps / 3.5) / 4) * (1 + options.chestEase)
   const bottomWidth = (measurements.seat / 4) * (1 + options.seatEase)
   const width = Math.max(topWidth, bottomWidth)
 

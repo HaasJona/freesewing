@@ -17,7 +17,7 @@
     "cutGodet.t": "The godet is not shown",
     "cutGodet.d": "The **Godet** (5) is a isosceles triangle that is {{{ w }}} wide at the base and {{{ l }}} high.",
     "cutSleeve.t": "The sleeve is not shown",
-    "cutSleeve.d": "The **Sleeve** (2) is a trapezoidal shape that is {{{ wt }}} wide at the armhole, {{{ wb }}} wide at the cuff and {{{ l }}} long. The first {{{ fl }}} near the cuff are straight."
+    "cutSleeve.d": "The **Sleeve** (2) is an isosceles trapezoidal shape that is {{{ wt }}} wide at the top, {{{ wb }}} wide at the base and {{{ l }}} high. The bottommost {{{ fl }}} are straight."
   },
   "o": {
   }
