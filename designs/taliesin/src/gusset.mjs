@@ -6,7 +6,7 @@ export const gusset = {
   options: {
     gusset: {
       bool: true,
-      menu: 'fit',
+      menu: 'construction',
     },
   },
   after: body,

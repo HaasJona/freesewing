@@ -31,6 +31,8 @@ export const body = {
         determineLength(mergedOptions, data.measurements),
     },
     splitPosition: { pct: 30, min: -10, max: 100, menu: 'fit' },
+    shoulderSeam: { bool: true, menu: 'construction' },
+    centerSeam: { bool: false, menu: 'construction' },
   },
   draft: taliesinBody,
 }
@@ -117,8 +119,8 @@ function taliesinBody({
       msg: `taliesin:cut${capitalize(part.name.split('.')[1])}`,
       notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
       replace: {
-        w: units(2 * width + extraSa),
-        l: units(length + sa + hemAllowance),
+        w: units((options.centerSeam ? 1 : 2) * width + extraSa),
+        l: units((options.shoulderSeam ? 1 : 2) * length + sa + hemAllowance),
       },
       suggest: {
         text: 'flag:show',
@@ -141,16 +143,33 @@ function taliesinBody({
     .line(points.centerShoulder)
     .close()
     .addClass('fabric')
-  if (sa)
+  if (sa) {
     paths.sa = new Path()
       .move(points.centerHem)
       .line(points.centerHem.translate(0, hemAllowance))
       .line(points.sideHem.translate(sa, hemAllowance))
-      .line(points.sideShoulder.translate(sa, -sa))
-      .line(points.centerShoulder.translate(0, -sa))
-      .line(points.centerShoulder)
       .addClass('fabric sa')
 
+    if (options.shoulderSeam) {
+      paths.sa
+        .line(points.sideShoulder.translate(sa, -sa))
+        .line(points.centerShoulder.translate(0, -sa))
+      if (!options.centerSeam) {
+        paths.sa.line(points.centerShoulder)
+      }
+    } else {
+      paths.sa
+        .line(points.sideShoulder.translate(sa, 0))
+        .line(points.sideShoulder)
+        .move(points.centerShoulder)
+    }
+    if (options.centerSeam) {
+      paths.sa
+        .line(paths.sa.end().translate(-sa, 0))
+        .line(points.centerHem.translate(-sa, hemAllowance))
+      paths.sa.ops[0].to = points.centerHem.translate(-sa, hemAllowance)
+    }
+  }
   /*
    * Annotations
    */
@@ -158,15 +177,41 @@ function taliesinBody({
   snippets.splitPosition = new Snippet('notch', points.splitPosition)
   snippets.armpit = new Snippet('notch', points.armpit)
 
+  let cuts = 1
+  if (options.shoulderSeam) cuts *= 2
+  if (options.centerSeam) cuts *= 2
+
   // Cutlist
-  store.cutlist.setCut({ cut: 2, from: 'fabric', onFold: true, identical: true })
+  store.cutlist.setCut({
+    cut: cuts,
+    from: 'fabric',
+    onFold: options.shoulderSeam || options.centerSeam,
+    identical: true,
+  })
 
   // Grainline
-  macro('cutonfold', {
-    grainline: true,
-    from: points.centerShoulder,
-    to: points.centerHem,
-  })
+  if (options.centerSeam) {
+    macro('grainline', {
+      id: 'left',
+      from: points.centerShoulder.translate(15, 0),
+      to: points.centerHem.translate(15, 0),
+    })
+  } else {
+    macro('cutonfold', {
+      id: 'left',
+      grainline: true,
+      from: points.centerShoulder,
+      to: points.centerHem,
+    })
+  }
+
+  if (!options.shoulderSeam) {
+    macro('cutonfold', {
+      id: 'top',
+      from: points.sideShoulder,
+      to: points.centerShoulder,
+    })
+  }
 
   // Dimensions
   macro('hd', {

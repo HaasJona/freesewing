@@ -12,7 +12,7 @@ export const godet = {
     },
     godet: {
       bool: false,
-      menu: 'style',
+      menu: 'construction',
     },
   },
   after: body,
