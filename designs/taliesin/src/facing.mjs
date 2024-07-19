@@ -5,8 +5,8 @@ export const facing = {
   options: {
     neckEase: {
       pct: 20,
-      min: -20,
-      max: 110,
+      min: -5,
+      max: 50,
       menu: 'fit',
     },
     headEase: {
@@ -49,7 +49,7 @@ function taliesinFacing({
   const stitchDistFront = facingWidth / 20
   const stitchDistCircle = facingWidth / 8
   const keyholeLength = Math.max(
-    facingWidth,
+    stitchDistCircle,
     ((1 + options.headEase) * measurements.head - (1 + options.neckEase) * measurements.neck) / 2
   )
 
@@ -152,7 +152,7 @@ function taliesinFacing({
   })
 
   macro('title', {
-    nr: 4,
+    nr: 3,
     title: 'facing',
     at: points.center.translate(-40, 0),
     notes: ['taliesin:noSeamAllowance'],

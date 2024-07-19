@@ -12,9 +12,15 @@ export const sleeve = {
     },
     wristEase: {
       pct: 80,
-      min: 5,
+      min: 20,
       max: 200,
       menu: 'fit',
+    },
+    cuffWidth: {
+      pct: 150,
+      min: 100,
+      max: 500,
+      menu: (settings) => (settings.sa ? 'style' : false),
     },
   },
   after: body,
@@ -48,7 +54,7 @@ function taliesinSleeve({
   const wristToWrist = measurements.shoulderToShoulder + 2 * measurements.shoulderToWrist
   const length = wristToWrist / 2 - store.get('bodyWidth')
   const wristWidth = (1 + options.wristEase) * measurements.wrist
-  const hemAllowance = sa * 2.5
+  const hemAllowance = options.cuffWidth * sa * 2
   const armpitWidth = store.get('armpitDistance')
 
   points.shoulder = new Point(0, 0)
@@ -110,6 +116,11 @@ function taliesinSleeve({
       .line(points.shoulder.translate(0, -sa))
       .line(points.shoulder)
       .addClass('fabric sa')
+
+    paths.cuffFold = new Path()
+      .move(points.cuffCenter.translate(0, hemAllowance / 2))
+      .line(points.cuffSide.translate(sa, hemAllowance / 2))
+      .addClass('fabric lashed')
   }
 
   /*

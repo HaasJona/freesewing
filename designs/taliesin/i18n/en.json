@@ -17,8 +17,100 @@
     "cutGodet.t": "The godet is not shown",
     "cutGodet.d": "The **Godet** (5) is a isosceles triangle that is {{{ w }}} wide at the base and {{{ l }}} high.",
     "cutSleeve.t": "The sleeve is not shown",
-    "cutSleeve.d": "The **Sleeve** (2) is an isosceles trapezoidal shape that is {{{ wt }}} wide at the top, {{{ wb }}} wide at the base and {{{ l }}} high. The bottommost {{{ fl }}} are straight."
+    "cutSleeve.d": "The **Sleeve** (2) is an isosceles trapezoidal shape that is {{{ wt }}} wide at the top, {{{ wb }}} wide at the base and {{{ l }}} high. The bottommost {{{ fl }}} are straight.",
+    "length.thigh.t": "Thigh",
+    "length.thigh.d": "To the middle of the thigh",
+    "length.knee.t": "Knee",
+    "length.knee.d": "To the knee",
+    "length.calf.t": "Calf",
+    "length.calf.d": "To the middle of the calf",
+    "length.floor.t": "Floor",
+    "length.floor.d": "To the floor",
+    "centerSeamYes.t":  "Yes",
+    "centerSeamNo.t": "No",
+    "centerSeamYes.d":  "Split at center",
+    "centerSeamNo.d": "Center on fold",
+      "gussetYes.t":  "Yes",
+    "gussetNo.t": "No",
+      "gussetYes.d":  "Include a gusset",
+    "gussetNo.d": "Draft without gusset",
+      "godetYes.t":  "Include godets",
+    "godetNo.t": "No godets",
+      "godetYes.d":  "Add godets to increase flare",
+    "godetNo.d": "Add side split",
+        "shoulderSeamYes.t":  "Yes",
+    "shoulderSeamNo.t": "No",
+        "shoulderSeamYes.d":  "Join at shoulders",
+    "shoulderSeamNo.d": "No shoulder seams"
   },
   "o": {
+    "centerSeam": {
+      "t": "Center Seam",
+      "d": "Split the body vertically along the center. This allows for more freedom between the legs and was historically used when riding horses."
+    },
+    "shoulderSeam": {
+      "t": "Shoulder Seam",
+      "d": "If front and back parts should be joined at the shoulder."
+    },
+    "gusset": {
+      "t": "Include Gusset",
+      "d": "Add a gusset in the armpit for increased freedom of movement."
+    },
+    "godet": {
+      "t": "Include Godets",
+      "d": "Add godets (often incorrectly called gores) into the side seam instead of an open split."
+    },
+    "armpitEase": {
+      "t": "Armpit ease",
+      "d": "The additional ease at the upper sleeve."
+    },
+    "chestEase": {
+      "t": "Chest ease",
+      "d": "Ease around the chest, used for calculating the minimum width of the body part."
+    },
+    "seatEase": {
+      "t": "Seat ease",
+      "d": "Ease around the seat, used for calculating the minimum width of the body part."
+    },
+    "headEase": {
+      "t": "Head ease",
+      "d": "Ease around the head, used to determine the needed size of the neck opening."
+    },
+    "neckEase": {
+      "t": "Neck ease",
+      "d": "Ease around the neck, determines the size if the neck hole."
+    },
+    "wristEase": {
+      "t": "Wrist ease",
+      "d": "Determines the width of the sleeves near the cuff."
+    },
+    "length": {
+      "t": "Length",
+      "d": "How long the tunic should be."
+    },
+    "lengthBonus": {
+      "t": "Length bonus",
+      "d": "Fine adjust the length of the tunic."
+    },
+    "sleeveLength": {
+      "t": "Sleeve length",
+      "d": "Adjust the length of the sleeves."
+    },
+    "splitPosition": {
+      "t": "Split position",
+      "d": "Determines the height where the body parts are split at the bottom, or where the godets start."
+    },
+    "cuffWidth": {
+      "t": "Cuff Width",
+      "d": "The finished width of the cuff as a factor of the seam allowance."
+    },
+    "hemWidth": {
+      "t": "Hem Width",
+      "d": "The finished width of the hem as a factor of the seam allowance."
+    },
+    "hemEase": {
+      "t": "Godet Flare Bonus",
+      "d": "Use higher values for more flare and range of motion."
+    }
   }
 }

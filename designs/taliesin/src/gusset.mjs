@@ -5,7 +5,7 @@ export const gusset = {
   name: 'taliesin.gusset',
   options: {
     gusset: {
-      bool: true,
+      bool: false,
       menu: 'construction',
     },
   },
@@ -117,7 +117,7 @@ function taliesinGusset({
   })
 
   macro('title', {
-    nr: 3,
+    nr: 4,
     title: 'gusset',
     at: new Point(15, 60),
     scale: 0.5,

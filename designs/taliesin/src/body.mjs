@@ -13,8 +13,8 @@ export const body = {
     'biceps',
   ],
   options: {
-    chestEase: { pct: 15, min: 5, max: 25, menu: 'fit' },
-    seatEase: { pct: 15, min: 5, max: 50, menu: 'fit' },
+    chestEase: { pct: 15, min: 5, max: 30, menu: 'fit' },
+    seatEase: { pct: 15, min: 5, max: 30, menu: 'fit' },
     armpitEase: { pct: 33, min: 15, max: 50, menu: 'fit' },
     length: {
       dflt: 'thigh',
@@ -30,7 +30,8 @@ export const body = {
         determineAdjustedLength(mergedOptions, data.measurements) -
         determineLength(mergedOptions, data.measurements),
     },
-    splitPosition: { pct: 30, min: -10, max: 100, menu: 'fit' },
+    splitPosition: { pct: 30, min: -10, max: 100, menu: 'style' },
+    hemWidth: { pct: 150, min: 100, max: 500, menu: (settings) => (settings.sa ? 'style' : false) },
     shoulderSeam: { bool: true, menu: 'construction' },
     centerSeam: { bool: false, menu: 'construction' },
   },
@@ -88,7 +89,7 @@ function taliesinBody({
 
   const length = determineAdjustedLength(options, measurements)
 
-  const hemAllowance = sa * 2.5
+  const hemAllowance = options.hemWidth * sa * 2
 
   points.centerShoulder = new Point(0, 0)
   points.sideShoulder = new Point(width, 0)
@@ -97,17 +98,18 @@ function taliesinBody({
 
   points.centerFloor = new Point(0, measurements.hpsToWaistBack + measurements.waistToFloor)
   points.armpit = new Point(width, ((1 + options.armpitEase) * measurements.biceps) / 2)
-  points.splitPosition = new Point(
-    width,
+  points.centerSplitPosition = new Point(
+    0,
     measurements.hpsToWaistBack +
       measurements.waistToHips +
       ((measurements.waistToUpperLeg + measurements.waistToKnee) / 2 - measurements.waistToHips) *
         options.splitPosition
   )
+  points.sideSplitPosition = points.centerSplitPosition.translate(width, 0)
 
   store.set('armpitDistance', points.sideShoulder.dist(points.armpit))
-  store.set('splitDistance', points.splitPosition.dist(points.sideHem))
-  store.set('splitToFloor', points.splitPosition.dy(points.centerFloor))
+  store.set('splitDistance', points.sideSplitPosition.dist(points.sideHem))
+  store.set('splitToFloor', points.sideSplitPosition.dy(points.centerFloor))
   store.set('bodyWidth', width)
 
   if (expand) {
@@ -143,6 +145,24 @@ function taliesinBody({
     .line(points.centerShoulder)
     .close()
     .addClass('fabric')
+
+  if (complete) {
+    // draw waistline
+    points.centerWaist = new Point(0, measurements.hpsToWaistBack)
+    points.sideWaist = new Point(width, measurements.hpsToWaistBack)
+    paths.waist = new Path()
+      .move(points.centerWaist)
+      .line(points.sideWaist)
+      .addClass('fabric lashed stroke-sm')
+    // draw hipline
+    points.centerHip = new Point(0, measurements.hpsToWaistBack + measurements.waistToHips)
+    points.sideHip = new Point(width, measurements.hpsToWaistBack + measurements.waistToHips)
+    paths.hips = new Path()
+      .move(points.centerHip)
+      .line(points.sideHip)
+      .addClass('fabric lashed stroke-sm center italic')
+  }
+
   if (sa) {
     paths.sa = new Path()
       .move(points.centerHem)
@@ -169,23 +189,29 @@ function taliesinBody({
         .line(points.centerHem.translate(-sa, hemAllowance))
       paths.sa.ops[0].to = points.centerHem.translate(-sa, hemAllowance)
     }
+
+    paths.hemFold = new Path()
+      .move(new Point(paths.sa.start().x, points.centerHem.y + hemAllowance / 2))
+      .line(points.sideHem.translate(sa, hemAllowance / 2))
+      .addClass('fabric lashed')
   }
   /*
    * Annotations
    */
-
-  snippets.splitPosition = new Snippet('notch', points.splitPosition)
+  snippets.sideSplitPosition = new Snippet('notch', points.sideSplitPosition)
+  if (options.centerSeam) {
+    snippets.centerSplitPosition = new Snippet('notch', points.centerSplitPosition)
+  }
   snippets.armpit = new Snippet('notch', points.armpit)
 
+  // Cutlist
   let cuts = 1
   if (options.shoulderSeam) cuts *= 2
   if (options.centerSeam) cuts *= 2
-
-  // Cutlist
   store.cutlist.setCut({
     cut: cuts,
     from: 'fabric',
-    onFold: options.shoulderSeam || options.centerSeam,
+    onFold: !options.shoulderSeam || !options.centerSeam,
     identical: true,
   })
 
@@ -235,16 +261,35 @@ function taliesinBody({
   macro('vd', {
     id: 'armpitToSplit',
     from: points.armpit,
-    to: points.splitPosition,
+    to: points.sideSplitPosition,
     x: points.sideShoulder.x - 15,
   })
   macro('vd', {
     id: 'splitToHem',
-    from: points.splitPosition,
+    from: points.sideSplitPosition,
     to: points.sideHem,
     x: points.sideShoulder.x - 15,
   })
 
+  // banners
+  macro('banner', {
+    id: `waist`,
+    path: paths.waist,
+    text: 'waist',
+    classes: 'fill-note text-sm center',
+    repeat: 30,
+    spaces: 60,
+  })
+  macro('banner', {
+    id: `hips`,
+    path: paths.hips,
+    text: 'hips',
+    classes: 'fill-note text-sm center',
+    repeat: 30,
+    spaces: 60,
+  })
+
+  // title
   macro('title', {
     nr: 1,
     title: 'body',
