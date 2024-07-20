@@ -26,27 +26,27 @@
     "length.calf.d": "To the middle of the calf",
     "length.floor.t": "Floor",
     "length.floor.d": "To the floor",
-    "centerSeamYes.t":  "Yes",
+    "centerSeamYes.t": "Yes",
     "centerSeamNo.t": "No",
-    "centerSeamYes.d":  "Split at center",
+    "centerSeamYes.d": "Split at center",
     "centerSeamNo.d": "Center on fold",
-      "gussetYes.t":  "Yes",
+    "gussetYes.t": "Yes",
     "gussetNo.t": "No",
-      "gussetYes.d":  "Include a gusset",
+    "gussetYes.d": "Include a gusset",
     "gussetNo.d": "Draft without gusset",
-      "godetYes.t":  "Include godets",
+    "godetYes.t": "Include godets",
     "godetNo.t": "No godets",
-      "godetYes.d":  "Add godets to increase flare",
+    "godetYes.d": "Add godets to increase flare",
     "godetNo.d": "Add side split",
-        "shoulderSeamYes.t":  "Yes",
+    "shoulderSeamYes.t": "Yes",
     "shoulderSeamNo.t": "No",
-        "shoulderSeamYes.d":  "Join at shoulders",
+    "shoulderSeamYes.d": "Join at shoulders",
     "shoulderSeamNo.d": "No shoulder seams"
   },
   "o": {
     "centerSeam": {
       "t": "Center Seam",
-      "d": "Split the body vertically along the center. This allows for more freedom between the legs and was historically used when riding horses."
+      "d": "Split the body vertically along the center. This allows for more freedom between the legs and was used for horse riding."
     },
     "shoulderSeam": {
       "t": "Shoulder Seam",

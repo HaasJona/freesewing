@@ -80,8 +80,8 @@ function taliesinSleeve({
       replace: {
         wt: units(2 * armpitWidth + extraSa),
         wb: units(2 * points.cuffSide.x + extraSa),
-        l: units(points.cuffCenter.y + extraSa),
-        fl: units(flatLength + extraSa / 2),
+        l: units(points.cuffCenter.y + extraSa / 2 + hemAllowance),
+        fl: units(flatLength + extraSa / 2 + hemAllowance),
       },
       suggest: {
         text: 'flag:show',
