@@ -4,13 +4,13 @@ export const facing = {
   name: 'taliesin.facing',
   options: {
     neckEase: {
-      pct: 20,
+      pct: 7.5,
       min: -5,
       max: 50,
       menu: 'fit',
     },
     headEase: {
-      pct: 10,
+      pct: 5,
       min: 0,
       max: 30,
       menu: 'fit',
@@ -62,10 +62,14 @@ function taliesinFacing({
   points.stitchBottom = points.bottom.translate(0, stitchDistFront)
   points.stitchBottomCorner = points.stitchBottom.translate(stitchDistFront, 0)
 
+  points.outerRight = points.center.translate(innerRadius + facingWidth, 0)
+  points.outerLeft = points.center.translate(-innerRadius - facingWidth, 0)
+  points.outerTop = points.center.translate(0, -innerRadius - facingWidth)
+
   paths.innerCircle = new Path()
     .move(points.front)
     .circleSegment(180, points.center)
-    .addClass('fabric')
+    .addClass('lining')
   paths.outerCircle = new Path().move(points.outerFront).circleSegment(180, points.center).hide()
   paths.stitchCircle = new Path().move(points.stitchFront).circleSegment(180, points.center).hide()
   paths.outerPilot = new Path()
@@ -85,12 +89,12 @@ function taliesinFacing({
     paths.shoulder = new Path()
       .move(points.shoulderCenter)
       .line(points.shoulder)
-      .addClass('contrast stroke-sm')
+      .addClass('contrast dashed stroke-sm')
 
   points.outerCorner = paths.outerCircle.intersects(paths.outerPilot)[0]
   points.stitchCorner = paths.stitchCircle.intersects(paths.stitchPilot)[0]
 
-  paths.keyhole = new Path().move(points.front).line(points.bottom).addClass('fabric')
+  paths.keyhole = new Path().move(points.front).line(points.bottom).addClass('lining')
   paths.facing = new Path()
     .move(points.outerBottom)
     .move(points.outerBottom.translate(facingWidth, 0))
@@ -108,8 +112,10 @@ function taliesinFacing({
   if (complete)
     paths.verticalCenter = new Path()
       .move(paths.outerCircle.end())
+      .line(points.front)
+      .move(points.bottom)
       .line(points.outerBottom)
-      .addClass('contrast stroke-sm')
+      .addClass('contrast dashed stroke-sm')
 
   macro('mirror', {
     paths: ['facing', 'stitch', 'innerCircle', 'shoulder'],
@@ -132,11 +138,10 @@ function taliesinFacing({
     to: points.front,
     x: innerRadius + facingWidth + 15,
   })
-  macro('vd', {
+  macro('ld', {
     id: 'radius',
-    from: points.front,
-    to: points.center,
-    x: -innerRadius - facingWidth - 15,
+    from: points.center,
+    to: points.front.rotate(155, points.center),
   })
   macro('vd', {
     id: 'shoulderOffset',
@@ -149,6 +154,27 @@ function taliesinFacing({
     from: paths.innerCircle.end(),
     to: paths.outerCircle.end(),
     x: innerRadius + facingWidth + 15,
+  })
+
+  macro('hd', {
+    id: 'totalWidth',
+    from: points.outerLeft,
+    to: points.outerRight,
+    y: points.outerTop.y - 15,
+  })
+
+  macro('hd', {
+    id: 'haftWidth',
+    from: points.center,
+    to: points.outerRight,
+    y: points.center.y,
+  })
+
+  macro('vd', {
+    id: 'totalHeight',
+    from: points.outerBottom,
+    to: points.outerTop,
+    x: points.outerLeft.x - 30,
   })
 
   macro('title', {
