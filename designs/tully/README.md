@@ -1,12 +1,12 @@
 <p align='center'><a
-  href="https://www.npmjs.com/package/@freesewing/taliesin"
-  title="@freesewing/taliesin on NPM"
-  ><img src="https://img.shields.io/npm/v/@freesewing/taliesin.svg"
-  alt="@freesewing/taliesin on NPM"/>
+  href="https://www.npmjs.com/package/@freesewing/tully"
+  title="@freesewing/tully on NPM"
+  ><img src="https://img.shields.io/npm/v/@freesewing/tully.svg"
+  alt="@freesewing/tully on NPM"/>
   </a><a
   href="https://opensource.org/licenses/MIT"
   title="License: MIT"
-  ><img src="https://img.shields.io/npm/l/@freesewing/taliesin.svg?label=License"
+  ><img src="https://img.shields.io/npm/l/@freesewing/tully.svg?label=License"
   alt="License: MIT"/>
   </a><a
   href="https://deepscan.io/dashboard#view=project&tid=2114&pid=2993&bid=23256"
@@ -14,10 +14,10 @@
   ><img src="https://deepscan.io/api/teams/2114/projects/2993/branches/23256/badge/grade.svg"
   alt="Code quality on DeepScan"/>
   </a><a
-  href="https://github.com/freesewing/freesewing/issues?q=is%3Aissue+is%3Aopen+label%3Apkg%3Ataliesin"
-  title="Open issues tagged pkg:taliesin"
-  ><img src="https://img.shields.io/github/issues/freesewing/freesewing/pkg:taliesin.svg?label=Issues"
-  alt="Open issues tagged pkg:taliesin"/>
+  href="https://github.com/freesewing/freesewing/issues?q=is%3Aissue+is%3Aopen+label%3Apkg%3Atully"
+  title="Open issues tagged pkg:tully"
+  ><img src="https://img.shields.io/github/issues/freesewing/freesewing/pkg:tully.svg?label=Issues"
+  alt="Open issues tagged pkg:tully"/>
   </a><a
   href="#contributors-"
   title="All Contributors"
@@ -45,7 +45,7 @@
   alt="Follow @freesewing_org on Twitter"/>
   </a></p>
 
-# @freesewing/taliesin
+# @freesewing/tully
 
 A FreeSewing pattern for a historical tunic
 
@@ -65,7 +65,7 @@ hardship, then you should [join us and become a patron](https://freesewing.org/c
 
 This repository is the FreeSewing *monorepo* holding all FreeSewing's websites, documentation, designs, plugins, and other NPM packages.
 
-This folder holds: @freesewing/taliesin
+This folder holds: @freesewing/tully
 
 If you're not entirely sure what to do or how to start, type this command:
 

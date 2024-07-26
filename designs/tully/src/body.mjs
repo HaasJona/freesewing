@@ -1,7 +1,7 @@
 import { capitalize } from '@freesewing/core'
 
 export const body = {
-  name: 'taliesin.body',
+  name: 'tully.body',
   measurements: [
     'hpsToWaistBack',
     'chest',
@@ -35,7 +35,7 @@ export const body = {
     shoulderSeam: { bool: true, menu: 'construction' },
     centerSeam: { bool: false, menu: 'construction' },
   },
-  draft: taliesinBody,
+  draft: tullyBody,
 }
 
 function determineAdjustedLength(options, measurements) {
@@ -60,7 +60,7 @@ function determineLength(options, measurements) {
   throw `unsupported length value : ${options.length}`
 }
 
-function taliesinBody({
+function tullyBody({
   store,
   sa,
   Point,
@@ -118,7 +118,7 @@ function taliesinBody({
     // Expand is off, do not draw the part but flag this to the user
     const extraSa = sa ? 2 * sa : 0
     store.flag.note({
-      msg: `taliesin:cut${capitalize(part.name.split('.')[1])}`,
+      msg: `tully:cut${capitalize(part.name.split('.')[1])}`,
       notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
       replace: {
         w: units((options.centerSeam ? 1 : 2) * width + extraSa),

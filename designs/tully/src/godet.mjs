@@ -2,7 +2,7 @@ import { body } from './body.mjs'
 import { capitalize } from '@freesewing/core'
 
 export const godet = {
-  name: 'taliesin.godet',
+  name: 'tully.godet',
   options: {
     hemEase: {
       pct: 0,
@@ -17,10 +17,10 @@ export const godet = {
   },
   after: body,
   measurements: ['waistToFloor'],
-  draft: taliesinGodet,
+  draft: tullyGodet,
 }
 
-function taliesinGodet({
+function tullyGodet({
   options,
   store,
   measurements,
@@ -66,7 +66,7 @@ function taliesinGodet({
     // Expand is off, do not draw the part but flag this to the user
     const extraSa = sa ? 2 * sa : 0
     store.flag.note({
-      msg: `taliesin:cut${capitalize(part.name.split('.')[1])}`,
+      msg: `tully:cut${capitalize(part.name.split('.')[1])}`,
       notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
       replace: {
         w: units(2 * width + extraSa),

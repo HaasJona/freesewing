@@ -2,7 +2,7 @@ import { capitalize } from '@freesewing/core'
 import { body } from './body.mjs'
 
 export const sleeve = {
-  name: 'taliesin.sleeve',
+  name: 'tully.sleeve',
   options: {
     sleeveLength: {
       pct: 100,
@@ -25,10 +25,10 @@ export const sleeve = {
   },
   after: body,
   measurements: ['shoulderToShoulder', 'shoulderToWrist', 'wrist'],
-  draft: taliesinSleeve,
+  draft: tullySleeve,
 }
 
-function taliesinSleeve({
+function tullySleeve({
   options,
   store,
   measurements,
@@ -75,7 +75,7 @@ function taliesinSleeve({
     // Expand is off, do not draw the part but flag this to the user
     const extraSa = sa ? 2 * sa : 0
     store.flag.note({
-      msg: `taliesin:cut${capitalize(part.name.split('.')[1])}`,
+      msg: `tully:cut${capitalize(part.name.split('.')[1])}`,
       notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
       replace: {
         wt: units(2 * armpitWidth + extraSa),

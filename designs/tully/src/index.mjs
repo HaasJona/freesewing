@@ -8,10 +8,10 @@ import { sleeve } from './sleeve.mjs'
 import { godet } from './godet.mjs'
 
 // Setup our new design
-const Taliesin = new Design({
+const Tully = new Design({
   data,
   parts: [sleeve, body, facing, gusset, godet],
 })
 
 // Named exports
-export { body, sleeve, facing, gusset, godet, Taliesin, i18n }
+export { body, sleeve, facing, gusset, godet, Tully, i18n }

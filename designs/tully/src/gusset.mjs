@@ -2,7 +2,7 @@ import { capitalize, hidePresets } from '@freesewing/core'
 import { body } from './body.mjs'
 
 export const gusset = {
-  name: 'taliesin.gusset',
+  name: 'tully.gusset',
   options: {
     gusset: {
       bool: false,
@@ -10,10 +10,10 @@ export const gusset = {
     },
   },
   after: body,
-  draft: taliesinGusset,
+  draft: tullyGusset,
 }
 
-function taliesinGusset({
+function tullyGusset({
   options,
   store,
   measurements,
@@ -70,7 +70,7 @@ function taliesinGusset({
     // Expand is off, do not draw the part but flag this to the user
     const extraSa = sa ? 2 * sa : 0
     store.flag.note({
-      msg: `taliesin:cut${capitalize(part.name.split('.')[1])}`,
+      msg: `tully:cut${capitalize(part.name.split('.')[1])}`,
       notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
       replace: {
         w: units(gussetWidth + extraSa),

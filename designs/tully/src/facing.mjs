@@ -1,7 +1,7 @@
 import { hidePresets } from '@freesewing/core'
 
 export const facing = {
-  name: 'taliesin.facing',
+  name: 'tully.facing',
   options: {
     neckEase: {
       pct: 7.5,
@@ -17,10 +17,10 @@ export const facing = {
     },
   },
   measurements: ['neck', 'head'],
-  draft: taliesinFacing,
+  draft: tullyFacing,
 }
 
-function taliesinFacing({
+function tullyFacing({
   options,
   store,
   measurements,
@@ -181,7 +181,7 @@ function taliesinFacing({
     nr: 3,
     title: 'facing',
     at: points.center.translate(-40, 0),
-    notes: ['taliesin:noSeamAllowance'],
+    notes: ['tully:noSeamAllowance'],
   })
 
   return part

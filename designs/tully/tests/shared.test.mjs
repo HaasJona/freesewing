@@ -1,5 +1,5 @@
 // This file is auto-generated | Any changes you make will be overwritten.
-import { Taliesin, i18n } from '../src/index.mjs'
+import { Tully, i18n } from '../src/index.mjs'
 
 // Shared tests
 import { testPatternConfig } from '../../../tests/designs/config.mjs'
@@ -8,13 +8,13 @@ import { testPatternDrafting } from '../../../tests/designs/drafting.mjs'
 import { testPatternSampling } from '../../../tests/designs/sampling.mjs'
 
 // Test config
-testPatternConfig(Taliesin)
+testPatternConfig(Tully)
 
 // Test translation
-testPatternI18n(Taliesin, i18n)
+testPatternI18n(Tully, i18n)
 
 // Test drafting - Change the second parameter to `true` to log errors
-testPatternDrafting(Taliesin, false)
+testPatternDrafting(Tully, false)
 
 // Test sampling - Change the second parameter to `true` to log errors
-testPatternSampling(Taliesin, false)
+testPatternSampling(Tully, false)
