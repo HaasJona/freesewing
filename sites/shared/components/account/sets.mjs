@@ -58,6 +58,7 @@ import {
 } from 'shared/components/inputs.mjs'
 import { BookmarkButton } from 'shared/components/bookmarks.mjs'
 import { DynamicMdx } from 'shared/components/mdx/dynamic.mjs'
+import { validateMset } from './msetvalidation.mjs'
 
 export const ns = [inputNs, 'account', 'patterns', 'status', 'measurements', 'sets']
 
@@ -322,6 +323,10 @@ export const Mset = ({ id, publicOnly = false }) => {
       setMset(result.data.set)
       setLoadingStatus([true, 'nailedIt', true, true])
     } else setLoadingStatus([true, 'backendError', true, false])
+  }
+
+  const validateMeasurements = () => {
+    alert(validateMset(measies).join('\n'))
   }
 
   const importSet = async () => {
@@ -748,6 +753,12 @@ export const Mset = ({ id, publicOnly = false }) => {
       >
         <UploadIcon />
         {t('saveThing', { thing: t('account:set') })}
+      </button>
+      <button
+        onClick={validateMeasurements}
+        className="btn btn-secondary btn-lg flex flex-row items-center gap-4 mx-auto mt-8"
+      >
+        {t('validateMeasurements')}
       </button>
     </div>
   )
