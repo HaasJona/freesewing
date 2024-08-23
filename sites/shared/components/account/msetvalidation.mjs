@@ -1,6 +1,5 @@
-import { useTranslation } from 'next-i18next'
+//  __SDEFILE__ - This file is a dependency for the stand-alone environment
 import { formatMm } from '../../utils.mjs'
-import { ns as inputNs } from 'shared/components/inputs.mjs'
 
 const descendingCheck = [
   ['hpsToWaistFront', 'hpsToBust'],
@@ -15,8 +14,6 @@ const descendingCheck = [
   ['waist', 'waistBack'],
 ]
 
-const { t } = useTranslation(inputNs, 'account')
-
 const constraintCheck = [
   {
     lhs: [
@@ -27,7 +24,7 @@ const constraintCheck = [
       { m: 'chest', coefficient: 1 },
       { m: 'bustFront', coefficient: -1 },
     ],
-    tolerance: 0.05,
+    tolerance: 0.025,
   },
   {
     lhs: [{ m: 'hpsToWaistFront', coefficient: 1 }],
@@ -36,7 +33,7 @@ const constraintCheck = [
       { m: 'bustPointToUnderbust', coefficient: 1 },
       { m: 'waistToUnderbust', coefficient: 1 },
     ],
-    tolerance: 0.08,
+    tolerance: 0.05,
   },
   {
     lhs: [{ m: 'waistToFloor', coefficient: 1 }],
@@ -44,11 +41,11 @@ const constraintCheck = [
       { m: 'waistToUpperLeg', coefficient: 1 },
       { m: 'inseam', coefficient: 1 },
     ],
-    tolerance: 0.03,
+    tolerance: 0.025,
   },
 ]
 
-function checkDescendingSet(set, warnings, measies) {
+function checkDescendingSet(t, set, warnings, measies) {
   let biggerValue = null
   let biggerMeasurement = null
   for (const measurement of set) {
@@ -64,18 +61,20 @@ function checkDescendingSet(set, warnings, measies) {
   }
 }
 
-function formatSum(params) {
+function formatSum(t, params) {
   let result = ''
   for (const e of params) {
-    let prefix = ''
+    let prefix = ' + '
     if (e.coefficient === -1) {
-      prefix = '-'
-    } else if (e.coefficient !== 1) {
-      prefix = e.coefficient + '×'
+      prefix = ' - '
+    } else if (e.coefficient !== 1 && e.coefficient > 0) {
+      prefix = ' + ' + e.coefficient + '×'
+    } else if (e.coefficient !== 1 && e.coefficient < 0) {
+      prefix = ' - ' + -e.coefficient + '×'
     }
-    result += prefix + t(e.m) + ' '
+    result += prefix + t(e.m)
   }
-  return result.trim()
+  return result.replaceAll(/^ \+ /g, '').trim()
 }
 
 function sumMeasurements(params, measies) {
@@ -89,9 +88,9 @@ function sumMeasurements(params, measies) {
   return result
 }
 
-function formatWarningMessage(constraint, lhsSum, rhsSum, imperial) {
-  let leftConstraint = formatSum(constraint.lhs)
-  let rightConstraint = formatSum(constraint.rhs)
+function formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial) {
+  let leftConstraint = formatSum(t, constraint.lhs)
+  let rightConstraint = formatSum(t, constraint.rhs)
 
   return t('shouldBeEqual', {
     lhsSum: formatMm(lhsSum, imperial),
@@ -101,7 +100,7 @@ function formatWarningMessage(constraint, lhsSum, rhsSum, imperial) {
   })
 }
 
-function checkConstraint(constraint, warnings, measies, imperial) {
+function checkConstraint(t, constraint, warnings, measies, imperial) {
   let lhsSum = sumMeasurements(constraint.lhs, measies)
   let rhsSum = sumMeasurements(constraint.rhs, measies)
   if (lhsSum === false || rhsSum === false) {
@@ -110,25 +109,25 @@ function checkConstraint(constraint, warnings, measies, imperial) {
   }
   const difference = Math.abs(((lhsSum - rhsSum) / (lhsSum + rhsSum)) * 2)
   if (difference > constraint.tolerance) {
-    warnings.add(formatWarningMessage(constraint, lhsSum, rhsSum, imperial))
+    warnings.push(formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial))
   }
 }
 
-function checkDescendingSets(warnings, measies) {
+function checkDescendingSets(t, warnings, measies) {
   for (const e of descendingCheck) {
-    checkDescendingSet(e, warnings, measies)
+    checkDescendingSet(t, e, warnings, measies)
   }
 }
-function checkConstraints(warnings, measies, imperial) {
+function checkConstraints(t, warnings, measies, imperial) {
   for (const e of constraintCheck) {
-    checkConstraint(e, warnings, measies, imperial)
+    checkConstraint(t, e, warnings, measies, imperial)
   }
 }
 
-export function validateMset(measies, imperial) {
+export function validateMset(t, measies, imperial) {
   const warnings = []
-  checkDescendingSets(warnings, measies)
-  checkConstraints(warnings, measies, imperial)
+  checkDescendingSets(t, warnings, measies)
+  checkConstraints(t, warnings, measies, imperial)
   if (warnings.length === 0) {
     warnings.push(t('validationSuccess'))
   }

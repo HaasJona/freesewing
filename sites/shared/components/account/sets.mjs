@@ -326,7 +326,7 @@ export const Mset = ({ id, publicOnly = false }) => {
   }
 
   const validateMeasurements = () => {
-    alert(validateMset(measies).join('\n'))
+    alert(validateMset(t, measies).join('\n'))
   }
 
   const importSet = async () => {
