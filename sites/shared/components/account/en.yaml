@@ -1,3 +1,10 @@
+
+# validation
+shouldBeLarger: "{ lhs } should be larger than { rhs }."
+shouldBeEqual: "{ lhsConstraint } (= { lhsSum }) should be approximately equal to { rhsConstraint } (= { rhsSum })."
+validationSuccess: "No problems were found."
+validateMeasurements: Validate measurements
+
 account: Account
 yourAccount: Your Account
 newPattern: New Pattern
