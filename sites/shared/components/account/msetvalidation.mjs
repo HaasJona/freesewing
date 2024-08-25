@@ -41,7 +41,8 @@ const constraintCheck = [
       { m: 'waistToUpperLeg', coefficient: 1 },
       { m: 'inseam', coefficient: 1 },
     ],
-    tolerance: 0.025,
+    tolerance: 0.1,
+    lhsMustBeSmaller: true,
   },
 ]
 
@@ -92,7 +93,7 @@ function formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial) {
   let leftConstraint = formatSum(t, constraint.lhs)
   let rightConstraint = formatSum(t, constraint.rhs)
 
-  return t('shouldBeEqual', {
+  return t(constraint.lhsMustBeSmaller ? 'shouldBeSlightlySmaller' : 'shouldBeEqual', {
     lhsSum: formatMm(lhsSum, imperial),
     lhsConstraint: leftConstraint,
     rhsSum: formatMm(rhsSum, imperial),
@@ -109,6 +110,8 @@ function checkConstraint(t, constraint, warnings, measies, imperial) {
   }
   const difference = Math.abs(((lhsSum - rhsSum) / (lhsSum + rhsSum)) * 2)
   if (difference > constraint.tolerance) {
+    warnings.push(formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial))
+  } else if (constraint.lhsMustBeSmaller && lhsSum > rhsSum) {
     warnings.push(formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial))
   }
 }

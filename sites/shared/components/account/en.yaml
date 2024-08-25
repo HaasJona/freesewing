@@ -2,6 +2,7 @@
 # validation
 shouldBeLarger: "{ lhs } should be larger than { rhs }."
 shouldBeEqual: "{ lhsConstraint } (= { lhsSum }) should be approximately equal to { rhsConstraint } (= { rhsSum })."
+shouldBeSlightlySmaller: "{ lhsConstraint } (= { lhsSum }) should be slightly smaller than { rhsConstraint } (= { rhsSum })."
 validationSuccess: "No problems were found."
 validateMeasurements: Validate measurements
 
