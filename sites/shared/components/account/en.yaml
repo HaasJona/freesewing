@@ -1,11 +1,3 @@
-
-# validation
-shouldBeLarger: "{ lhs } should be larger than { rhs }."
-shouldBeEqual: "{ lhsConstraint } (= { lhsSum }) should be approximately equal to { rhsConstraint } (= { rhsSum })."
-shouldBeSlightlySmaller: "{ lhsConstraint } (= { lhsSum }) should be slightly smaller than { rhsConstraint } (= { rhsSum })."
-validationSuccess: "No problems were found."
-validateMeasurements: Validate measurements
-
 account: Account
 yourAccount: Your Account
 newPattern: New Pattern
@@ -360,3 +352,10 @@ importSetTip2: Your file can either contain a single measurements set, or an arr
 importing: Importing
 imported: Imported
 importFailed: Import failed
+
+# validation
+shouldBeLarger: "{ lhs } should be larger than { rhs }."
+shouldBeEqual: "{ lhsConstraint } (= { lhsSum }) should be approximately equal to { rhsConstraint } (= { rhsSum })."
+shouldBeSlightlySmaller: "{ lhsConstraint } (= { lhsSum }) should be slightly smaller than { rhsConstraint } (= { rhsSum })."
+validationSuccess: No problems were found.
+validateMeasurements: Check Measurements
