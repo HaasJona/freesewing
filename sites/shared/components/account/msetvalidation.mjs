@@ -25,6 +25,7 @@ const constraintCheck = [
       { m: 'bustFront', coefficient: -1 },
     ],
     tolerance: 0.025,
+    key: 'backChest',
   },
   {
     lhs: [{ m: 'hpsToWaistFront', coefficient: 1 }],
@@ -33,7 +34,9 @@ const constraintCheck = [
       { m: 'bustPointToUnderbust', coefficient: 1 },
       { m: 'waistToUnderbust', coefficient: 1 },
     ],
-    tolerance: 0.05,
+    lhsMustBeSmaller: true,
+    tolerance: 0.1,
+    key: 'bustFront',
   },
   {
     lhs: [{ m: 'waistToFloor', coefficient: 1 }],
@@ -43,6 +46,7 @@ const constraintCheck = [
     ],
     tolerance: 0.1,
     lhsMustBeSmaller: true,
+    key: 'waistToUpperLeg',
   },
 ]
 
@@ -93,12 +97,18 @@ function formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial) {
   let leftConstraint = formatSum(t, constraint.lhs)
   let rightConstraint = formatSum(t, constraint.rhs)
 
-  return t(constraint.lhsMustBeSmaller ? 'shouldBeSlightlySmaller' : 'shouldBeEqual', {
-    lhsSum: formatMm(lhsSum, imperial),
-    lhsConstraint: leftConstraint,
-    rhsSum: formatMm(rhsSum, imperial),
-    rhsConstraint: rightConstraint,
-  })
+  return (
+    t(constraint.key + '.t') +
+    ': ' +
+    t(constraint.lhsMustBeSmaller ? 'shouldBeSlightlySmaller' : 'shouldBeEqual', {
+      lhsSum: formatMm(lhsSum, imperial),
+      lhsConstraint: leftConstraint,
+      rhsSum: formatMm(rhsSum, imperial),
+      rhsConstraint: rightConstraint,
+    }) +
+    ' ' +
+    t(constraint.key + '.d')
+  )
 }
 
 function checkConstraint(t, constraint, warnings, measies, imperial) {

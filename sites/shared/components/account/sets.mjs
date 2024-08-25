@@ -327,7 +327,7 @@ export const Mset = ({ id, publicOnly = false }) => {
   }
 
   const validateMeasurements = (measies) => {
-    alert(validateMset(t, measies).join('\n'))
+    alert(validateMset(t, measies).join('\n\n'))
     return true
   }
 
