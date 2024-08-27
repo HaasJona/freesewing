@@ -712,6 +712,25 @@
       "hem"
     ]
   },
+  "paul": {
+    "code": "Joost De Cock",
+    "description": "A FreeSewing pattern for summer pants",
+    "design": "Joost De Cock",
+    "difficulty": 3,
+    "lab": true,
+    "org": true,
+    "tags": [
+      "bottoms",
+      "trousers"
+    ],
+    "techniques": [
+      "elastic",
+      "curvedSeam",
+      "pocket",
+      "weltPocket",
+      "hem"
+    ]
+  },
   "penelope": {
     "code": "Wouter Van Wageningen",
     "description": "A FreeSewing pattern for a pencil skirt",
