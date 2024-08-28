@@ -62,16 +62,13 @@ function draftPaulBack({
     options.backPocketHorizontalPlacement
   )
   points.dartPilot = points.dartCenter.shift(angle - 90, 666)
-  points.dartTip = utils.beamsIntersect(
-    points.dartCenter,
-    points.dartPilot,
-    points.cbSeat,
-    points.seatOut
-  )
+  points.dartTip = utils
+    .beamsIntersect(points.dartCenter, points.dartPilot, points.cbSeat, points.seatOut)
+    .shiftFractionTowards(points.dartCenter, 1 - options.backDartDepth)
 
   // Back dart
-  points.tmp1 = points.dartCenter.rotate(8.66, points.dartTip)
-  points.tmp2 = points.dartCenter.rotate(-8.66, points.dartTip)
+  points.tmp1 = points.dartCenter.rotate(options.backDartAngle, points.dartTip)
+  points.tmp2 = points.dartCenter.rotate(-options.backDartAngle, points.dartTip)
   points.backDartLeft = points.dartTip.shiftFractionTowards(points.tmp1, 1.05)
   points.backDartRight = points.dartTip.shiftFractionTowards(points.tmp2, 1.05)
   let newBase =
@@ -104,7 +101,7 @@ function draftPaulBack({
     .shiftTowards(points.dartTip, dist)
     .rotate(90, points.backDartRight)
   points.outCp = points.styleWaistOut
-    .shiftTowards(points.seatOutCp2, dist)
+    .shiftTowards(points.seatOut, dist)
     .rotate(-90, points.styleWaistOut)
 
   // Store waistband length
@@ -299,6 +296,8 @@ export const back = {
     backPocketWidth: { pct: 55, min: 50, max: 60, menu: 'pockets.backpockets' },
     backPocketDepth: { pct: 60, min: 40, max: 80, menu: 'pockets.backpockets' },
     backPocketFacing: { bool: true, menu: 'pockets.backpockets' },
+    backDartAngle: { deg: 8.66, min: 0, max: 15, menu: 'style' },
+    backDartDepth: { pct: 50, min: 1, max: 100, menu: 'style' },
   },
   draft: draftPaulBack,
 }

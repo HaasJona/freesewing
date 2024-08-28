@@ -8,26 +8,41 @@ function draftPaulFlyFacing({ points, Point, paths, Path, macro, snippets, store
   // Anchor for sampling/grid
   points.anchor = points.flyTop.clone()
 
+  // rotate all points so the fly is upright
+  let rotAngle = 90 - points.flyBottom.angle(points.styleWaistIn)
+  const rotPoints = [
+    'flyCurveStart',
+    'flyCurveCp2',
+    'flyCurveCp1',
+    'flyBottom',
+    'flyTop',
+    'styleWaistIn',
+  ]
+  for (const p of rotPoints) {
+    points[p] = points[p].rotate(rotAngle, points.anchor)
+  }
+
   paths.saBase = new Path()
-    .move(points.fork)
-    .curve(points.crotchSeamCurveCp1, points.crotchSeamCurveCp2, points.crotchSeamCurveStart)
+    .move(points.flyBottom)
     .line(points.styleWaistIn)
     .line(points.flyTop)
-    .split(points.flyBottom)
-    .pop()
+    .hide()
+
   paths.seam = paths.saBase
     .clone()
     .line(points.flyCurveStart)
     .curve(points.flyCurveCp2, points.flyCurveCp1, points.flyBottom)
     .close()
-    .attr('class', 'fabric')
+    .unhide()
+    .addClass('fabric')
 
   if (sa)
     paths.sa = paths.saBase
       .offset(sa)
-      .line(points.flyCurveStart)
+      .line(points.flyTop)
       .reverse()
       .line(points.flyBottom)
+      .unhide()
       .addClass('sa fabric')
 
   /*
