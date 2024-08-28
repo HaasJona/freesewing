@@ -19,7 +19,10 @@ function draftPaulFront({
   log,
   part,
 }) {
-  // Helper method to draw the outseam path
+  // Adapt bottom leg based on heel and heel ease
+  let quarterHeel = (measurements.heel * (1 + options.heelEase) * (1 - options.legBalance)) / 2
+  points.floorOut = points.floor.shift(180, quarterHeel)
+  points.floorIn = points.floor.shift(0, quarterHeel)
 
   // Helper method to draw the outline path
   const drawPath = () => {
@@ -27,23 +30,24 @@ function draftPaulFront({
   }
 
   // Helper object holding the Titan side seam path
-  const sideSeam =
-    points.waistOut.x < points.seatOut.x
-      ? new Path()
-          .move(points.styleWaistOut)
-          .curve(points.seatOut, points.kneeOutCp1, points.kneeOut)
-          .line(points.floorOut)
-      : new Path()
-          .move(points.styleWaistOut)
-          ._curve(points.seatOutCp1, points.seatOut)
-          .curve(points.seatOutCp2, points.kneeOutCp1, points.kneeOut)
-          .line(points.floorOut)
+  const sideSeam = new Path()
+    .move(points.styleWaistOut)
+    .curveThrough_(
+      points.seatOut,
+      points.floorOut.translate(0, points.floorOut.dy(points.kneeIn)),
+      points.kneeOut,
+      points.floorOut
+    )
 
   // Helper object holding the inseam path
   const frontInseamPath = new Path()
     .move(points.floorIn)
-    .line(points.kneeIn)
-    .curve(points.kneeInCp2, points.forkCp1, points.fork)
+    ._curveThrough(
+      points.floorIn.translate(0, points.floorIn.dy(points.kneeIn)),
+      points.kneeIn,
+      points.kneeIn,
+      points.fork
+    )
 
   // Helper object holding the crotchCurve
   const crotchCurveTmp = new Path()
@@ -351,6 +355,7 @@ export const front = {
     'waistToHips',
     'waistToSeat',
     'waistToUpperLeg',
+    'heel',
   ],
   options: {
     // Constants (from Titan)
