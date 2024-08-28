@@ -28,23 +28,8 @@ function draftPaulBack({
    * Helper method to draw the outline path
    */
   const drawPath = () => {
-    // Helper object that holds the titan outseam path adapted for the dart
-    const titanOutseam =
-      points.waistOut.x > points.seatOut.x
-        ? new Path()
-            .move(points.floorOut)
-            .line(points.kneeOut)
-            .curve(points.kneeOutCp2, points.seatOut, points.styleWaistOut)
-            .reverse()
-        : new Path()
-            .move(points.floorOut)
-            .line(points.kneeOut)
-            .curve(points.kneeOutCp2, points.seatOutCp1, points.seatOut)
-            .curve_(points.seatOutCp2, points.styleWaistOut)
-            .reverse()
-
     let waistIn = points.styleWaistIn || points.waistIn
-    return titanOutseam
+    return sideSeam
       .reverse()
       .curve(points.outCp, points.backDartRightCp, points.backDartRight)
       .noop('dart')
@@ -52,9 +37,25 @@ function draftPaulBack({
       .curve(points.backDartLeftCp, points.cbCp, waistIn)
       .line(points.crossSeamCurveStart)
       .curve(points.crossSeamCurveCp1, points.crossSeamCurveCp2, points.fork)
-      .curve(points.forkCp2, points.kneeInCp1, points.kneeIn)
-      .line(points.floorIn)
+      .curveThrough_(
+        points.forkCp2,
+        points.floorIn.translate(0, points.floorOut.dy(points.kneeIn)),
+        points.kneeIn,
+        points.floorIn
+      )
   }
+
+  const sideSeam = new Path()
+    .move(points.styleWaistOut)
+    .move(points.floorOut)
+    ._curveThrough(
+      points.floorOut.translate(0, points.floorOut.dy(points.kneeIn)),
+      points.seatOutCp1,
+      points.kneeOut,
+      points.seatOut
+    )
+    .curve_(points.seatOutCp2, points.styleWaistOut)
+    .reverse()
 
   // Mark back pocket
   let base = points.styleWaistIn.dist(points.styleWaistOut)
@@ -123,21 +124,7 @@ function draftPaulBack({
   )
   store.set('legWidthBack', points.floorIn.dist(points.floorOut))
 
-  const titanOutseam =
-    points.waistOut.x > points.seatOut.x
-      ? new Path()
-          .move(points.floorOut)
-          .line(points.kneeOut)
-          .curve(points.kneeOutCp2, points.seatOut, points.styleWaistOut)
-          .reverse()
-      : new Path()
-          .move(points.floorOut)
-          .line(points.kneeOut)
-          .curve(points.kneeOutCp2, points.seatOutCp1, points.seatOut)
-          .curve_(points.seatOutCp2, points.styleWaistOut)
-          .reverse()
-
-  points.yokeRight = titanOutseam.shiftAlong(points.styleWaistOut.dist(points.seatOut) * 0.8)
+  points.yokeRight = sideSeam.shiftAlong(points.styleWaistOut.dist(points.seatOut) * 0.8)
   points.yokeRightRotated = points.yokeRight.rotate(options.backDartAngle * 2, points.dartTip)
   points.styleWaistOutRotated = points.styleWaistOut.rotate(
     options.backDartAngle * 2,
@@ -331,7 +318,6 @@ export const back = {
     backPocketFacing: { bool: true, menu: 'pockets.backpockets' },
     backDartAngle: { deg: 8.66, min: 0, max: 15, menu: 'style' },
     backDartDepth: { pct: 50, min: 1, max: 100, menu: 'style' },
-    heelEase: { pct: 5, min: 0, max: 50, menu: 'style' },
   },
   draft: draftPaulBack,
 }

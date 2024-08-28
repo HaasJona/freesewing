@@ -19,6 +19,9 @@ function draftPaulFront({
   log,
   part,
 }) {
+  delete points.kneeOutCp1
+  delete points.kneeInCp1
+
   // Adapt bottom leg based on heel and heel ease
   let quarterHeel = (measurements.heel * (1 + options.heelEase) * (1 - options.legBalance)) / 2
   points.floorOut = points.floor.shift(180, quarterHeel)
@@ -403,6 +406,8 @@ export const front = {
     flyCurve: { pct: 72, min: 50, max: 100, menu: 'advanced.fly' },
     flyLength: { pct: 45, min: 30, max: 60, menu: 'advanced.fly' },
     flyWidth: { pct: 15, min: 10, max: 20, menu: 'advanced.fly' },
+
+    heelEase: { pct: 5, min: 0, max: 50, menu: 'style' },
   },
   draft: draftPaulFront,
 }
