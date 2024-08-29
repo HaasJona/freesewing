@@ -29,7 +29,7 @@ function draftPaulBack({
    */
   const drawPath = () => {
     let waistIn = points.styleWaistIn || points.waistIn
-    return sideSeam
+    return drawOutseam()
       .reverse()
       .curve(points.outCp, points.backDartRightCp, points.backDartRight)
       .noop('dart')
@@ -37,25 +37,50 @@ function draftPaulBack({
       .curve(points.backDartLeftCp, points.cbCp, waistIn)
       .line(points.crossSeamCurveStart)
       .curve(points.crossSeamCurveCp1, points.crossSeamCurveCp2, points.fork)
-      .curveThrough_(
+      .join(drawInseam())
+  }
+
+  function drawInseam() {
+    return new Path()
+      .move(points.fork)
+      .curve(
         points.forkCp2,
-        points.floorIn.translate(0, points.floorOut.dy(points.kneeIn)),
-        points.kneeIn,
+        points.floorIn.translate(0, points.floorOut.dy(points.kneeIn) * options.heelShape),
         points.floorIn
       )
   }
 
-  const sideSeam = new Path()
-    .move(points.styleWaistOut)
-    .move(points.floorOut)
-    ._curveThrough(
-      points.floorOut.translate(0, points.floorOut.dy(points.kneeIn)),
-      points.seatOutCp1,
-      points.kneeOut,
-      points.seatOut
-    )
-    .curve_(points.seatOutCp2, points.styleWaistOut)
-    .reverse()
+  function drawOutseam() {
+    return new Path()
+      .move(points.styleWaistOut)
+      .move(points.floorOut)
+      .curve(
+        points.floorOut.translate(0, points.floorOut.dy(points.kneeIn) * options.heelShape),
+        points.seatOutCp1,
+        points.seatOut
+      )
+      .curve_(points.seatOutCp2, points.styleWaistOut)
+      .reverse()
+  }
+
+  /*
+   * Helper method to calculate the inseam delta
+   */
+  const inseamDelta = () => drawInseam().length() - store.get('frontInseamLength')
+  /*
+   * Helper method to calculate the outseam delta
+   */
+  const outseamDelta = () => drawOutseam().length() - store.get('frontOutseamLength')
+
+  // Our style changes will have influenced the inseam & outseam a bit
+  // but not enough to do a full slash & rotate. So let's just fix the
+  // inseam, and then lengthen/shorten the outseam at the waist
+  let dIn = inseamDelta()
+  points.floor = points.floor.shift(90, dIn)
+  points.floorIn = points.floorIn.shift(90, dIn)
+  points.floorOut = points.floorOut.shift(90, dIn)
+  points.grainlineBottom = points.grainlineBottom.shift(90, dIn)
+  points.styleWaistOut = points.floorOut.shiftOutwards(points.styleWaistOut, outseamDelta() * -1)
 
   // Mark back pocket
   let base = points.styleWaistIn.dist(points.styleWaistOut)
@@ -124,19 +149,19 @@ function draftPaulBack({
   )
   store.set('legWidthBack', points.floorIn.dist(points.floorOut))
 
-  points.yokeRight = sideSeam.shiftAlong(points.styleWaistOut.dist(points.seatOut) * 0.8)
+  points.yokeRight = drawOutseam().shiftAlong(points.styleWaistOut.dist(points.seatOut) * 0.8)
   points.yokeRightRotated = points.yokeRight.rotate(options.backDartAngle * 2, points.dartTip)
   points.styleWaistOutRotated = points.styleWaistOut.rotate(
     options.backDartAngle * 2,
     points.dartTip
   )
-  paths.yoke = new Path()
-    .move(points.styleWaistIn)
-    .line(points.crossSeamCurveStart)
-    .curve_(points.dartTip, points.yokeRightRotated)
-    .line(points.styleWaistOutRotated)
-    ._curve(points.backDartLeft, points.styleWaistIn)
-    .close()
+  // paths.yoke = new Path()
+  //   .move(points.styleWaistIn)
+  //   .line(points.crossSeamCurveStart)
+  //   .curve_(points.dartTip, points.yokeRightRotated)
+  //   .line(points.styleWaistOutRotated)
+  //   ._curve(points.backDartLeft, points.styleWaistIn)
+  //   .close()
 
   // Anchor for sampling/grid
   // This breaks the samples for reason not clear. See #
@@ -162,7 +187,7 @@ function draftPaulBack({
       .addClass('fabric sa')
 
   // Sanity check, to make sure inseams and outseams match front and back
-  const backInseamLength = backInseamPath.length()
+  const backInseamLength = drawInseam().length()
   const frontInseamLength = store.get('frontInseamLength')
   const inseamDiff = frontInseamLength - backInseamLength
   let inseamDesc = 'Paul back inseam is longer than front'
@@ -172,16 +197,16 @@ function draftPaulBack({
     log.debug('Paul frontInseam: ' + utils.round(frontInseamLength).toString())
     log.debug('Paul backInseam: ' + utils.round(backInseamLength).toString())
   }
-  // const backOutseamLength = drawOutseam().length()
-  // const frontOutseamLength = store.get('frontOutseamLength')
-  // const outseamDiff = frontOutseamLength - backOutseamLength
-  // let outseamDesc = 'Paul back outseam is longer than front'
-  // if (outseamDiff > 0) outseamDesc = 'Paul front outseam is longer than back'
-  // if (Math.abs(outseamDiff) > 1) {
-  //   log.warn(outseamDesc + ' by ' + utils.round(Math.abs(outseamDiff)) + ' mm')
-  //   log.debug('Paul frontOutseam: ' + utils.round(frontOutseamLength).toString())
-  //   log.debug('Paul backOutseam: ' + utils.round(backOutseamLength).toString())
-  // }
+  const backOutseamLength = drawOutseam().length()
+  const frontOutseamLength = store.get('frontOutseamLength')
+  const outseamDiff = frontOutseamLength - backOutseamLength
+  let outseamDesc = 'Paul back outseam is longer than front'
+  if (outseamDiff > 0) outseamDesc = 'Paul front outseam is longer than back'
+  if (Math.abs(outseamDiff) > 1) {
+    log.warn(outseamDesc + ' by ' + utils.round(Math.abs(outseamDiff)) + ' mm')
+    log.debug('Paul frontOutseam: ' + utils.round(frontOutseamLength).toString())
+    log.debug('Paul backOutseam: ' + utils.round(backOutseamLength).toString())
+  }
 
   /*
    * Annotations

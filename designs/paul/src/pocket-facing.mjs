@@ -10,7 +10,9 @@ function draftPaulPocketFacing({
   store,
   sa,
   options,
-  complete,
+  expand,
+  units,
+  utils,
   part,
 }) {
   for (let id in paths) if (id !== 'sideSeam') delete paths[id]
@@ -36,24 +38,45 @@ function draftPaulPocketFacing({
     .line(points.pocketFacingRightCorner)
     .line(points.styleWaistOut)
     .close()
-    .addClass('fabric')
 
   if (sa) {
-    paths.sa = paths.pocketFacingCurve.offset(sa).addClass('fabric sa')
+    paths.sa = paths.pocketFacingCurve.offset(sa)
   }
+
+  // Title
+  points.center = points.styleWaistOut.shiftFractionTowards(points.pocketFacingInnerCorner, 0.5)
+
+  points.grainlineTop = points.styleWaistOut.shiftFractionTowards(
+    points.pocketFacingRightCorner,
+    0.3
+  )
+  points.grainlineBottom = utils.beamIntersectsX(
+    points.pocketFacingInnerCorner,
+    points.pocketFacingBottomCorner,
+    points.grainlineTop.x
+  )
+
+  // straighten part
+  const rotAngle = -points.styleWaistOut.angle(points.pocketFacingRightCorner)
+  paths.pocketFacingCurve = paths.pocketFacingCurve
+    .rotate(rotAngle, points.center)
+    .addClass('fabric')
+  if (sa) paths.sa = paths.sa.rotate(rotAngle, points.center).addClass('fabric sa')
+  points.grainlineTop = points.grainlineTop.rotate(rotAngle, points.center)
+  points.grainlineBottom = points.grainlineBottom.rotate(rotAngle, points.center)
 
   store.cutlist.setCut({ cut: 2, from: 'fabric' })
 
-  // Title
-  points.titleAnchor = points.styleWaistOut.shiftFractionTowards(
-    points.pocketFacingInnerCorner,
-    0.5
-  )
   macro('title', {
-    at: points.titleAnchor,
+    at: points.center,
     nr: 9,
     title: 'pocketFacing',
     align: 'center',
+  })
+
+  macro('grainline', {
+    from: points.grainlineTop,
+    to: points.grainlineBottom,
   })
 
   return part
