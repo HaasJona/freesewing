@@ -9,24 +9,13 @@ import { waistband } from './waistband.mjs'
 import { waistbandCurved } from './waistband-curved.mjs'
 import { flyFacing } from './fly-facing.mjs'
 import { flyPlacket } from './fly-placket.mjs'
-import { flyInterfacing } from './fly-interfacing.mjs'
 import { flyExtension } from './fly-extension.mjs'
 import { beltLoops } from './beltloops.mjs'
 
 // Create design
 const Paul = new Design({
   data,
-  parts: [
-    front,
-    back,
-    waistband,
-    waistbandCurved,
-    flyFacing,
-    flyPlacket,
-    flyInterfacing,
-    flyExtension,
-    beltLoops,
-  ],
+  parts: [front, back, waistband, waistbandCurved, flyFacing, flyPlacket, flyExtension, beltLoops],
 })
 
 // Merge translations
@@ -40,7 +29,6 @@ export {
   waistbandCurved,
   flyFacing,
   flyExtension,
-  flyInterfacing,
   flyPlacket,
   beltLoops,
   Paul,

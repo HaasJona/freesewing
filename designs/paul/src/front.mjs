@@ -117,7 +117,7 @@ function draftPaulFront({
   }
 
   // Make sure fly edge is straight
-  paths.crotchCurve = crotchCurveTmp.split(points.flyBottom)[0].line(points.styleWaistIn)
+  paths.crotchCurve = crotchCurveTmp.split(points.flyBottom)[0].line(points.styleWaistIn).hide()
 
   paths.flyFacingLine = new Path()
     .move(points.flyTop)
