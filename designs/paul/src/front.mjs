@@ -53,7 +53,7 @@ function draftPaulFront({
     )
 
   // Helper object holding the crotchCurve
-  const crotchCurveTmp = new Path()
+  let crotchCurveTmp = new Path()
     .move(points.fork)
     .curve(points.crotchSeamCurveCp1, points.crotchSeamCurveCp2, points.crotchSeamCurveStart)
     .line(points.styleWaistIn)
@@ -85,7 +85,7 @@ function draftPaulFront({
   )
 
   points.flyCorner = points.flyTop.shift(
-    points.styleWaistIn.angle(points.crotchSeamCurveStart),
+    points.styleWaistIn.angle(points.flyBottom),
     points.styleWaistIn.dist(points.flyBottom)
   )
   points.flyCurveStart = points.flyCorner.shiftTowards(
@@ -117,7 +117,11 @@ function draftPaulFront({
   }
 
   // Make sure fly edge is straight
-  paths.crotchCurve = crotchCurveTmp.split(points.flyBottom)[0].line(points.styleWaistIn).hide()
+  let split = crotchCurveTmp.split(points.flyBottom)
+  if (split[0] !== null) {
+    crotchCurveTmp = split[0]
+  }
+  paths.crotchCurve = crotchCurveTmp.line(points.styleWaistIn).hide()
 
   paths.flyFacingLine = new Path()
     .move(points.flyTop)
@@ -127,7 +131,10 @@ function draftPaulFront({
 
   let JseamCurve = paths.flyFacingLine.offset(-topStitchDist)
 
-  const splitElement = JseamCurve.split(points.flyBottomSeamLine)[0]
+  let splitElement = JseamCurve.split(points.flyBottomSeamLine)[0]
+  if (!splitElement) {
+    splitElement = JseamCurve
+  }
   if (splitElement) {
     paths.completeJseam = splitElement
       .clone()

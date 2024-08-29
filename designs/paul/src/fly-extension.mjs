@@ -2,7 +2,7 @@ import { flyPlacket } from './fly-placket.mjs'
 
 function draftPaulFlyExtension({ points, paths, Path, Snippet, macro, store, sa, part, snippets }) {
   // Clean up
-  for (let id in paths) delete paths[id]
+  for (let id in paths) if (id !== 'crotchCurve') delete paths[id]
   for (let id in snippets) delete snippets[id]
   for (let id in points) {
     if (id.startsWith('button')) {
@@ -14,18 +14,11 @@ function draftPaulFlyExtension({ points, paths, Path, Snippet, macro, store, sa,
   // Anchor for sampling/grid
   points.anchor = points.flyTop.clone()
 
-  const crotchCurveTmp = new Path()
-    .move(points.fork)
-    .curve(points.crotchSeamCurveCp1, points.crotchSeamCurveCp2, points.crotchSeamCurveStart)
-    .line(points.styleWaistIn)
-  // Make sure fly edge is straight
-  paths.crotchCurve = crotchCurveTmp.split(points.flyBottom)[0].line(points.styleWaistIn).hide()
-
   // Paths
   paths.saBase = new Path()
     .move(points.flyCorner)
     .line(points.flyExtensionBottom)
-    .join(paths.crotchCurve.split(points.flyExtensionBottom).pop())
+    // .join(paths.crotchCurve.split(points.flyExtensionBottom).pop())
     .line(points.styleWaistIn)
     .line(points.flyTop)
     .hide()
