@@ -5,21 +5,10 @@ function draftPaulFlyFacing({ points, Point, paths, Path, macro, snippets, store
   for (let id in paths) delete paths[id]
   for (let id in snippets) delete snippets[id]
 
-  // Anchor for sampling/grid
-  points.anchor = points.flyTop.clone()
-
-  // rotate all points so the fly is upright
-  let rotAngle = 90 - points.flyBottom.angle(points.styleWaistIn)
-  const rotPoints = [
-    'flyCurveStart',
-    'flyCurveCp2',
-    'flyCurveCp1',
-    'flyBottom',
-    'flyTop',
-    'styleWaistIn',
-  ]
-  for (const p of rotPoints) {
-    points[p] = points[p].rotate(rotAngle, points.anchor)
+  // Straighten part
+  const angle = points.styleWaistIn.angle(points.flyBottom) * -1 + 270
+  for (let id in points) {
+    if (id !== 'flyTop') points[id] = points[id].rotate(angle, points.flyTop)
   }
 
   paths.saBase = new Path()

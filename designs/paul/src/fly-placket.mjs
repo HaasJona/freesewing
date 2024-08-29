@@ -1,10 +1,39 @@
 import { flyFacing } from './fly-facing.mjs'
 
-function draftPaulFlyPlacket({ points, paths, Path, macro, complete, store, sa, part }) {
+function draftPaulFlyPlacket({
+  points,
+  paths,
+  Point,
+  Path,
+  Snippet,
+  macro,
+  options,
+  complete,
+  snippets,
+  store,
+  sa,
+  part,
+}) {
   macro('mirror', {
     mirror: [points.styleWaistIn, points.flyBottom],
     points: ['flyTop', 'flyCurveStart', 'flyCurveCp2', 'flyCurveCp1'],
   })
+
+  points.upperCenter = points.styleWaistIn.shiftFractionTowards(points.mirroredFlyTop, 0.5)
+  points.lowerCenter = points.flyBottom.shiftFractionTowards(points.mirroredFlyCurveStart, 0.5)
+  points.upperButton = points.upperCenter.shiftTowards(
+    points.lowerCenter,
+    points.styleWaistIn.dx(points.mirroredFlyTop) / 2
+  )
+  points.lowerButton = new Point(points.upperButton.x, points.mirroredFlyCurveStart.y)
+
+  for (let i = 0; i < options.buttons; i++) {
+    let frac = i / (options.buttons - 1)
+    points['button' + i] = points.upperButton.shiftFractionTowards(points.lowerButton, frac)
+    snippets['button' + i] = new Snippet('buttonhole', points['button' + i])
+      .attr('data-scale', 2)
+      .attr('data-rotate', 90)
+  }
 
   paths.seam = new Path()
     .move(points.flyTop)
@@ -53,5 +82,12 @@ function draftPaulFlyPlacket({ points, paths, Path, macro, complete, store, sa, 
 export const flyPlacket = {
   name: 'paul.flyPlacket',
   from: flyFacing,
+  options: {
+    buttons: {
+      count: 4,
+      min: 2,
+      max: 8,
+    },
+  },
   draft: draftPaulFlyPlacket,
 }
