@@ -1,29 +1,31 @@
-import { flyFacing } from './fly-facing.mjs'
+import { flyPlacket } from './fly-placket.mjs'
 
-function draftPaulFlyExtension({ points, paths, Path, macro, store, sa, part }) {
+function draftPaulFlyExtension({ points, paths, Path, Snippet, macro, store, sa, part, snippets }) {
   // Clean up
   for (let id in paths) delete paths[id]
-
-  // Straighten part
-  const angle = points.flyTop.angle(points.flyCorner) * -1 + 270
+  for (let id in snippets) delete snippets[id]
   for (let id in points) {
-    if (id !== 'flyTop') points[id] = points[id].rotate(angle, points.flyTop)
+    if (id.startsWith('button')) {
+      points[id].x = 2 * points.styleWaistIn.x - points[id].x
+      snippets[id] = new Snippet('button', points[id]).attr('data-scale', 2)
+    }
   }
 
   // Anchor for sampling/grid
   points.anchor = points.flyTop.clone()
 
+  const crotchCurveTmp = new Path()
+    .move(points.fork)
+    .curve(points.crotchSeamCurveCp1, points.crotchSeamCurveCp2, points.crotchSeamCurveStart)
+    .line(points.styleWaistIn)
+  // Make sure fly edge is straight
+  paths.crotchCurve = crotchCurveTmp.split(points.flyBottom)[0].line(points.styleWaistIn).hide()
+
   // Paths
   paths.saBase = new Path()
     .move(points.flyCorner)
     .line(points.flyExtensionBottom)
-    .join(
-      new Path()
-        .move(points.fork)
-        .curve(points.crotchSeamCurveCp1, points.crotchSeamCurveCp2, points.crotchSeamCurveStart)
-        .split(points.flyExtensionBottom)
-        .pop()
-    )
+    .join(paths.crotchCurve.split(points.flyExtensionBottom).pop())
     .line(points.styleWaistIn)
     .line(points.flyTop)
     .hide()
@@ -56,6 +58,7 @@ function draftPaulFlyExtension({ points, paths, Path, macro, store, sa, part }) 
     at: points.titleAnchor,
     nr: 10,
     title: 'flyExtension',
+    scale: 0.5,
   })
 
   return part
@@ -63,6 +66,6 @@ function draftPaulFlyExtension({ points, paths, Path, macro, store, sa, part }) 
 
 export const flyExtension = {
   name: 'paul.flyExtension',
-  from: flyFacing,
+  from: flyPlacket,
   draft: draftPaulFlyExtension,
 }

@@ -29,7 +29,7 @@ function draftPaulFront({
 
   // Helper method to draw the outline path
   const drawPath = () => {
-    return frontInseamPath.clone().join(crotchCurve).join(sideSeam)
+    return frontInseamPath.clone().join(paths.crotchCurve).join(sideSeam)
   }
 
   // Helper object holding the Titan side seam path
@@ -117,7 +117,7 @@ function draftPaulFront({
   }
 
   // Make sure fly edge is straight
-  const crotchCurve = crotchCurveTmp.split(points.flyBottom)[0].line(points.styleWaistIn)
+  paths.crotchCurve = crotchCurveTmp.split(points.flyBottom)[0].line(points.styleWaistIn)
 
   paths.flyFacingLine = new Path()
     .move(points.flyTop)
@@ -134,7 +134,7 @@ function draftPaulFront({
       .setClass('dashed')
       .addText('jseamStitchLine', 'center text-sm')
 
-    paths.flyRightLegExtension = crotchCurve
+    paths.flyRightLegExtension = paths.crotchCurve
       .clone()
       .split(points.flyBottom)[1]
       .offset(topStitchDist)
