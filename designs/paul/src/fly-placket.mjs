@@ -20,11 +20,17 @@ function draftPaulFlyPlacket({
   })
   macro('rmgrainline')
 
+  let topStitchDist = (1 - options.flyWidth) * 8
+
   points.top = points.styleWaistIn.translate(options.placketOffset, 0)
   points.bottom = points.flyBottom.translate(options.placketOffset, 0)
 
-  points.upperCenter = points.styleWaistIn.shiftFractionTowards(points.mirroredFlyTop, 0.5)
-  points.lowerCenter = points.flyBottom.shiftFractionTowards(points.mirroredFlyCurveStart, 0.5)
+  points.upperCenter = points.styleWaistIn
+    .shiftFractionTowards(points.mirroredFlyTop, 0.5)
+    .shiftTowards(points.styleWaistIn, topStitchDist / 2)
+  points.lowerCenter = points.flyBottom
+    .shiftFractionTowards(points.mirroredFlyCurveStart, 0.5)
+    .shiftTowards(points.flyBottom, topStitchDist / 2)
   points.upperButton = points.upperCenter.shiftTowards(
     points.lowerCenter,
     points.styleWaistIn.dx(points.mirroredFlyTop) / 2
@@ -36,7 +42,7 @@ function draftPaulFlyPlacket({
     let frac = (i + 0.5) / buttons
     points['button' + i] = points.upperButton.shiftFractionTowards(points.lowerButton, frac)
     snippets['button' + i] = new Snippet('buttonhole', points['button' + i])
-      .attr('data-scale', 2)
+      .attr('data-scale', 1.5)
       .attr('data-rotate', 90)
   }
 

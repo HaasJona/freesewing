@@ -13,28 +13,10 @@ function draftPaulPocketBag({
   complete,
   part,
 }) {
-  for (let id in paths) if (id !== 'sideSeam') delete paths[id]
+  for (let id in paths) if (id !== 'sideSeam' && id !== 'pocketCurve') delete paths[id]
   for (let id in snippets) delete snippets[id]
 
-  let pocketWidth = options.pocketWidth
-  points.pocketTop = points.styleWaistOut.shiftFractionTowards(points.flyTop, pocketWidth)
   let height = points.styleWaistOut.dist(points.seatOut) * options.pocketHeight
-  let pocketCurveShape = options.pocketCurveShape
-  points.pocketLeft = paths.sideSeam.shiftAlong(height)
-  points.pocketCorner = points.pocketTop.translate(0, points.styleWaistOut.dy(points.pocketLeft))
-  points.pocketCornerCp1 = points.pocketCorner.shiftTowards(
-    points.pocketTop,
-    height * pocketCurveShape
-  )
-  points.pocketCornerCp2 = points.pocketCorner.shiftTowards(
-    points.pocketLeft,
-    height * pocketCurveShape
-  )
-
-  paths.pocketCurve = new Path()
-    .move(points.pocketTop)
-    .curve(points.pocketCornerCp1, points.pocketCornerCp2, points.pocketLeft)
-    .hide()
 
   let pocketDepth = points.styleWaistOut.dist(points.seatOut) * options.pocketDepth
   let pocketBagLeftCurve = options.pocketBagCurve * 0.5
@@ -94,6 +76,10 @@ function draftPaulPocketBag({
     .close()
     .addClass('lining')
 
+  if (sa) {
+    paths.sa = paths.pocketBagCurve.offset(sa).addClass('lining sa')
+  }
+
   if (complete) {
     paths.center = new Path()
       .move(points.pocketBagTop)
@@ -119,10 +105,6 @@ export const pocketBag = {
   name: 'paul.pocketBag',
   from: front,
   options: {
-    pocketWidth: 0.6,
-    pocketHeight: 0.8,
-    pocketCurveShape: 0.15,
-    pocketDepth: 2,
     pocketBagCurve: 0.5,
     pocketBagCurveShape: 0.5,
     pocketBagSlant: 0.0,

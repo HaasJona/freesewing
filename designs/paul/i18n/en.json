@@ -19,8 +19,6 @@
   "s": {
     "cutBeltloops.t": "The belt loops are not shown",
     "cutBeltloops.d": "The **Belt loops** are {{{ count }}} rectangular piece of fabric {{{ width }}} wide and {{{ length }}} long.",
-    "cutBackPocketInterfacing.t": "The back pocket interfacing is not shown",
-    "cutBackPocketInterfacing.d": "The **Back pocket interfacing** is a rectangular piece of fusible interfacing {{{ width }}} wide and {{{ length }}} long.",
     "cutWaistband.t": "The waistband is not shown",
     "cutWaistband.d": "The **Waistband** is a rectangular piece of fabric {{{ width }}} wide and {{{ length }}} long."
   },

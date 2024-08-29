@@ -28,17 +28,25 @@ function draftPaulFront({
   points.floorIn = points.floor.shift(0, quarterHeel)
 
   // Helper method to draw the outline path
-  const drawPath = () => {
-    return frontInseamPath.clone().join(paths.crotchCurve).join(sideSeam)
+  const drawPath = (withPocket = false) => {
+    const result = frontInseamPath.clone().join(paths.crotchCurve)
+    if (!withPocket) {
+      return result.join(sideSeam)
+    } else {
+      return result
+        .line(points.pocketTop)
+        .join(paths.pocketCurve)
+        .line(points.pocketLeft)
+        .join(sideSeam.split(points.pocketLeft)[1])
+    }
   }
 
   // Helper object holding the Titan side seam path
   const sideSeam = new Path()
     .move(points.styleWaistOut)
-    .curveThrough_(
+    .curve(
       points.seatOut,
-      points.floorOut.translate(0, points.floorOut.dy(points.kneeIn)),
-      points.kneeOut,
+      points.floorOut.translate(0, points.floorOut.dy(points.kneeIn) * options.heelShape),
       points.floorOut
     )
 
@@ -47,9 +55,8 @@ function draftPaulFront({
   // Helper object holding the inseam path
   const frontInseamPath = new Path()
     .move(points.floorIn)
-    ._curveThrough(
-      points.floorIn.translate(0, points.floorIn.dy(points.kneeIn)),
-      points.kneeIn,
+    .curve(
+      points.floorIn.translate(0, points.floorIn.dy(points.kneeIn) * options.heelShape),
       points.kneeIn,
       points.fork
     )
@@ -155,14 +162,34 @@ function draftPaulFront({
       .addText('rightLegSeamline', 'center fill-note text-sm')
   }
 
+  let pocketWidth = options.pocketWidth
+  points.pocketTop = points.styleWaistOut.shiftFractionTowards(points.flyTop, pocketWidth)
+  let height = points.styleWaistOut.dist(points.seatOut) * options.pocketHeight
+  let pocketCurveShape = options.pocketCurveShape
+  points.pocketLeft = paths.sideSeam.shiftAlong(height)
+  points.pocketCorner = points.pocketTop.translate(0, points.styleWaistOut.dy(points.pocketLeft))
+  points.pocketCornerCp1 = points.pocketCorner.shiftTowards(
+    points.pocketTop,
+    height * pocketCurveShape
+  )
+  points.pocketCornerCp2 = points.pocketCorner.shiftTowards(
+    points.pocketLeft,
+    height * pocketCurveShape
+  )
+
+  paths.pocketCurve = new Path()
+    .move(points.pocketTop)
+    .curve(points.pocketCornerCp1, points.pocketCornerCp2, points.pocketLeft)
+    .hide()
+
   // Anchor for sampling/grid
   points.anchor = points.fork.clone()
 
   // Draw path
-  paths.seam = drawPath().close().attr('class', 'fabric')
+  paths.seam = drawPath(true).close().attr('class', 'fabric')
 
-  if (sa)
-    paths.sa = drawPath()
+  if (sa) {
+    paths.sa = drawPath(true)
       .offset(sa)
       .join(
         new Path()
@@ -174,6 +201,17 @@ function draftPaulFront({
       .trim()
       .addClass('fabric sa')
 
+    // Draw the right leg fly extension (not for dolls)
+    if (measurements.waist > 500) {
+      let FlyRightLegExtensionSa = paths.flyRightLegExtension.offset(sa)
+      paths.flyRightLegExtensionSa = FlyRightLegExtensionSa.split(
+        FlyRightLegExtensionSa.intersects(paths.sa)[0]
+      )[1]
+        .setClass('sa')
+        .addText('rightLegSeamAllowance', 'center fill-note text-sm')
+    }
+  }
+
   // Store waistband length
   store.set('waistbandFront', points.styleWaistIn.dist(points.styleWaistOut))
   store.set('waistbandFly', points.styleWaistIn.dist(points.flyTop))
@@ -183,9 +221,6 @@ function draftPaulFront({
   store.set('frontInseamLength', frontInseamPath.length())
   store.set('frontOutseamLength', sideSeam.length())
 
-  const Jseam = new Path()
-    .move(points.flyCurveStart)
-    .curve(points.flyCurveCp2, points.flyCurveCp1, points.flyBottom)
   if (complete) {
     points.titleAnchor = new Point(points.knee.x, points.fork.y)
     macro('title', {
@@ -204,31 +239,6 @@ function draftPaulFront({
       snippet: 'notch',
       on: ['topPleat', 'grainlineBottom', 'flyBottom', 'flyExtensionBottom', 'flyBottomSeamLine'],
     })
-
-    if (sa) {
-      // Draw the main front seam allowance
-      paths.sa = drawPath()
-        .offset(sa)
-        .join(
-          new Path()
-            .move(points.floorOut)
-            .line(points.floorIn)
-            .offset(sa * 6)
-        )
-        .close()
-        .trim()
-        .setClass('fabric sa')
-
-      // Draw the right leg fly extension (not for dolls)
-      if (measurements.waist > 500) {
-        let FlyRightLegExtensionSa = paths.flyRightLegExtension.offset(sa)
-        paths.flyRightLegExtensionSa = FlyRightLegExtensionSa.split(
-          FlyRightLegExtensionSa.intersects(paths.sa)[0]
-        )[1]
-          .setClass('dotted')
-          .addText('rightLegSeamAllowance', 'center fill-note text-sm')
-      }
-    }
   }
 
   delete paths.hint
@@ -416,7 +426,13 @@ export const front = {
     flyLength: { pct: 45, min: 30, max: 60, menu: 'advanced.fly' },
     flyWidth: { pct: 15, min: 10, max: 20, menu: 'advanced.fly' },
 
-    heelEase: { pct: 5, min: 0, max: 50, menu: 'style' },
+    heelEase: { pct: 5, min: 0, max: 100, menu: 'style' },
+    heelShape: { pct: 50, min: 0, max: 100, menu: 'style' },
+
+    pocketWidth: 0.6,
+    pocketHeight: 0.8,
+    pocketCurveShape: 0.15,
+    pocketDepth: 2,
   },
   draft: draftPaulFront,
 }
