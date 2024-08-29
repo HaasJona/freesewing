@@ -31,8 +31,9 @@ function draftPaulFlyPlacket({
   )
   points.lowerButton = new Point(points.upperButton.x, points.mirroredFlyCurveStart.y)
 
-  for (let i = 0; i < options.buttons; i++) {
-    let frac = i / (options.buttons - 1)
+  let buttons = options.buttons * 1
+  for (let i = 0; i < buttons; i++) {
+    let frac = (i + 0.5) / buttons
     points['button' + i] = points.upperButton.shiftFractionTowards(points.lowerButton, frac)
     snippets['button' + i] = new Snippet('buttonhole', points['button' + i])
       .attr('data-scale', 2)
@@ -97,9 +98,10 @@ export const flyPlacket = {
   from: flyFacing,
   options: {
     buttons: {
-      count: 4,
-      min: 2,
-      max: 8,
+      count: 3,
+      min: 1,
+      max: 5,
+      menu: 'style',
     },
     placketOffset: 1.5,
   },

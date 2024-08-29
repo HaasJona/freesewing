@@ -2,7 +2,7 @@ import { front } from './front.mjs'
 
 function draftPaulFlyFacing({ points, Point, paths, Path, macro, snippets, store, sa, part }) {
   // Clean up
-  for (let id in paths) delete paths[id]
+  for (let id in paths) if (id !== 'crotchCurve') delete paths[id]
   for (let id in snippets) delete snippets[id]
 
   // Straighten part
