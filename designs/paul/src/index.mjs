@@ -11,11 +11,22 @@ import { flyFacing } from './fly-facing.mjs'
 import { flyPlacket } from './fly-placket.mjs'
 import { flyExtension } from './fly-extension.mjs'
 import { beltLoops } from './beltloops.mjs'
+import { pocketBag } from './pocket-bag.mjs'
 
 // Create design
 const Paul = new Design({
   data,
-  parts: [front, back, waistband, waistbandCurved, flyFacing, flyPlacket, flyExtension, beltLoops],
+  parts: [
+    front,
+    back,
+    waistband,
+    waistbandCurved,
+    flyFacing,
+    flyPlacket,
+    flyExtension,
+    beltLoops,
+    pocketBag,
+  ],
 })
 
 // Merge translations
@@ -31,6 +42,7 @@ export {
   flyExtension,
   flyPlacket,
   beltLoops,
+  pocketBag,
   Paul,
   i18n,
 }

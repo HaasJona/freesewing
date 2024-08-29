@@ -42,6 +42,8 @@ function draftPaulFront({
       points.floorOut
     )
 
+  paths.sideSeam = sideSeam.hide()
+
   // Helper object holding the inseam path
   const frontInseamPath = new Path()
     .move(points.floorIn)
