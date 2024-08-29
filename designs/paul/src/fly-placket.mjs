@@ -8,7 +8,7 @@ function draftPaulFlyPlacket({
   Snippet,
   macro,
   options,
-  complete,
+  expand,
   snippets,
   store,
   sa,
@@ -18,6 +18,10 @@ function draftPaulFlyPlacket({
     mirror: [points.styleWaistIn, points.flyBottom],
     points: ['flyTop', 'flyCurveStart', 'flyCurveCp2', 'flyCurveCp1'],
   })
+  macro('rmgrainline')
+
+  points.top = points.styleWaistIn.translate(options.placketOffset, 0)
+  points.bottom = points.flyBottom.translate(options.placketOffset, 0)
 
   points.upperCenter = points.styleWaistIn.shiftFractionTowards(points.mirroredFlyTop, 0.5)
   points.lowerCenter = points.flyBottom.shiftFractionTowards(points.mirroredFlyCurveStart, 0.5)
@@ -36,12 +40,10 @@ function draftPaulFlyPlacket({
   }
 
   paths.seam = new Path()
-    .move(points.flyTop)
-    .line(points.flyCurveStart)
-    .curve(points.flyCurveCp2, points.flyCurveCp1, points.flyBottom)
+    .move(points.bottom)
     .curve(points.mirroredFlyCurveCp1, points.mirroredFlyCurveCp2, points.mirroredFlyCurveStart)
     .line(points.mirroredFlyTop)
-    .line(points.styleWaistIn)
+    .line(points.top)
     .close()
     .addClass('fabric')
 
@@ -49,31 +51,42 @@ function draftPaulFlyPlacket({
     paths.sa = new Path()
       .move(points.mirroredFlyTop)
       .line(points.mirroredFlyTop.translate(0, -sa))
-      .line(points.styleWaistIn.translate(0, -sa))
-      .line(points.flyTop.translate(0, -sa))
-      .line(points.flyTop)
+      .line(points.top.translate(0, -sa))
+      // .line(points.flyTop.translate(0, -sa))
+      .line(points.top)
       .addClass('fabric sa')
 
-  if (complete) {
-    paths.fold = new Path()
-      .move(points.styleWaistIn)
-      .line(points.flyBottom)
-      .attr('class', 'fabric help')
-  }
+  // if (complete) {
+  //   paths.fold = new Path()
+  //     .move(points.styleWaistIn)
+  //     .line(points.flyBottom)
+  //     .attr('class', 'fabric help')
+  // }
 
   /*
    * Annotations
    */
-  store.cutlist.setCut({ cut: 1, from: 'fabric' })
+  // Cut list
+  store.cutlist.setCut({ cut: 1, from: 'fabric', onFold: true })
+  store.cutlist.addCut({ cut: 1, from: 'interfacing', onFold: false })
+
+  // Cut on fold
+  macro('cutonfold', {
+    from: points.top,
+    to: points.bottom,
+    grainline: true,
+    offset: 10,
+  })
 
   // Title
-  points.titleAnchor = points.grainlineTop.shiftFractionTowards(points.grainlineBottom, 0.5)
+  points.titleAnchor = points.upperCenter.shiftFractionTowards(points.lowerCenter, 0.5)
   macro('title', {
     at: points.titleAnchor,
     nr: 13,
     title: 'flyPlacket',
     align: 'center',
-    scale: 0.5,
+    scale: 0.3,
+    rotation: -11,
   })
 
   return part
@@ -88,6 +101,7 @@ export const flyPlacket = {
       min: 2,
       max: 8,
     },
+    placketOffset: 1.5,
   },
   draft: draftPaulFlyPlacket,
 }

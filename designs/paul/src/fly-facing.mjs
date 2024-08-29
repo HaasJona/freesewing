@@ -38,6 +38,7 @@ function draftPaulFlyFacing({ points, Point, paths, Path, macro, snippets, store
    * Annotations
    */
   store.cutlist.setCut({ cut: 1, from: 'fabric' })
+  store.cutlist.addCut({ cut: 1, from: 'interfacing' })
 
   // Grainline
   points.grainlineTop = points.flyTop.shiftFractionTowards(points.styleWaistIn, 0.5)
