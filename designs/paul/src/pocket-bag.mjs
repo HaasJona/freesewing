@@ -9,16 +9,17 @@ function draftPaulPocketBag({
   snippets,
   store,
   sa,
+  options,
   complete,
   part,
 }) {
   for (let id in paths) if (id !== 'sideSeam') delete paths[id]
   for (let id in snippets) delete snippets[id]
 
-  let pocketWidth = 0.6
+  let pocketWidth = options.pocketWidth
   points.pocketTop = points.styleWaistOut.shiftFractionTowards(points.flyTop, pocketWidth)
-  let height = 80
-  let pocketCurveShape = 0.4
+  let height = points.styleWaistOut.dist(points.seatOut) * options.pocketHeight
+  let pocketCurveShape = options.pocketCurveShape
   points.pocketLeft = paths.sideSeam.shiftAlong(height)
   points.pocketCorner = points.pocketTop.translate(0, points.styleWaistOut.dy(points.pocketLeft))
   points.pocketCornerCp1 = points.pocketCorner.shiftTowards(
@@ -35,30 +36,30 @@ function draftPaulPocketBag({
     .curve(points.pocketCornerCp1, points.pocketCornerCp2, points.pocketLeft)
     .hide()
 
-  let pocketDepth = 200
-  let pocketBackLeftCurve = 0.4
-  let pocketBackLeftCurveShape = 0.8
-  let pocketSlant = 1 - 0.1
-  points.pocketBagTop = points.pocketTop.shiftFractionTowards(points.flyTop, 0.5)
+  let pocketDepth = points.styleWaistOut.dist(points.seatOut) * options.pocketDepth
+  let pocketBagLeftCurve = options.pocketBagCurve * 0.5
+  let pocketBagLeftCurveShape = options.pocketBagCurveShape
+  let pocketSlant = 1 - options.pocketBagSlant
+  points.pocketBagTop = points.pocketTop.shiftFractionTowards(points.flyTop, options.pocketBagWidth)
   points.pocketBagLeft = paths.sideSeam.shiftAlong(height + pocketDepth * pocketSlant)
   points.pocketBagBottom = points.pocketBagTop.shift(
     points.styleWaistOut.angle(points.styleWaistIn) - 90,
     pocketDepth + height
   )
   points.pocketBagTopCorner = paths.sideSeam.shiftAlong(
-    height + pocketDepth * (1 - pocketBackLeftCurve)
+    height + pocketDepth * (1 - pocketBagLeftCurve) * pocketSlant
   )
   points.pocketBagRightCorner = points.pocketBagLeft.shiftTowards(
     points.pocketBagBottom,
-    pocketDepth * pocketBackLeftCurve
+    pocketDepth * pocketBagLeftCurve
   )
   points.pocketBagCornerCp1 = points.pocketBagTopCorner.shiftFractionTowards(
     points.pocketBagLeft,
-    pocketBackLeftCurveShape
+    pocketBagLeftCurveShape
   )
   points.pocketBagCornerCp2 = points.pocketBagRightCorner.shiftFractionTowards(
     points.pocketBagLeft,
-    pocketBackLeftCurveShape
+    pocketBagLeftCurveShape
   )
 
   macro('mirror', {
@@ -117,5 +118,15 @@ function draftPaulPocketBag({
 export const pocketBag = {
   name: 'paul.pocketBag',
   from: front,
+  options: {
+    pocketWidth: 0.6,
+    pocketHeight: 0.8,
+    pocketCurveShape: 0.15,
+    pocketDepth: 2,
+    pocketBagCurve: 0.5,
+    pocketBagCurveShape: 0.5,
+    pocketBagSlant: 0.0,
+    pocketBagWidth: 0.9,
+  },
   draft: draftPaulPocketBag,
 }

@@ -12,6 +12,7 @@ import { flyPlacket } from './fly-placket.mjs'
 import { flyExtension } from './fly-extension.mjs'
 import { beltLoops } from './beltloops.mjs'
 import { pocketBag } from './pocket-bag.mjs'
+import { pocketFacing } from './pocket-facing.mjs'
 
 // Create design
 const Paul = new Design({
@@ -26,6 +27,7 @@ const Paul = new Design({
     flyExtension,
     beltLoops,
     pocketBag,
+    pocketFacing,
   ],
 })
 
@@ -43,6 +45,7 @@ export {
   flyPlacket,
   beltLoops,
   pocketBag,
+  pocketFacing,
   Paul,
   i18n,
 }
