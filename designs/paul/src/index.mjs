@@ -13,6 +13,7 @@ import { flyExtension } from './fly-extension.mjs'
 import { beltLoops } from './beltloops.mjs'
 import { pocketBag } from './pocket-bag.mjs'
 import { pocketFacing } from './pocket-facing.mjs'
+import { yoke } from './yoke.mjs'
 
 // Create design
 const Paul = new Design({
@@ -28,6 +29,7 @@ const Paul = new Design({
     beltLoops,
     pocketBag,
     pocketFacing,
+    yoke,
   ],
 })
 
@@ -46,6 +48,7 @@ export {
   beltLoops,
   pocketBag,
   pocketFacing,
+  yoke,
   Paul,
   i18n,
 }
