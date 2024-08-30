@@ -27,15 +27,22 @@ function draftPaulBack({
   /*
    * Helper method to draw the outline path
    */
-  const drawPath = () => {
+  const drawPath = (yoke = false) => {
     let waistIn = points.styleWaistIn || points.waistIn
-    return drawOutseam()
-      .reverse()
-      .curve(points.outCp, points.backDartRightCp, points.backDartRight)
-      .noop('dart')
-      .line(points.backDartLeft)
-      .curve(points.backDartLeftCp, points.cbCp, waistIn)
-      .line(points.crossSeamCurveStart)
+    let result = drawOutseam(yoke)
+    if (!yoke) {
+      result = result
+        .curve(points.outCp, points.backDartRightCp, points.backDartRight)
+        .noop('dart')
+        .line(points.backDartLeft)
+        .curve(points.backDartLeftCp, points.cbCp, waistIn)
+        .line(points.crossSeamCurveStart)
+    } else {
+      result = result
+        .curve_(points.yokeCp2, points.dartTip)
+        .curve_(points.yokeCp1, points.crossSeamCurveStart)
+    }
+    return result
       .curve(points.crossSeamCurveCp1, points.crossSeamCurveCp2, points.fork)
       .join(drawInseam())
   }
@@ -50,9 +57,8 @@ function draftPaulBack({
       )
   }
 
-  function drawOutseam() {
-    return new Path()
-      .move(points.styleWaistOut)
+  function drawOutseam(yoke = false) {
+    let outSeam = new Path()
       .move(points.floorOut)
       .curve(
         points.floorOut.translate(0, points.floorOut.dy(points.kneeIn) * options.heelShape),
@@ -60,7 +66,10 @@ function draftPaulBack({
         points.seatOut
       )
       .curve_(points.seatOutCp2, points.styleWaistOut)
-      .reverse()
+    if (yoke) {
+      return outSeam.split(points.yokeRight)[0]
+    }
+    return outSeam
   }
 
   /*
@@ -111,12 +120,6 @@ function draftPaulBack({
   }
   points.styleWaistOut = points.styleWaistOut.shift(angle, delta / 2)
 
-  // Helper object holding the inseam path
-  const backInseamPath = new Path()
-    .move(points.fork)
-    .curve(points.forkCp2, points.kneeInCp1, points.kneeIn)
-    .line(points.floorIn)
-
   // Keep the seat control point vertically between the (lowered) waist and seat line
   points.seatOutCp2.y = points.styleWaistOut.y + points.styleWaistOut.dy(points.seatOut) / 2
 
@@ -147,27 +150,36 @@ function draftPaulBack({
         .curve(points.backDartRightCp, points.outCp, points.styleWaistOut)
         .length()
   )
+
   store.set('legWidthBack', points.floorIn.dist(points.floorOut))
 
-  points.yokeRight = drawOutseam().shiftAlong(points.styleWaistOut.dist(points.seatOut) * 0.8)
+  points.yokeRight = drawOutseam()
+    .reverse()
+    .shiftAlong(points.styleWaistOut.dist(points.seatOut) * options.yokeOuterWidth)
+  let yokeCpDist = points.yokeRight.dist(points.crossSeamCurveStart) * 0.2
+  let yokeCpAngle = points.yokeRight.angle(points.crossSeamCurveStart)
+  points.yokeCp1 = points.dartTip.shift(yokeCpAngle, yokeCpDist)
+  points.yokeCp2 = points.dartTip.shift(yokeCpAngle + 180, yokeCpDist)
   points.yokeRightRotated = points.yokeRight.rotate(options.backDartAngle * 2, points.dartTip)
   points.styleWaistOutRotated = points.styleWaistOut.rotate(
     options.backDartAngle * 2,
     points.dartTip
   )
-  // paths.yoke = new Path()
-  //   .move(points.styleWaistIn)
-  //   .line(points.crossSeamCurveStart)
-  //   .curve_(points.dartTip, points.yokeRightRotated)
-  //   .line(points.styleWaistOutRotated)
-  //   ._curve(points.backDartLeft, points.styleWaistIn)
-  //   .close()
+
+  store.set(
+    'yokeBottom',
+    new Path()
+      .move(points.yokeRight)
+      .curve_(points.yokeCp2, points.dartTip)
+      .curve_(points.yokeCp1, points.crossSeamCurveStart)
+      .length()
+  )
 
   // Anchor for sampling/grid
   // This breaks the samples for reason not clear. See #
   // points.anchor = points.fork.clone()
 
-  paths.saBase = drawPath()
+  paths.saBase = drawPath(true)
   paths.seam = paths.saBase
     .insop('dart', new Path().line(points.dartTip))
     .close()
@@ -343,6 +355,7 @@ export const back = {
     backPocketFacing: { bool: true, menu: 'pockets.backpockets' },
     backDartAngle: { deg: 8.66, min: 0, max: 15, menu: 'style' },
     backDartDepth: { pct: 50, min: 1, max: 100, menu: 'style' },
+    yokeOuterWidth: { pct: 35, min: 1, max: 100, menu: 'style' },
   },
   draft: draftPaulBack,
 }

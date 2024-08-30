@@ -59,9 +59,10 @@ function draftPaulPocketFacing({
     .line(points.pocketFacingRightCorner)
     .line(points.styleWaistOut)
     .close()
+    .setClass('fabric')
 
   if (sa) {
-    paths.sa = paths.pocketFacingCurve.offset(sa)
+    paths.sa = paths.pocketFacingCurve.offset(sa).setClass('fabric sa')
   }
 
   // Title
