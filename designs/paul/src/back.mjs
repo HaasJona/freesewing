@@ -19,6 +19,9 @@ function draftPaulBack({
   utils,
   part,
 }) {
+  // Store titan waistband length
+  store.set('waistbandBack', points.styleWaistIn.dist(points.styleWaistOut))
+
   // Adapt bottom leg width based on heel & heel ease
   let quarterHeel = (measurements.heel * (1 + options.heelEase) * options.legBalance) / 2
   points.floorOut = points.floor.shift(0, quarterHeel)
@@ -106,19 +109,19 @@ function draftPaulBack({
     .beamsIntersect(points.dartCenter, points.dartPilot, points.cbSeat, points.seatOut)
     .shiftFractionTowards(points.dartCenter, 1 - options.backDartDepth)
 
-  // Back dart
+  // // Back dart
   points.tmp1 = points.dartCenter.rotate(options.backDartAngle, points.dartTip)
   points.tmp2 = points.dartCenter.rotate(-options.backDartAngle, points.dartTip)
   points.backDartLeft = points.dartTip.shiftFractionTowards(points.tmp1, 1.05)
   points.backDartRight = points.dartTip.shiftFractionTowards(points.tmp2, 1.05)
-  let newBase =
-    points.styleWaistIn.dist(points.backDartLeft) + points.styleWaistOut.dist(points.backDartRight)
-  let delta = base - newBase
-  // Adapt waist to new darted reality
-  for (let p of ['styleWaistIn', 'crossSeamCurveStart', 'crossSeamCurveCp1']) {
-    points[p] = points[p].shift(angle + 180, delta / 2)
-  }
-  points.styleWaistOut = points.styleWaistOut.shift(angle, delta / 2)
+  // let newBase =
+  //   points.styleWaistIn.dist(points.backDartLeft) + points.styleWaistOut.dist(points.backDartRight)
+  // let delta = base - newBase
+  // // Adapt waist to new darted reality
+  // for (let p of ['styleWaistIn', 'crossSeamCurveStart', 'crossSeamCurveCp1']) {
+  //   points[p] = points[p].shift(angle + 180, delta / 2)
+  // }
+  // points.styleWaistOut = points.styleWaistOut.shift(angle, delta / 2)
 
   // Keep the seat control point vertically between the (lowered) waist and seat line
   points.seatOutCp2.y = points.styleWaistOut.y + points.styleWaistOut.dy(points.seatOut) / 2
@@ -138,18 +141,17 @@ function draftPaulBack({
     .shiftTowards(points.seatOut, dist)
     .rotate(-90, points.styleWaistOut)
 
-  // Store waistband length
-  store.set(
-    'waistbandBack',
-    new Path()
-      .move(points.styleWaistIn)
-      .curve(points.cbCp, points.backDartLeftCp, points.backDartLeft)
-      .length() +
-      new Path()
-        .move(points.backDartRight)
-        .curve(points.backDartRightCp, points.outCp, points.styleWaistOut)
-        .length()
-  )
+  // store.set(
+  //   'waistbandBack',
+  //   new Path()
+  //     .move(points.styleWaistIn)
+  //     .curve(points.cbCp, points.backDartLeftCp, points.backDartLeft)
+  //     .length() +
+  //     new Path()
+  //       .move(points.backDartRight)
+  //       .curve(points.backDartRightCp, points.outCp, points.styleWaistOut)
+  //       .length()
+  // )
 
   store.set('legWidthBack', points.floorIn.dist(points.floorOut))
 
@@ -300,12 +302,6 @@ function draftPaulBack({
     from: points.grainlineTop,
     to: points.dartCenter,
     y: y - 15,
-  })
-  macro('ld', {
-    id: 'lWelt',
-    from: points.pocketLeft,
-    to: points.pocketRight,
-    d: -15,
   })
   macro('ld', {
     id: 'lDart',
