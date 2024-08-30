@@ -136,7 +136,7 @@ function draftPaulFront({
     .move(points.flyTop)
     .line(points.flyCurveStart)
     .curve(points.flyCurveCp2, points.flyCurveCp1, points.flyBottom)
-    .setClass('lining dashed')
+    .hide()
 
   let JseamCurve = paths.flyFacingLine.offset(-topStitchDist)
 
@@ -145,11 +145,6 @@ function draftPaulFront({
     splitElement = JseamCurve
   }
   if (splitElement) {
-    paths.completeJseam = splitElement
-      .clone()
-      .setClass('dashed')
-      .addText('jseamStitchLine', 'center text-sm')
-
     paths.flyRightLegExtension = paths.crotchCurve
       .clone()
       .split(points.flyBottom)[1]
@@ -158,8 +153,7 @@ function draftPaulFront({
       .reverse()
       .line(points.flyExtensionBottom)
       .reverse()
-      .setClass('fabric')
-      .addText('rightLegSeamline', 'center fill-note text-sm')
+      .setClass('fabric dotted')
   }
 
   points.pocketTop = points.styleWaistOut.shiftFractionTowards(points.flyTop, options.pocketWidth)
@@ -199,15 +193,10 @@ function draftPaulFront({
       .trim()
       .addClass('fabric sa')
 
-    // Draw the right leg fly extension (not for dolls)
-    if (measurements.waist > 500) {
-      let FlyRightLegExtensionSa = paths.flyRightLegExtension.offset(sa)
-      paths.flyRightLegExtensionSa = FlyRightLegExtensionSa.split(
-        FlyRightLegExtensionSa.intersects(paths.sa)[0]
-      )[1]
-        .setClass('sa')
-        .addText('rightLegSeamAllowance', 'center fill-note text-sm')
-    }
+    let FlyRightLegExtensionSa = paths.flyRightLegExtension.offset(sa)
+    paths.flyRightLegExtensionSa = FlyRightLegExtensionSa.split(
+      FlyRightLegExtensionSa.intersects(paths.sa)[0]
+    )[1].setClass('sa')
   }
 
   // Store waistband length

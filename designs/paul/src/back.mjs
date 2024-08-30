@@ -354,8 +354,8 @@ export const back = {
     backPocketDepth: { pct: 60, min: 40, max: 80, menu: 'pockets.backpockets' },
     backPocketFacing: { bool: true, menu: 'pockets.backpockets' },
     backDartAngle: { deg: 8.66, min: 0, max: 15, menu: 'style' },
-    backDartDepth: { pct: 50, min: 1, max: 100, menu: 'style' },
-    yokeOuterWidth: { pct: 35, min: 1, max: 100, menu: 'style' },
+    backDartDepth: { pct: 50, min: 20, max: 100, menu: 'style' },
+    yokeOuterWidth: { pct: 35, min: 10, max: 100, menu: 'style' },
   },
   draft: draftPaulBack,
 }
