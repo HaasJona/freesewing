@@ -162,19 +162,17 @@ function draftPaulFront({
       .addText('rightLegSeamline', 'center fill-note text-sm')
   }
 
-  let pocketWidth = options.pocketWidth
-  points.pocketTop = points.styleWaistOut.shiftFractionTowards(points.flyTop, pocketWidth)
+  points.pocketTop = points.styleWaistOut.shiftFractionTowards(points.flyTop, options.pocketWidth)
   let height = points.styleWaistOut.dist(points.seatOut) * options.pocketHeight
-  let pocketCurveShape = options.pocketCurveShape
   points.pocketLeft = paths.sideSeam.shiftAlong(height)
   points.pocketCorner = points.pocketTop.translate(0, points.styleWaistOut.dy(points.pocketLeft))
   points.pocketCornerCp1 = points.pocketCorner.shiftTowards(
     points.pocketTop,
-    height * pocketCurveShape
+    height * options.pocketCurveShape
   )
   points.pocketCornerCp2 = points.pocketCorner.shiftTowards(
     points.pocketLeft,
-    height * pocketCurveShape
+    height * options.pocketCurveShape
   )
 
   paths.pocketCurve = new Path()

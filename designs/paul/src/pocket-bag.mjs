@@ -21,15 +21,15 @@ function draftPaulPocketBag({
   let pocketDepth = points.styleWaistOut.dist(points.seatOut) * options.pocketDepth
   let pocketBagLeftCurve = options.pocketBagCurve * 0.5
   let pocketBagLeftCurveShape = options.pocketBagCurveShape
-  let pocketSlant = 1 - options.pocketBagSlant
+  let pocketBagSlant = 1 - options.pocketBagSlant
   points.pocketBagTop = points.pocketTop.shiftFractionTowards(points.flyTop, options.pocketBagWidth)
-  points.pocketBagLeft = paths.sideSeam.shiftAlong(height + pocketDepth * pocketSlant)
+  points.pocketBagLeft = paths.sideSeam.shiftAlong(height + pocketDepth * pocketBagSlant)
   points.pocketBagBottom = points.pocketBagTop.shift(
     points.styleWaistOut.angle(points.styleWaistIn) - 90,
     pocketDepth + height
   )
   points.pocketBagTopCorner = paths.sideSeam.shiftAlong(
-    height + pocketDepth * (1 - pocketBagLeftCurve) * pocketSlant
+    height + pocketDepth * (1 - pocketBagLeftCurve) * pocketBagSlant
   )
   points.pocketBagRightCorner = points.pocketBagLeft.shiftTowards(
     points.pocketBagBottom,
@@ -44,6 +44,9 @@ function draftPaulPocketBag({
     pocketBagLeftCurveShape
   )
 
+  paths.sideSeamA = paths.sideSeam.split(points.pocketBagTopCorner)[0].hide()
+  paths.sideSeamB = paths.sideSeamA.split(points.pocketLeft)[1].hide()
+
   macro('mirror', {
     points: [
       'pocketBagTop',
@@ -55,12 +58,11 @@ function draftPaulPocketBag({
       'pocketBagCornerCp2',
       'styleWaistOut',
     ],
+    paths: ['sideSeamA'],
     mirror: [points.pocketBagTop, points.pocketBagBottom],
   })
 
-  let sideSeamA = paths.sideSeam.split(points.pocketBagTopCorner)[0]
-  let sideSeamB = sideSeamA.split(points.pocketLeft)[1]
-  paths.pocketBagCurve = sideSeamB
+  paths.pocketBagCurve = paths.sideSeamB
     .curve(points.pocketBagCornerCp1, points.pocketBagCornerCp2, points.pocketBagRightCorner)
     .line(points.pocketBagBottom)
     .line(points.mirroredPocketBagRightCorner)
@@ -69,6 +71,7 @@ function draftPaulPocketBag({
       points.mirroredPocketBagCornerCp1,
       points.mirroredPocketBagTopCorner
     )
+    .join(paths.mirroredSideSeamA.reverse())
     .line(points.mirroredStyleWaistOut)
     .line(points.mirroredPocketBagTop)
     .line(points.pocketTop)
