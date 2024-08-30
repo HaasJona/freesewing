@@ -311,13 +311,6 @@ function draftPaulFront({
     y: y - 75,
   })
 
-  macro('hd', {
-    id: 'wPleatToPocketFacingWaist',
-    from: points.pocketFacingTop,
-    to: points.topPleat,
-    y: y - 15,
-  })
-
   let x = points.fork.x + sa
   macro('vd', {
     id: 'hHemToFork',
