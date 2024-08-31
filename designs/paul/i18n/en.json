@@ -20,7 +20,9 @@
     "cutBeltloops.t": "The belt loops are not shown",
     "cutBeltloops.d": "The **Belt loops** are {{{ count }}} rectangular piece of fabric {{{ width }}} wide and {{{ length }}} long.",
     "cutWaistband.t": "The waistband is not shown",
-    "cutWaistband.d": "The **Waistband** is a rectangular piece of fabric {{{ width }}} wide and {{{ length }}} long."
+    "cutWaistband.d": "The **Waistband** is a rectangular piece of fabric {{{ width }}} wide and {{{ length }}} long.",
+    "cutBackPocket.t": "The back pocket is not shown",
+    "cutBackPocket.d": "The **Back Pocket** is a piece of fabric than can be traced from the **Back** part."
   },
   "o": {
     "backPocketHorizontalPlacement": {
