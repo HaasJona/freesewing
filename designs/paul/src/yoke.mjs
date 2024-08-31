@@ -58,10 +58,10 @@ function draftPaulYoke({
       .curve_(points.waistCp1, points.backDartLeft)
       .curve_(points.waistCp2, points.styleWaistOutRotated)
   adjustPoint(
-    'styleWaistOutRotated',
+    'styleWaistIn',
     drawWaistband,
     store.get('waistbandBack'),
-    points.waistCp2.angle(points.styleWaistOutRotated)
+    points.waistCp1.angle(points.styleWaistIn)
   )
 
   paths.yoke = new Path()
