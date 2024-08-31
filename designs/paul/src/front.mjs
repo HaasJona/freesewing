@@ -377,7 +377,7 @@ export const front = {
     kneeEase: { pct: 15, min: 10, max: 30, menu: 'fit' },
 
     // Style (from Titan)
-    waistHeight: { pct: -4, min: -15, max: 40, menu: 'style' },
+    waistHeight: { pct: -4, min: -15, max: 110, menu: 'style' },
     waistbandWidth: {
       pct: 3,
       min: 1,
@@ -412,7 +412,7 @@ export const front = {
     pocketWidth: 0.6,
     pocketHeight: 0.8,
     pocketCurveShape: 0.15,
-    pocketDepth: 2,
+    pocketDepth: 0.5,
   },
   draft: draftPaulFront,
 }

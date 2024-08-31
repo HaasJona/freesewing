@@ -14,6 +14,7 @@ import { beltLoops } from './beltloops.mjs'
 import { pocketBag } from './pocket-bag.mjs'
 import { pocketFacing } from './pocket-facing.mjs'
 import { yoke } from './yoke.mjs'
+import { backPocketTemplate } from './back-pocket-template.mjs'
 
 // Create design
 const Paul = new Design({
@@ -30,6 +31,7 @@ const Paul = new Design({
     pocketBag,
     pocketFacing,
     yoke,
+    backPocketTemplate,
   ],
 })
 
@@ -49,6 +51,7 @@ export {
   pocketBag,
   pocketFacing,
   yoke,
+  backPocketTemplate,
   Paul,
   i18n,
 }

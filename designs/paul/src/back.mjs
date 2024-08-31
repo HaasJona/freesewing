@@ -168,14 +168,35 @@ function draftPaulBack({
     points.dartTip
   )
 
-  store.set(
-    'yokeBottom',
-    new Path()
-      .move(points.yokeRight)
-      .curve_(points.yokeCp2, points.dartTip)
-      .curve_(points.yokeCp1, points.crossSeamCurveStart)
-      .length()
-  )
+  paths.yokeJoin = new Path()
+    .move(points.yokeRight)
+    .curve_(points.yokeCp2, points.dartTip)
+    .curve_(points.yokeCp1, points.crossSeamCurveStart)
+    .hide()
+  store.set('yokeBottom', paths.yokeJoin.length())
+
+  points.pocketCenter = paths.yokeJoin
+    .shiftFractionAlong(0.6)
+    .translate(0, points.crossSeamCurveStart.dy(points.fork) / 2)
+
+  points.pocketTopIn = points.pocketCenter.shiftFractionTowards(points.crossSeamCurveStart, 0.8)
+  points.pocketTopOut = points.pocketCenter.shiftFractionTowards(points.yokeRight, 0.6)
+  points.pocketTopCenter = points.pocketTopIn.shiftFractionTowards(points.pocketTopOut, 0.5)
+  const topAngle = points.pocketTopIn.angle(points.pocketTopOut)
+  const size = points.pocketTopIn.dist(points.pocketTopOut)
+  points.pocketBottomCenter = points.pocketTopCenter.shift(topAngle - 90, size * 1.1)
+  points.pocketBottomOut = points.pocketBottomCenter.shift(topAngle + 25, size * 0.5)
+  points.pocketBottomIn = points.pocketBottomCenter.shift(180 + topAngle - 25, size * 0.5)
+
+  paths.backPocketTemplate = new Path()
+    .move(points.pocketTopIn)
+    .line(points.pocketBottomIn)
+    .line(points.pocketBottomCenter)
+    .line(points.pocketBottomOut)
+    .line(points.pocketTopOut)
+    .line(points.pocketTopIn)
+    .setClass('various dashed')
+    .close()
 
   // Anchor for sampling/grid
   // This breaks the samples for reason not clear. See #
@@ -222,6 +243,15 @@ function draftPaulBack({
     log.debug('Paul backOutseam: ' + utils.round(backOutseamLength).toString())
   }
 
+  const grainlineTopTmp = paths.yokeJoin.intersectsX(points.grainlineBottom.x).pop()
+  if (grainlineTopTmp) {
+    points.grainlineTop = grainlineTopTmp
+  }
+  macro('grainline', {
+    from: points.grainlineTop,
+    to: points.grainlineBottom,
+  })
+
   /*
    * Annotations
    */
@@ -241,10 +271,9 @@ function draftPaulBack({
   snippets.logo = new Snippet('logo', points.titleAnchor.shiftFractionTowards(points.knee, 0.5))
 
   // Notches
-
   macro('sprinkle', {
     snippet: 'bnotch',
-    on: ['grainlineBottom'],
+    on: ['grainlineTop', 'grainlineBottom'],
   })
 
   log.info(
@@ -350,8 +379,8 @@ export const back = {
     backPocketDepth: { pct: 60, min: 40, max: 80, menu: 'pockets.backpockets' },
     backPocketFacing: { bool: true, menu: 'pockets.backpockets' },
     backDartAngle: { deg: 8.66, min: 0, max: 15, menu: 'style' },
-    backDartDepth: { pct: 50, min: 20, max: 100, menu: 'style' },
-    yokeOuterWidth: { pct: 35, min: 10, max: 100, menu: 'style' },
+    backDartDepth: { pct: 33, min: 25, max: 75, menu: 'style' },
+    yokeOuterWidth: { pct: 14, min: 10, max: 75, menu: 'style' },
   },
   draft: draftPaulBack,
 }

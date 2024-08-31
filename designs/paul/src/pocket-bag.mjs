@@ -3,6 +3,7 @@ import { front } from './front.mjs'
 function draftPaulPocketBag({
   points,
   Point,
+  measurements,
   paths,
   Path,
   macro,
@@ -18,7 +19,7 @@ function draftPaulPocketBag({
 
   let height = points.styleWaistOut.dist(points.seatOut) * options.pocketHeight
 
-  let pocketDepth = points.styleWaistOut.dist(points.seatOut) * options.pocketDepth
+  let pocketDepth = measurements.waistToUpperLeg * options.pocketDepth
   let pocketBagLeftCurve = options.pocketBagCurve * 0.5
   let pocketBagLeftCurveShape = options.pocketBagCurveShape
   let pocketBagSlant = 1 - options.pocketBagSlant
