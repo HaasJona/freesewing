@@ -17,6 +17,7 @@ function draftPaulBack({
   log,
   units,
   utils,
+  complete,
   part,
 }) {
   // Store titan waistband length
@@ -188,7 +189,7 @@ function draftPaulBack({
   points.pocketBottomOut = points.pocketBottomCenter.shift(topAngle + 25, size * 0.5)
   points.pocketBottomIn = points.pocketBottomCenter.shift(180 + topAngle - 25, size * 0.5)
 
-  paths.backPocketTemplate = new Path()
+  paths.backPocket = new Path()
     .move(points.pocketTopIn)
     .line(points.pocketBottomIn)
     .line(points.pocketBottomCenter)
@@ -197,6 +198,10 @@ function draftPaulBack({
     .line(points.pocketTopIn)
     .setClass('various dashed')
     .close()
+
+  if (!complete) {
+    paths.backPocket.hide()
+  }
 
   // Anchor for sampling/grid
   // This breaks the samples for reason not clear. See #
