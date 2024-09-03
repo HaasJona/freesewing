@@ -20,7 +20,6 @@ function draftPaulBackPocket({
     store.flag.preset('expandIsOn')
   } else {
     // Expand is off, do not draw the part but flag this to the user
-    const extraSa = sa ? 2 * sa : 0
     store.flag.note({
       msg: `paul:cutBackPocket`,
       notes: ['flag:partHiddenByExpand'],
