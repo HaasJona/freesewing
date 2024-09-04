@@ -18,8 +18,8 @@ function draftPaulYoke({
   for (let id in paths) if (id !== 'sideSeam') delete paths[id]
   for (let id in snippets) delete snippets[id]
 
-  let yokeCpDist = points.yokeRightRotated.dist(points.crossSeamCurveStart) * 0.2
-  let yokeCpAngle = points.yokeRightRotated.angle(points.crossSeamCurveStart)
+  let yokeCpDist = points.yokeOutRotated.dist(points.yokeIn) * 0.2
+  let yokeCpAngle = points.yokeOutRotated.angle(points.yokeIn)
   points.yokeCp1 = points.dartTip.shift(yokeCpAngle, yokeCpDist)
   points.yokeCp2 = points.dartTip.shift(yokeCpAngle + 180, yokeCpDist)
 
@@ -39,24 +39,37 @@ function draftPaulYoke({
     }
   }
 
+  points.originalYokeOutRotated = points.yokeOutRotated.clone()
+
   // correct the seam lengths, so we match the back part and the waistband
   let drawYokeBottom = () =>
     new Path()
-      .move(points.crossSeamCurveStart)
+      .move(points.yokeIn)
       .curve_(points.yokeCp1, points.dartTip)
-      .curve_(points.yokeCp2, points.yokeRightRotated)
+      .curve_(points.yokeCp2, points.yokeOutRotated)
   adjustPoint(
-    'yokeRightRotated',
+    'yokeOutRotated',
     drawYokeBottom,
     store.get('yokeBottom'),
-    points.yokeCp2.angle(points.yokeRightRotated)
+    points.yokeCp2.angle(points.yokeOutRotated)
   )
 
-  let drawWaistband = () =>
-    new Path()
+  // adjust styleWaistOutRotated point (shift it the same distance)
+  points.styleWaistOutRotated = points.styleWaistOutRotated.translate(
+    points.originalYokeOutRotated.dx(points.yokeOutRotated),
+    points.originalYokeOutRotated.dy(points.yokeOutRotated)
+  )
+
+  let drawWaistband = () => {
+    let dist = points.styleWaistIn.dist(points.backDartLeft) * 0.2
+    points.waistCpIn = points.styleWaistIn
+      .shiftTowards(points.yokeIn, dist)
+      .rotate(90, points.styleWaistIn)
+    return new Path()
       .move(points.styleWaistIn)
-      .curve_(points.waistCp1, points.backDartLeft)
+      .curve(points.waistCpIn, points.waistCp1, points.backDartLeft)
       .curve_(points.waistCp2, points.styleWaistOutRotated)
+  }
   adjustPoint(
     'styleWaistIn',
     drawWaistband,
@@ -66,7 +79,7 @@ function draftPaulYoke({
 
   paths.yoke = new Path()
     .move(points.styleWaistIn)
-    .line(points.crossSeamCurveStart)
+    .line(points.yokeIn)
     .join(drawYokeBottom())
     .line(points.styleWaistOutRotated)
     .join(drawWaistband().reverse())
@@ -79,7 +92,7 @@ function draftPaulYoke({
 
   points.titleAnchor = points.styleWaistIn
     .shiftFractionTowards(points.dartTip, 0.5)
-    .shiftFractionTowards(points.crossSeamCurveStart, 0.3)
+    .shiftFractionTowards(points.yokeIn, 0.3)
   macro('title', {
     at: points.titleAnchor,
     nr: 4,
