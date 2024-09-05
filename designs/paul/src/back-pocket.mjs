@@ -16,6 +16,10 @@ function draftPaulBackPocket({
   part,
   utils,
 }) {
+  if (!options.backPockets) {
+    return part.hide()
+  }
+
   if (expand) {
     store.flag.preset('expandIsOn')
   } else {

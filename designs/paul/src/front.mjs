@@ -178,10 +178,10 @@ function draftPaulFront({
   points.anchor = points.fork.clone()
 
   // Draw path
-  paths.seam = drawPath(true).close().attr('class', 'fabric')
+  paths.seam = drawPath(options.frontPockets).close().attr('class', 'fabric')
 
   if (sa) {
-    paths.sa = drawPath(true)
+    paths.sa = drawPath(options.frontPockets)
       .offset(sa)
       .join(
         new Path()
@@ -207,6 +207,7 @@ function draftPaulFront({
   // Store inseam and outseam lengths
   store.set('frontInseamLength', frontInseamPath.length())
   store.set('frontOutseamLength', sideSeam.length())
+  store.set('crotchSeamLength', paths.crotchCurve.length())
 
   if (complete) {
     points.titleAnchor = new Point(points.knee.x, points.fork.y)
@@ -409,6 +410,7 @@ export const front = {
     heelEase: { pct: 5, min: 0, max: 100, menu: 'style' },
     heelShape: { pct: 50, min: 0, max: 100, menu: 'style' },
 
+    frontPockets: { bool: true, menu: 'construction' },
     pocketWidth: 0.6,
     pocketHeight: 0.8,
     pocketCurveShape: 0.15,
