@@ -14,6 +14,10 @@ function draftPaulPocketBag({
   complete,
   part,
 }) {
+  if (!options.frontPockets) {
+    return part.hide()
+  }
+
   for (let id in paths) if (id !== 'sideSeam' && id !== 'pocketCurve') delete paths[id]
   for (let id in snippets) delete snippets[id]
 

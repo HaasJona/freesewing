@@ -51,7 +51,6 @@ function draftPaulBack({
       .curve(points.crossSeamCurveCp1, points.crossSeamCurveCp2, points.fork)
       .join(drawInseam())
   }
-
   function drawInseam() {
     return new Path()
       .move(points.fork)
@@ -202,7 +201,7 @@ function draftPaulBack({
     .setClass('various dashed')
     .close()
 
-  if (!complete) {
+  if (!complete || !options.backPockets) {
     paths.backPocket.hide()
   }
 
@@ -251,6 +250,12 @@ function draftPaulBack({
     log.debug('Paul backOutseam: ' + utils.round(backOutseamLength).toString())
   }
 
+  paths.crossSeam = new Path()
+    .move(points.styleWaistIn)
+    .line(points.crossSeamCurveStart)
+    .curve(points.crossSeamCurveCp1, points.crossSeamCurveCp2, points.fork)
+    .hide()
+
   const grainlineTopTmp = paths.yokeJoin.intersectsX(points.grainlineBottom.x).pop()
   if (grainlineTopTmp) {
     points.grainlineTop = grainlineTopTmp
@@ -286,6 +291,10 @@ function draftPaulBack({
 
   log.info(
     `Inseam height: ${units(points.fork.dy(points.floorIn))} | ` +
+      `Inseam (curve) length: ${units(drawInseam().length())} | ` +
+      `Outseam length (excl. waistband): ${units(drawOutseam().length())} | ` +
+      `Cross seam back: ${units(paths.crossSeam.length())} | ` +
+      `Cross seam front: ${units(store.get('crotchSeamLength'))} | ` +
       `Waist: ${units((store.get('waistbandBack') + store.get('waistbandFront')) * 2)} | ` +
       `Bottom leg width: ${units((store.get('legWidthBack') + store.get('legWidthFront')) / 2)}`
   )
@@ -381,6 +390,7 @@ export const back = {
   after: front,
   hide: hidePresets.HIDE_TREE,
   options: {
+    backPockets: { bool: false, menu: 'construction' },
     backPocketHorizontalPlacement: { pct: 55, min: 48, max: 62, menu: 'pockets.backpockets' },
     backDartAngle: { deg: 8.66, min: 0, max: 15, menu: 'style' },
     backDartDepth: { pct: 25, min: 15, max: 75, menu: 'style' },

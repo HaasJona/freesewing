@@ -15,6 +15,10 @@ function draftPaulPocketFacing({
   utils,
   part,
 }) {
+  if (!options.frontPockets) {
+    return part.hide()
+  }
+
   for (let id in paths) if (id !== 'sideSeam') delete paths[id]
   for (let id in snippets) delete snippets[id]
 
