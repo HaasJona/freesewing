@@ -373,9 +373,9 @@ export const front = {
     waistbandFactor: 0.1,
 
     // Fit (from Titan)
-    waistEase: { pct: 1, min: 0, max: 5, menu: 'fit' },
-    seatEase: { pct: 5, min: 0, max: 10, menu: 'fit' },
-    kneeEase: { pct: 15, min: 10, max: 30, menu: 'fit' },
+    waistEase: { pct: 1, min: -5, max: 5, menu: 'fit' },
+    seatEase: { pct: 2, min: -10, max: 10, menu: 'fit' },
+    kneeEase: { pct: 15, min: 0, max: 30, menu: 'fit' },
 
     // Style (from Titan)
     waistHeight: { pct: -4, min: -15, max: 110, menu: 'style' },
@@ -411,10 +411,10 @@ export const front = {
     heelShape: { pct: 50, min: 0, max: 100, menu: 'style' },
 
     frontPockets: { bool: true, menu: 'construction' },
-    pocketWidth: 0.6,
-    pocketHeight: 0.8,
-    pocketCurveShape: 0.15,
-    pocketDepth: 0.5,
+    pocketWidth: { pct: 70, min: 40, max: 90, menu: 'pockets.front' },
+    pocketHeight: { pct: 80, min: 40, max: 100, menu: 'pockets.front' },
+    pocketCurveShape: { pct: 15, min: 5, max: 50, menu: 'pockets.front' },
+    pocketDepth: { pct: 50, min: 25, max: 100, menu: 'pockets.front' },
   },
   draft: draftPaulFront,
 }

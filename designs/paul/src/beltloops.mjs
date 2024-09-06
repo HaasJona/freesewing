@@ -121,7 +121,7 @@ export const beltLoops = {
   name: 'paul.beltLoops',
   after: waistband,
   options: {
-    beltLoops: { count: 8, min: 6, max: 12, menu: 'advanced' },
+    beltLoops: { count: 5, min: 5, max: 7, menu: 'advanced' },
   },
   draft: draftPaulBeltLoops,
 }
