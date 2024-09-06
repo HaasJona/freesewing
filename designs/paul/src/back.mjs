@@ -41,15 +41,14 @@ function draftPaulBack({
         .line(points.backDartLeft)
         .curve(points.backDartLeftCp, points.cbCp, waistIn)
         .line(points.crossSeamCurveStart)
+        .join(paths.crossSeam)
     } else {
       result = result
         .curve_(points.yokeCp2, points.dartTip)
         .curve_(points.yokeCp1, points.yokeIn)
-        .line(points.crossSeamCurveStart)
+        .join(paths.crossSeam.split(points.yokeIn).pop())
     }
-    return result
-      .curve(points.crossSeamCurveCp1, points.crossSeamCurveCp2, points.fork)
-      .join(drawInseam())
+    return result.join(drawInseam())
   }
   function drawInseam() {
     return new Path()
@@ -103,7 +102,7 @@ function draftPaulBack({
   store.set('backPocketDepth', base * options.backPocketDepth)
   points.dartCenter = points.styleWaistIn.shiftFractionTowards(
     points.styleWaistOut,
-    options.backPocketHorizontalPlacement
+    options.dartHorizontalPlacement
   )
   points.dartPilot = points.dartCenter.shift(angle - 90, 666)
   points.dartTip = utils
@@ -115,14 +114,14 @@ function draftPaulBack({
   points.tmp2 = points.dartCenter.rotate(-options.backDartAngle, points.dartTip)
   points.backDartLeft = points.dartTip.shiftFractionTowards(points.tmp1, 1.05)
   points.backDartRight = points.dartTip.shiftFractionTowards(points.tmp2, 1.05)
-  // let newBase =
-  //   points.styleWaistIn.dist(points.backDartLeft) + points.styleWaistOut.dist(points.backDartRight)
-  // let delta = base - newBase
-  // // Adapt waist to new darted reality
-  // for (let p of ['styleWaistIn', 'crossSeamCurveStart', 'crossSeamCurveCp1']) {
-  //   points[p] = points[p].shift(angle + 180, delta / 2)
-  // }
-  // points.styleWaistOut = points.styleWaistOut.shift(angle, delta / 2)
+  let newBase =
+    points.styleWaistIn.dist(points.backDartLeft) + points.styleWaistOut.dist(points.backDartRight)
+  let delta = base - newBase
+  // Adapt waist to new darted reality
+  for (let p of ['styleWaistIn', 'crossSeamCurveStart', 'crossSeamCurveCp1']) {
+    points[p] = points[p].shift(angle + 180, delta / 2)
+  }
+  points.styleWaistOut = points.styleWaistOut.shift(angle, delta / 2)
 
   // Keep the seat control point vertically between the (lowered) waist and seat line
   points.seatOutCp2.y = points.styleWaistOut.y + points.styleWaistOut.dy(points.seatOut) / 2
@@ -156,11 +155,26 @@ function draftPaulBack({
 
   store.set('legWidthBack', points.floorIn.dist(points.floorOut))
 
+  paths.crossSeam = new Path()
+    .move(points.styleWaistIn)
+    .line(points.crossSeamCurveStart)
+    .curve(points.crossSeamCurveCp1, points.crossSeamCurveCp2, points.fork)
+    .hide()
+
   let extraBack = 0
   points.yokeOut = drawOutseam()
     .reverse()
     .shiftAlong(points.styleWaistOut.dist(points.seatOut) * options.yokeOuterWidth)
-  points.yokeIn = points.crossSeamCurveStart.shiftTowards(points.styleWaistIn, extraBack)
+
+  points.yokePilotTarget = points.yokeOut.rotate(180 + options.backDartAngle, points.dartTip)
+  points.yokePilotTarget = points.dartTip.shiftFractionTowards(points.yokePilotTarget, 66)
+  paths.yokePilot = new Path()
+    .move(points.dartTip)
+    .line(points.yokePilotTarget)
+    .addClass('lining help')
+    .hide()
+  const intersections = paths.yokePilot.intersects(paths.crossSeam)
+  points.yokeIn = intersections.length === 0 ? points.styleWaistIn : intersections.pop()
   let yokeCpDist = points.yokeOut.dist(points.yokeIn) * 0.2
   let yokeCpAngle = points.yokeOut.angle(points.yokeIn)
   points.yokeCp1 = points.dartTip.shift(yokeCpAngle, yokeCpDist)
@@ -185,11 +199,32 @@ function draftPaulBack({
   points.pocketTopIn = points.pocketCenter.shiftFractionTowards(points.yokeIn, 0.8)
   points.pocketTopOut = points.pocketCenter.shiftFractionTowards(points.yokeOut, 0.6)
   points.pocketTopCenter = points.pocketTopIn.shiftFractionTowards(points.pocketTopOut, 0.5)
-  const topAngle = points.pocketTopIn.angle(points.pocketTopOut)
+  let topAngle = points.pocketTopIn.angle(points.pocketTopOut)
+  const maxAngle = 345
+  if (topAngle > 180 && topAngle < maxAngle) {
+    topAngle = maxAngle
+    points.pocketTopIn = points.pocketTopCenter.shift(
+      180 + topAngle,
+      points.pocketTopIn.dist(points.pocketTopCenter)
+    )
+    points.pocketTopOut = points.pocketTopCenter.shift(
+      topAngle,
+      points.pocketTopIn.dist(points.pocketTopCenter)
+    )
+  }
   const size = points.pocketTopIn.dist(points.pocketTopOut)
   points.pocketBottomCenter = points.pocketTopCenter.shift(topAngle - 90, size * 1.1)
   points.pocketBottomOut = points.pocketBottomCenter.shift(topAngle + 25, size * 0.5)
   points.pocketBottomIn = points.pocketBottomCenter.shift(180 + topAngle - 25, size * 0.5)
+  const dist1 = points.yokeIn.dist(points.pocketTopIn)
+  points.pocketTopIn = points.pocketTopIn.shiftFractionTowards(
+    points.yokeIn,
+    options.backPocketAsymmetry
+  )
+  points.pocketBottomIn = points.pocketBottomIn.shiftTowards(
+    points.crossSeamCurveCp1,
+    options.backPocketAsymmetry * dist1
+  )
 
   paths.backPocket = new Path()
     .move(points.pocketTopIn)
@@ -209,6 +244,7 @@ function draftPaulBack({
   // This breaks the samples for reason not clear. See #
   // points.anchor = points.fork.clone()
 
+  // paths.template = drawPath().addClass('help')
   paths.saBase = drawPath(true)
   paths.seam = paths.saBase
     .insop('dart', new Path().line(points.dartTip))
@@ -249,12 +285,6 @@ function draftPaulBack({
     log.debug('Paul frontOutseam: ' + utils.round(frontOutseamLength).toString())
     log.debug('Paul backOutseam: ' + utils.round(backOutseamLength).toString())
   }
-
-  paths.crossSeam = new Path()
-    .move(points.styleWaistIn)
-    .line(points.crossSeamCurveStart)
-    .curve(points.crossSeamCurveCp1, points.crossSeamCurveCp2, points.fork)
-    .hide()
 
   const grainlineTopTmp = paths.yokeJoin.intersectsX(points.grainlineBottom.x).pop()
   if (grainlineTopTmp) {
@@ -391,7 +421,8 @@ export const back = {
   hide: hidePresets.HIDE_TREE,
   options: {
     backPockets: { bool: false, menu: 'construction' },
-    backPocketHorizontalPlacement: { pct: 55, min: 48, max: 62, menu: 'pockets.backpockets' },
+    dartHorizontalPlacement: { pct: 55, min: 48, max: 62, menu: 'style' },
+    backPocketAsymmetry: { pct: 0, min: 0, max: 50, menu: 'pockets.backpockets' },
     backDartAngle: { deg: 8.66, min: 0, max: 15, menu: 'style' },
     backDartDepth: { pct: 25, min: 15, max: 75, menu: 'style' },
     yokeOuterWidth: { pct: 14, min: 10, max: 75, menu: 'style' },

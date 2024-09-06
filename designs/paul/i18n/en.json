@@ -25,7 +25,7 @@
     "cutBackPocket.d": "The **Back Pocket** is a piece of fabric than can be traced from the **Back** part."
   },
   "o": {
-    "backPocketHorizontalPlacement": {
+    "dartHorizontalPlacement": {
       "t": "Back pocket horizontal placement",
       "d": "Controls the horizontal placement of the back pocket"
     },

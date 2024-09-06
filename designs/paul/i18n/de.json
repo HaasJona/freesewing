@@ -18,7 +18,7 @@
   },
   "s": {},
   "o": {
-    "backPocketHorizontalPlacement": {
+    "dartHorizontalPlacement": {
       "t": "Horizontale Platzierung der hinteren Tasche",
       "d": "Steuert die horizontale Platzierung der hinteren Tasche"
     },
