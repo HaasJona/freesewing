@@ -97,21 +97,18 @@ function draftPaulBack({
   // Mark back pocket
   let base = points.styleWaistIn.dist(points.styleWaistOut)
   let angle = points.styleWaistIn.angle(points.styleWaistOut)
-  store.set('backPocketToWaistband', base * options.backPocketVerticalPlacement)
-  store.set('backPocketWidth', base * options.backPocketWidth)
-  store.set('backPocketDepth', base * options.backPocketDepth)
   points.dartCenter = points.styleWaistIn.shiftFractionTowards(
     points.styleWaistOut,
-    options.dartHorizontalPlacement
+    options.yokeHorizontalCenter
   )
   points.dartPilot = points.dartCenter.shift(angle - 90, 666)
   points.dartTip = utils
     .beamsIntersect(points.dartCenter, points.dartPilot, points.cbSeat, points.seatOut)
-    .shiftFractionTowards(points.dartCenter, 1 - options.backDartDepth)
+    .shiftFractionTowards(points.dartCenter, 1 - options.yokeHeight)
 
   // // Back dart
-  points.tmp1 = points.dartCenter.rotate(options.backDartAngle, points.dartTip)
-  points.tmp2 = points.dartCenter.rotate(-options.backDartAngle, points.dartTip)
+  points.tmp1 = points.dartCenter.rotate(options.yokeAngle, points.dartTip)
+  points.tmp2 = points.dartCenter.rotate(-options.yokeAngle, points.dartTip)
   points.backDartLeft = points.dartTip.shiftFractionTowards(points.tmp1, 1.05)
   points.backDartRight = points.dartTip.shiftFractionTowards(points.tmp2, 1.05)
   let newBase =
@@ -164,9 +161,11 @@ function draftPaulBack({
   let extraBack = 0
   points.yokeOut = drawOutseam()
     .reverse()
-    .shiftAlong(points.styleWaistOut.dist(points.seatOut) * options.yokeOuterWidth)
+    .shiftAlong(
+      points.styleWaistOut.dist(points.seatOut) * options.yokeHeight * options.yokeBalance
+    )
 
-  points.yokePilotTarget = points.yokeOut.rotate(180 + options.backDartAngle, points.dartTip)
+  points.yokePilotTarget = points.yokeOut.rotate(180 + options.yokeAngle, points.dartTip)
   points.yokePilotTarget = points.dartTip.shiftFractionTowards(points.yokePilotTarget, 66)
   paths.yokePilot = new Path()
     .move(points.dartTip)
@@ -179,11 +178,8 @@ function draftPaulBack({
   let yokeCpAngle = points.yokeOut.angle(points.yokeIn)
   points.yokeCp1 = points.dartTip.shift(yokeCpAngle, yokeCpDist)
   points.yokeCp2 = points.dartTip.shift(yokeCpAngle + 180, yokeCpDist)
-  points.yokeOutRotated = points.yokeOut.rotate(options.backDartAngle * 2, points.dartTip)
-  points.styleWaistOutRotated = points.styleWaistOut.rotate(
-    options.backDartAngle * 2,
-    points.dartTip
-  )
+  points.yokeOutRotated = points.yokeOut.rotate(options.yokeAngle * 2, points.dartTip)
+  points.styleWaistOutRotated = points.styleWaistOut.rotate(options.yokeAngle * 2, points.dartTip)
 
   paths.yokeJoin = new Path()
     .move(points.yokeOut)
@@ -421,11 +417,11 @@ export const back = {
   hide: hidePresets.HIDE_TREE,
   options: {
     backPockets: { bool: false, menu: 'construction' },
-    dartHorizontalPlacement: { pct: 55, min: 48, max: 62, menu: 'style' },
+    yokeHorizontalCenter: { pct: 55, min: 48, max: 62, menu: 'style.yoke' },
+    yokeAngle: { deg: 8.66, min: 0, max: 15, menu: 'style.yoke' },
+    yokeHeight: { pct: 25, min: 15, max: 75, menu: 'style.yoke' },
+    yokeBalance: { pct: 60, min: 50, max: 180, menu: 'style.yoke' },
     backPocketAsymmetry: { pct: 0, min: 0, max: 50, menu: 'pockets.backpockets' },
-    backDartAngle: { deg: 8.66, min: 0, max: 15, menu: 'style' },
-    backDartDepth: { pct: 25, min: 15, max: 75, menu: 'style' },
-    yokeOuterWidth: { pct: 14, min: 10, max: 75, menu: 'style' },
   },
   draft: draftPaulBack,
 }
