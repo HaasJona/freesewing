@@ -412,7 +412,7 @@ export const front = {
 
     frontPockets: { bool: true, menu: 'construction' },
     pocketWidth: { pct: 70, min: 40, max: 90, menu: 'pockets.front' },
-    pocketHeight: { pct: 80, min: 40, max: 100, menu: 'pockets.front' },
+    pocketHeight: { pct: 80, min: 40, max: 200, menu: 'pockets.front' },
     pocketCurveShape: { pct: 15, min: 5, max: 50, menu: 'pockets.front' },
     pocketDepth: { pct: 50, min: 25, max: 100, menu: 'pockets.front' },
   },

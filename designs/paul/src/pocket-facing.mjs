@@ -19,13 +19,12 @@ function draftPaulPocketFacing({
     return part.hide()
   }
 
-  for (let id in paths) if (id !== 'sideSeam') delete paths[id]
+  for (let id in paths) if (id !== 'sideSeam' && id !== 'pocketCurve') delete paths[id]
   for (let id in snippets) delete snippets[id]
 
   let height = points.styleWaistOut.dist(points.seatOut) * options.pocketHeight
-  points.pocketFacingBottomCorner = paths.sideSeam.shiftAlong(
-    height * (1 + options.pocketFacingBonus)
-  )
+  const bonusHeight = height * (1 + options.pocketFacingBonus)
+  points.pocketFacingBottomCorner = paths.sideSeam.shiftAlong(bonusHeight)
   points.pocketFacingRightCorner = points.styleWaistOut.shiftFractionTowards(
     points.flyTop,
     options.pocketWidth * (1 + options.pocketFacingBonus)
@@ -34,39 +33,45 @@ function draftPaulPocketFacing({
     points.styleWaistOut.dx(points.pocketFacingRightCorner),
     points.styleWaistOut.dy(points.pocketFacingRightCorner)
   )
+  //
+  // points.pocketFacingInnerCornerCurveStart = points.pocketFacingBottomCorner.shiftTowards(
+  //   points.pocketFacingInnerCorner,
+  //   height * options.pocketFacingBonus
+  // )
+  // points.pocketFacingInnerCornerCurveEnd = points.pocketFacingRightCorner.shiftTowards(
+  //   points.pocketFacingInnerCorner,
+  //   height * options.pocketFacingBonus
+  // )
+  // points.pocketFacingInnerCornerCp1 = points.pocketFacingInnerCorner.shiftTowards(
+  //   points.pocketFacingBottomCorner,
+  //   height * options.pocketCurveShape
+  // )
+  // points.pocketFacingInnerCornerCp2 = points.pocketFacingInnerCorner.shiftTowards(
+  //   points.pocketFacingRightCorner,
+  //   height * options.pocketCurveShape
+  // )
 
-  points.pocketFacingInnerCornerCurveStart = points.pocketFacingBottomCorner.shiftTowards(
-    points.pocketFacingInnerCorner,
-    height * options.pocketFacingBonus
-  )
-  points.pocketFacingInnerCornerCurveEnd = points.pocketFacingRightCorner.shiftTowards(
-    points.pocketFacingInnerCorner,
-    height * options.pocketFacingBonus
-  )
-  points.pocketFacingInnerCornerCp1 = points.pocketFacingInnerCorner.shiftTowards(
-    points.pocketFacingBottomCorner,
-    height * options.pocketCurveShape
-  )
-  points.pocketFacingInnerCornerCp2 = points.pocketFacingInnerCorner.shiftTowards(
-    points.pocketFacingRightCorner,
-    height * options.pocketCurveShape
-  )
-
-  paths.pocketFacingCurve = paths.sideSeam
-    .split(points.pocketFacingBottomCorner)[0]
-    .line(points.pocketFacingInnerCornerCurveStart)
-    .curve(
-      points.pocketFacingInnerCornerCp1,
-      points.pocketFacingInnerCornerCp2,
-      points.pocketFacingInnerCornerCurveEnd
-    )
-    .line(points.pocketFacingRightCorner)
+  const curve = paths.pocketCurve.reverse().offset(bonusHeight - height)
+  const sideSeam = paths.sideSeam.split(points.pocketFacingBottomCorner)[0]
+  paths.pocketFacingCurve = new Path()
+    .move(curve.end())
     .line(points.styleWaistOut)
+    .join(sideSeam)
+    .join(curve)
     .close()
     .setClass('fabric')
 
   if (sa) {
-    paths.sa = paths.pocketFacingCurve.offset(sa).setClass('fabric sa')
+    paths.sa = new Path()
+      .move(curve.end())
+      .line(points.styleWaistOut)
+      .join(sideSeam)
+      .offset(sa)
+      .line(curve.start())
+      .reverse()
+      .line(curve.end())
+      .reverse()
+      .setClass('fabric sa')
   }
 
   // Title
