@@ -24,9 +24,9 @@ export const waistband = {
       menu: (settings, mergedOptions) => (mergedOptions.fitWaist ? 'fit' : false),
       order: 'EBB',
     },
-    hipsEase: { pct: 5, min: -5, max: 50, menu: 'fit', order: 'ECA' },
-    seatEase: { pct: 2, min: -5, max: 50, menu: 'fit', order: 'EDA' },
-    chestEase: { pct: 2, min: -5, max: 25, menu: 'fit', order: 'EAB' },
+    hipsEase: { pct: 5, min: -25, max: 50, menu: 'fit', order: 'ECA' },
+    seatEase: { pct: 2, min: -25, max: 50, menu: 'fit', order: 'EDA' },
+    chestEase: { pct: 2, min: -25, max: 50, menu: 'fit', order: 'EAB' },
     length: {
       dflt: 'seat',
       list: ['underbust', 'waist', 'hips', 'seat', 'knee', 'floor'],

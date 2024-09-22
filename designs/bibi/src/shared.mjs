@@ -172,6 +172,10 @@ export function correctArmHole(part) {
 
   points.chestBelowArmhole = points.chest.y > points.armhole.y ? points.chest : points.armhole
 
+  if (points.chestBelowArmhole.y > (points.armhole.y + points.waist.y) / 2) {
+    points.chestBelowArmhole.y = (points.armhole.y + points.waist.y) / 2
+  }
+
   if (!options.sleeves && points.armhole.y > points.chest.y) {
     points.armhole = utils.beamIntersectsY(points.chest, points.waist, points.armhole.y)
     points.armholeCp2 = points.armhole.shift(180, points._tmp1.dx(points.armhole) / 4)
@@ -364,6 +368,11 @@ export function constructSideSeam(part, height) {
     // below seat
     bottom = extendSideLine(points, height)
   }
+
+  if (points.armholeCp1.y > points.waist.y - 100) {
+    points.armholeCp1.y = points.waist.y - 100
+  }
+
   points.hem = bottom
   let result
   if (points.hem.y < points.waist.y) {
@@ -434,7 +443,6 @@ export function adjustSidePoints(part) {
     if (points.waist.x < points.armhole.x) {
       points.waist.x = points.armhole.x
     }
-    points.waistCp2 = points.waist.shiftFractionTowards(points.armhole, 0.2)
     if (points.hips.x < points.waist.x) {
       points.hips.x = points.waist.x
     }
