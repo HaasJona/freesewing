@@ -5,14 +5,14 @@ title: Path.intersectsBeam()
 The `Path.intersectsBeam()` method returns the Point object(s) where the path
 intersects with an endless line (beam).
 
-<Warning>
+:::warning
 
 This method can sometimes fail to find intersections in some curves
 due to a limitation in an underlying Bézier library.
 Please see [Bug #3367](https://github.com/freesewing/freesewing/issues/3367)
 for more information.
 
-</Warning>
+:::
 
 ## Signature
 
@@ -23,8 +23,7 @@ array path.intersectsBeam(Point a, Point b)
 <Example caption="Example of the Path.intersectsBeam() method">
 
 ```js
-({ Point, points, Path, paths, snippets, Snippet, getId, part }) => {
-
+;({ Point, points, Path, paths, snippets, Snippet, getId, part }) => {
   points.A = new Point(45, 60)
   points.B = new Point(10, 30)
   points.BCp2 = new Point(40, 20)
@@ -34,15 +33,9 @@ array path.intersectsBeam(Point a, Point b)
   points.beamA = new Point(55, 30)
   points.beamB = new Point(0, 55)
 
-  paths.demo1 = new Path()
-    .move(points.A)
-    .line(points.B)
-    .curve(points.BCp2, points.CCp1, points.C)
-    
-  paths.beam = new Path()
-    .move(points.beamA)
-    .line(points.beamB)
-    .addClass('dashed')
+  paths.demo1 = new Path().move(points.A).line(points.B).curve(points.BCp2, points.CCp1, points.C)
+
+  paths.beam = new Path().move(points.beamA).line(points.beamB).addClass('dashed')
 
   for (let p of paths.demo1.intersectsBeam(points.beamA, points.beamB)) {
     snippets[getId()] = new Snippet('notch', p)
@@ -51,13 +44,13 @@ array path.intersectsBeam(Point a, Point b)
   return part
 }
 ```
-</Example>
 
+</Example>
 
 ## Notes
 
 This method works similar to `path.intersectsX(...)` and `path.intersectsY(...)`,
 but here the intersecting beam doesn't have to be horizontally or vertically.
 
-If you need intersections with a limited line instead of a beam, 
-use something like `path.intersects(new Path.move(lineA).line(lineB))` instead.
+If you need intersections with a limited line instead of a beam,
+use something like `path.intersects(new Path.move(pointA).line(pointB))` instead.

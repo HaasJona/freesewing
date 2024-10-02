@@ -12,9 +12,9 @@ The first two points in the parameter list form the beam, the last two points fo
 
 ```js
 Point | false utils.beamIntersectsLine(
-  Point beamA, 
-  Point beamB, 
-  Point lineA, 
+  Point beamA,
+  Point beamB,
+  Point lineA,
   Point lineB
 )
 ```
@@ -24,8 +24,7 @@ Point | false utils.beamIntersectsLine(
 <Example caption="A Utils.beamIntersectsLine() example">
 
 ```js
-({ Point, points, Path, paths, Snippet, snippets, utils, part }) => {
-
+;({ Point, points, Path, paths, Snippet, snippets, utils, part }) => {
   points.A = new Point(45, 20)
   points.B = new Point(60, 15)
   points.C = new Point(10, 10)
@@ -35,12 +34,12 @@ Point | false utils.beamIntersectsLine(
   paths.CD = new Path().move(points.C).line(points.D)
 
   snippets.x = new Snippet(
-    "notch",
+    'notch',
     utils.beamIntersectsLine(points.A, points.B, points.C, points.D)
   )
 
   return part
 }
 ```
-</Example>
 
+</Example>
