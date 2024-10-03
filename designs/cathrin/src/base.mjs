@@ -25,7 +25,7 @@ function draftCathrinBase({ measurements, options, store, points, paths, Point, 
   )
   store.set('bustIntake', 0.5 * (measurements.hips - measurements.underbust))
 
-  // Basic box (CB = Center back, CF = Center front)
+  // Basic base (CB = Center back, CF = Center front)
   let wid = store.get('width')
   points.underbustCF = new Point(0, 0)
   points.hipsCF = new Point(0, len)

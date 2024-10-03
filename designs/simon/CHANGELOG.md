@@ -74,7 +74,7 @@
 
 ### Fixed
 
- - Remove debug outline when enabling box pleat setting
+ - Remove debug outline when enabling base pleat setting
 
 ## 2.20.0 (2022-01-24)
 
@@ -237,7 +237,7 @@
 
 ### Changed
 
- - [#123](https://github.com/freesewing/freesewing/issues/123): Added a box pleat option to Simon
+ - [#123](https://github.com/freesewing/freesewing/issues/123): Added a base pleat option to Simon
  - Added the `backDarts` option to control the inclusion of back darts
  - Added the `backDartsShaping` option to control the amount of shaping by the back darts
  - Changed the defaults to slightly reduce the ease and adapt the sleevecap

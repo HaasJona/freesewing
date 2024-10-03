@@ -55,7 +55,7 @@ export const lowerTeeth = {
     points.titleAnchor = points.lowerTeeth02.shiftFractionTowards(points.lowerTeeth03, 0.5) //.shiftFractionTowards(points.lowerTeeth01, 0.5)
     points.gridAnchor = points.titleAnchor.clone()
 
-    // Bounding box to prevent title clipping
+    // Bounding base to prevent title clipping
     paths.bbox = new Path()
       .move(points.lowerTeeth02)
       .move(new Point(points.lowerTeeth03.x, points.lowerTeeth03.y * 1.75))

@@ -503,7 +503,7 @@
       "hem"
     ]
   },
-    "legend": {
+  "legend": {
     "code": "Joost De Cock",
     "description": "A FreeSewing pattern to document pattern notation",
     "lab": false,
@@ -1072,6 +1072,20 @@
       "elastic",
       "curvedSeam",
       "hem"
+    ]
+  },
+  "sabrina": {
+    "code": "Coder name",
+    "description": "A FreeSewing pattern that needs a description",
+    "design": "Designer name",
+    "difficulty": 1,
+    "lab": true,
+    "org": true,
+    "tags": [
+      "tagname"
+    ],
+    "techniques": [
+      "techname"
     ]
   }
 }

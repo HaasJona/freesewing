@@ -1,5 +1,5 @@
 /**
- * This draws a (diagonal in a) box
+ * This draws a (diagonal in a) base
  * with with w and height h with a non-visible line.
  * This is to force our examples parts to a certain size
  */
