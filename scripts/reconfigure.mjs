@@ -151,7 +151,7 @@ export const designs = {
 )
 
 // Step 7: Create use-design hooks for lab & org
-for (const site of ['lab', 'org']) {
+for (const site of ['org']) {
   fs.writeFileSync(
     path.join(repo.path, 'sites', site, 'hooks', 'use-design.mjs'),
     mustache.render(
