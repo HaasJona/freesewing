@@ -19,6 +19,7 @@ function draftBase({
   const hemCirc =
     (measurements.waist * options.length + measurements.underbust * (1 - options.length)) *
     (1 + options.hemEase)
+  const strapAngle = 30
 
   points.hps = new Point(measurements.neck * options.neckWidthFront, 0)
   points.shoulder = utils.beamIntersectsX(
@@ -46,14 +47,72 @@ function draftBase({
   snippets.bustPoint = new Snippet('notch', points.bustPoint)
 
   const armpitWidth = points.armpit.x * 0.2
+  const backWidth = measurements.chest * 0.1
 
-  points.strapFrontLeft = points.hps.shiftFractionTowards(points.shoulder, 1 / 3)
-  points.strapFrontRight = points.hps.shiftFractionTowards(points.shoulder, 2 / 3)
-  points.strapBackLeft = points.hpsBack.shiftFractionTowards(points.shoulder, 1 / 3)
-  points.strapBackRight = points.hpsBack.shiftFractionTowards(points.shoulder, 2 / 3)
+  points.strapFrontLeft = points.hps.shiftFractionTowards(
+    points.shoulder,
+    options.strapPosition - options.strapWidth / 2
+  )
+  points.strapFrontRight = points.hps.shiftFractionTowards(
+    points.shoulder,
+    options.strapPosition + options.strapWidth / 2
+  )
+  points.strapBackLeft = points.hpsBack.shiftFractionTowards(
+    points.shoulder,
+    options.strapPosition - options.strapWidth / 2
+  )
+  points.strapBackRight = points.hpsBack.shiftFractionTowards(
+    points.shoulder,
+    options.strapPosition + options.strapWidth / 2
+  )
+
+  points.strapFrontLeftCp = points.strapFrontLeft.shift(
+    strapAngle - 90 - measurements.shoulderSlope,
+    40
+  )
+  points.strapFrontRightCp = points.strapFrontRight.shift(
+    strapAngle - 90 - measurements.shoulderSlope,
+    40
+  )
+  points.strapBackLeftCp = points.strapBackLeft.shift(
+    strapAngle - 90 + measurements.shoulderSlope,
+    40
+  )
+  points.strapBackRightCp = points.strapBackRight.shift(
+    strapAngle - 90 + measurements.shoulderSlope,
+    40
+  )
+
   points.sfArmpitDart = points.armpit.shift(180, armpitWidth)
   points.armpitBottom = points.armpit.shift(270, armpitWidth)
-  points.sbArmpitDart = points.armpit.shift(-20, armpitWidth * 1.8)
+  points.sbArmpitDart = points.armpit.shift(-15, armpitWidth * 2)
+
+  points.sbHem = points.sfHem.translate(bustCirc * 0.25, 0)
+  points.cbHem = points.sbHem.translate(bustCirc * 0.1, 0)
+  points.cbNeck = new Point(backOffset, measurements.neck * options.neckHeightBack)
+  points.sbDart = points.sbHem.translate(0, -bustToHem * 0.8)
+  points.cbCenter = new Point(
+    points.cbNeck.x,
+    points.strapBackRight.y + (points.sbArmpitDart.y - points.strapBackRight.y) * 0.6
+  )
+  points.backCCenter = points.cbCenter.translate(-backWidth / 2, 0)
+  points.backCCenterCp1 = points.backCCenter.translate(0, -40)
+  points.backCCenterCp2 = points.backCCenter.translate(0, 40)
+
+  points.cfNeckCp = points.cfNeck.translate(80, 0)
+  points.cbNeckCp = points.cbNeck.translate(-40, 0)
+
+  const frontArmpitAngle = points.strapFrontRightCp.angle(points.armpitBottom)
+  const backArmpitAngle = points.backCCenterCp2.angle(points.armpitBottom)
+
+  points.sfArmpitDartCp1 = points.sfArmpitDart.shift(frontArmpitAngle, armpitWidth / 2)
+  points.sfArmpitDartCp2 = points.sfArmpitDart.shift(180 + frontArmpitAngle, armpitWidth / 2)
+
+  points.sbArmpitDartCp1 = points.sbArmpitDart.shift(backArmpitAngle, armpitWidth / 2)
+  points.sbArmpitDartCp2 = points.sbArmpitDart.shift(180 + backArmpitAngle, armpitWidth / 2)
+
+  points.armpitBottomCp1 = points.armpitBottom.translate((armpitWidth * 2) / 3, 0)
+  points.armpitBottomCp2 = points.armpitBottom.translate(-armpitWidth / 3, 0)
 
   paths.cf = new Path()
     .move(points.cfNeck)
@@ -61,32 +120,29 @@ function draftBase({
     .line(points.sfHem)
     .line(points.sfDart)
     .line(points.sfArmpitDart)
-    .line(points.strapFrontRight)
+    .curve(points.sfArmpitDartCp2, points.strapFrontRightCp, points.strapFrontRight)
     .line(points.strapFrontLeft)
+    .curve(points.strapFrontLeftCp, points.cfNeckCp, points.cfNeck)
     .close()
-
-  points.sbHem = points.sfHem.translate(bustCirc * 0.25, 0)
-  points.cbHem = points.sbHem.translate(bustCirc * 0.1, 0)
-  points.cbNeck = new Point(backOffset, measurements.neck * options.neckHeightBack)
-
-  points.sbDart = points.sbHem.translate(0, -bustToHem * 0.6)
 
   paths.cb = new Path()
     .move(points.sbHem)
     .line(points.cbHem)
     .line(points.cbNeck)
-    .line(points.strapBackLeft)
+    .curve(points.cbNeckCp, points.strapBackLeftCp, points.strapBackLeft)
     .line(points.strapBackRight)
-    .line(points.sbArmpitDart)
+    .curve(points.strapBackRightCp, points.backCCenterCp1, points.backCCenter)
+    .curve(points.backCCenterCp2, points.sbArmpitDartCp2, points.sbArmpitDart)
     .line(points.sbDart)
     .close()
+
   paths.side = new Path()
     .move(points.sfHem)
     .line(points.sbHem)
     .line(points.sbDart)
     .line(points.sbArmpitDart)
-    .line(points.armpitBottom)
-    .line(points.sfArmpitDart)
+    .curve(points.sbArmpitDartCp1, points.armpitBottomCp1, points.armpitBottom)
+    .curve(points.armpitBottomCp2, points.sfArmpitDartCp1, points.sfArmpitDart)
     .line(points.sfDart)
     .close()
 
@@ -114,8 +170,10 @@ export const base = {
     neckWidthFront: 0.17,
     neckHeightFront: 0.4,
     neckHeightBack: 0.17,
-    bustEase: { pct: -15, min: -30, max: 0, menu: 'fit' },
+    bustEase: { pct: -20, min: -30, max: 0, menu: 'fit' },
     hemEase: { pct: -15, min: -30, max: 0, menu: 'fit' },
+    strapPosition: { pct: 50, min: 40, max: 60, menu: 'fit' },
+    strapWidth: { pct: 33, min: 20, max: 90, menu: 'fit' },
   },
   draft: draftBase,
 }
