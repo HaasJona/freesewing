@@ -139,7 +139,7 @@ function draftBase({
       let testPath = tester(probe)
       let collision = testPath.intersects(referencePath).length > 0
       if (collision !== lastCollision) {
-        dist /= 2
+        dist *= 1 / 3
       }
       lastCollision = collision
       offset += collision ? -dist : dist
