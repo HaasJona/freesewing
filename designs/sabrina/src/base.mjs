@@ -14,13 +14,14 @@ function draftBase({
   utils,
   part,
 }) {
-  const bustDist = (measurements.bustSpan / 2) * (1 + options.bustEase)
-  const bustCirc = measurements.chest * (1 + options.bustEase)
-  const chestCirc = measurements.highBust * (1 + options.bustEase)
-  const bustFront = measurements.bustFront * (1 + options.bustEase)
+  const bustDist = (measurements.bustSpan / 2) * (1 + options.horizontalEase)
+  const bustCirc = measurements.chest * (1 + options.horizontalEase)
+  const chestCirc = measurements.highBust * (1 + options.horizontalEase)
+  const bustFront = measurements.bustFront * (1 + options.horizontalEase)
   const hemCirc =
     (measurements.waist * options.length + measurements.underbust * (1 - options.length)) *
-    (1 + options.hemEase)
+    (1 + options.extraHemEase) *
+    (1 + options.horizontalEase)
   points.hps = new Point(measurements.neck * options.neckWidthFront, 0)
   points.shoulder = utils.beamIntersectsX(
     points.hps,
@@ -46,10 +47,8 @@ function draftBase({
     .shiftFractionTowards(points.bustPoint, options.frontDartDistance)
   points.armpit = new Point(
     points.sfChest.x,
-    points.cfWaist.y - measurements.waistToArmpit * (1 - options.armpitEase)
+    points.cfWaist.y - measurements.waistToArmpit * (1 - options.armpitAdjustment)
   )
-
-  snippets.bustPoint = new Snippet('notch', points.bustPoint)
 
   const armpitWidth = bustCirc * 0.05
   const backWidth = measurements.chest * options.backWidth
@@ -214,7 +213,7 @@ function draftBase({
     .beamIntersectsX(points.sbHemCp2Dart, points.sbHemDartRight, points.cbHem.x)
     .shiftFractionTowards(points.cbHem, 0.6)
 
-  paths.cf = new Path()
+  paths.front = new Path()
     .move(points.cfNeck)
     .line(points.cfHem)
     ._curve(points.sfHemCp1Dart, points.sfHemDartLeft)
@@ -224,7 +223,7 @@ function draftBase({
     .curve(points.strapFrontLeftCp, points.cfNeckCp, points.cfNeck)
     .close()
 
-  paths.cb = new Path()
+  paths.back = new Path()
     .move(points.sbHemDartRight)
     .curve_(points.sbHemCp2Dart, points.cbHem)
     .line(points.cbNeck)
@@ -268,9 +267,9 @@ export const base = {
     neckWidthFront: 0.17,
     neckHeightFront: 0.35,
     neckHeightBack: 0.17,
-    bustEase: { pct: -19, min: -35, max: 0, menu: 'fit' },
-    hemEase: { pct: -19, min: -35, max: 0, menu: 'fit' },
-    armpitEase: { pct: -1.5, min: -10, max: 10, menu: 'fit' },
+    horizontalEase: { pct: -19, min: -35, max: 0, menu: 'fit' },
+    extraHemEase: { pct: 0, min: -20, max: 0, menu: 'fit' },
+    armpitAdjustment: { pct: -1.5, min: -10, max: 10, menu: 'fit' },
     strapPosition: { pct: 40, min: 20, max: 60, menu: 'fit' },
     strapWidth: { pct: 33, min: 20, max: 50, menu: 'fit' },
     backWidth: { pct: 9, min: 5, max: 20, menu: 'fit' },
