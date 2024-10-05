@@ -12,11 +12,34 @@ function draftSide({
   sa,
   macro,
   utils,
+  store,
   part,
 }) {
   paths.back.hide()
   paths.front.hide()
   paths.side.addClass('fabric')
+
+  points.titleAnchor = points.sfChest.translate(10, 10)
+
+  store.cutlist.setCut({ cut: 4, from: 'fabric' })
+
+  macro('title', {
+    at: points.titleAnchor,
+    nr: 3,
+    title: 'side',
+    scale: 0.5,
+  })
+
+  if (sa) {
+    paths.sa = macro('sa', {
+      paths: ['sideFrontJoin', 'sideHem', 'sideBackJoin', null],
+    })
+  }
+
+  macro('grainline', {
+    from: points.armpitBottom,
+    to: new Point(points.armpitBottom.x, points.cfHem.y),
+  })
 
   return part
 }

@@ -88,7 +88,7 @@ function draftBase({
     40
   )
 
-  points.sfArmpitDart = points.armpit.shift(180, armpitWidth)
+  points.sfArmpit = points.armpit.shift(180, armpitWidth)
   points.armpitBottom = points.armpit.shift(270, armpitWidth)
 
   points.sbHem = points.cfHem.translate(bustCirc * 0.36, 0)
@@ -97,7 +97,7 @@ function draftBase({
   points.cbNeck = new Point(backOffset, measurements.neck * options.neckHeightBack)
   points.sbDart = points.sbHem.translate(0, -bustToHem * 0.8)
 
-  points.sbArmpitDart = utils
+  points.sbArmpit = utils
     .beamsIntersect(
       points.sbBust,
       points.armpit,
@@ -105,13 +105,13 @@ function draftBase({
       points.armpitBottom.shift(10, 10)
     )
     .translate(armpitWidth, 0)
-  if (points.sbArmpitDart.x > points.sbBust.x) {
-    points.sbArmpitDart.x = points.sbBust.x
+  if (points.sbArmpit.x > points.sbBust.x) {
+    points.sbArmpit.x = points.sbBust.x
   }
 
   points.cbCenter = new Point(
     points.cbNeck.x,
-    points.strapBackRight.y + (points.sbArmpitDart.y - points.strapBackRight.y) * 0.6
+    points.strapBackRight.y + (points.sbArmpit.y - points.strapBackRight.y) * 0.6
   )
   points.backCCenter = points.cbCenter.translate(-backWidth / 2, 0)
   points.backCCenterCp1 = points.backCCenter.translate(
@@ -129,11 +129,11 @@ function draftBase({
   const frontArmpitAngle = -60
   const backArmpitAngle = points.backCCenterCp2.angle(points.armpitBottom)
 
-  points.sfArmpitDartCp1 = points.sfArmpitDart.shift(frontArmpitAngle, armpitWidth)
-  points.sfArmpitDartCp2 = points.sfArmpitDart.shift(180 + frontArmpitAngle, armpitWidth)
+  points.sfArmpitCp1 = points.sfArmpit.shift(frontArmpitAngle, armpitWidth)
+  points.sfArmpitCp2 = points.sfArmpit.shift(180 + frontArmpitAngle, armpitWidth)
 
-  points.sbArmpitDartCp1 = points.sbArmpitDart.shift(backArmpitAngle, armpitWidth)
-  points.sbArmpitDartCp2 = points.sbArmpitDart.shift(180 + backArmpitAngle, armpitWidth / 2)
+  points.sbArmpitCp1 = points.sbArmpit.shift(backArmpitAngle, armpitWidth)
+  points.sbArmpitCp2 = points.sbArmpit.shift(180 + backArmpitAngle, armpitWidth / 2)
 
   points.sfHemCp1 = points.sfHem.shiftFractionTowards(points.cfHem, 1 / 3)
   points.sfHemCp2 = points.sfHem.shiftFractionTowards(points.sbHem, 1 / 3)
@@ -180,16 +180,16 @@ function draftBase({
 
   constructDart(points.sfDart, 'sfHem', 'sfHemCp1', 'sfHemCp2', bottomDartWidth)
   constructDart(points.sbDart, 'sbHem', 'sbHemCp1', 'sbHemCp2', bottomDartWidth)
-  constructDart(points.sfDart, 'sfArmpitDart', 'sfArmpitDartCp1', 'sfArmpitDartCp2', bustDartWidth)
-  constructDart(points.sbDart, 'sbArmpitDart', 'sbArmpitDartCp2', 'sbArmpitDartCp1', backDartWidth)
+  constructDart(points.sfDart, 'sfArmpit', 'sfArmpitCp1', 'sfArmpitCp2', bustDartWidth)
+  constructDart(points.sbDart, 'sbArmpit', 'sbArmpitCp2', 'sbArmpitCp1', backDartWidth)
 
   if (bottomDartWidth > 0) {
     points.sfDartSide = adjustDart(
       points.sfDart,
       new Path()
         .move(points.sfHemDartLeft)
-        .curve(points.sfDart, points.sfDart, points.sfArmpitDartDartRight),
-      (p) => new Path().move(points.sfArmpitDartDartLeft).curve(p, p, points.sfHemDartRight),
+        .curve(points.sfDart, points.sfDart, points.sfArmpitDartRight),
+      (p) => new Path().move(points.sfArmpitDartLeft).curve(p, p, points.sfHemDartRight),
       -10
     )
 
@@ -197,14 +197,22 @@ function draftBase({
       points.sbDart,
       new Path()
         .move(points.sbHemDartRight)
-        .curve(points.sbDart, points.sbDart, points.sbArmpitDartDartLeft),
-      (p) => new Path().move(points.sbArmpitDartDartRight).curve(p, p, points.sbHemDartLeft),
+        .curve(points.sbDart, points.sbDart, points.sbArmpitDartLeft),
+      (p) => new Path().move(points.sbArmpitDartRight).curve(p, p, points.sbHemDartLeft),
       10
     )
   } else {
     points.sfDartSide = points.sfDart
     points.sbDartSide = points.sbDart
   }
+
+  points.strapBackLeft = points.strapBackLeft.rotate(-options.backDartAngle, points.backCCenter)
+  points.strapBackLeftCp = points.strapBackLeftCp.rotate(-options.backDartAngle, points.backCCenter)
+  points.strapBackRight = points.strapBackRight.rotate(-options.backDartAngle, points.backCCenter)
+  points.strapBackRightCp = points.strapBackRightCp.rotate(
+    -options.backDartAngle,
+    points.backCCenter
+  )
 
   points.cfHem = utils
     .beamIntersectsX(points.sfHemCp1Dart, points.sfHemDartLeft, 0)
@@ -214,14 +222,25 @@ function draftBase({
     .shiftFractionTowards(points.cbHem, 0.6)
 
   paths.front = new Path()
-    .move(points.cfNeck)
-    .line(points.cfHem)
+    .move(points.cfHem)
     ._curve(points.sfHemCp1Dart, points.sfHemDartLeft)
-    .curve(points.sfDart, points.sfDart, points.sfArmpitDartDartRight)
-    .curve(points.sfArmpitDartCp2Dart, points.strapFrontRightCp, points.strapFrontRight)
+    .curve(points.sfDart, points.sfDart, points.sfArmpitDartRight)
+    .curve(points.sfArmpitCp2Dart, points.strapFrontRightCp, points.strapFrontRight)
     .line(points.strapFrontLeft)
     .curve(points.strapFrontLeftCp, points.cfNeckCp, points.cfNeck)
     .close()
+
+  paths.frontStrap = new Path().move(points.strapFrontRight).line(points.strapFrontLeft).hide()
+
+  paths.frontSideJoin = new Path()
+    .move(points.sfHemDartLeft)
+    .curve(points.sfDart, points.sfDart, points.sfArmpitDartRight)
+    .hide()
+
+  paths.frontHem = new Path()
+    .move(points.cfHem)
+    ._curve(points.sfHemCp1Dart, points.sfHemDartLeft)
+    .hide()
 
   paths.back = new Path()
     .move(points.sbHemDartRight)
@@ -230,17 +249,44 @@ function draftBase({
     .curve(points.cbNeckCp, points.strapBackLeftCp, points.strapBackLeft)
     .line(points.strapBackRight)
     .curve(points.strapBackRightCp, points.backCCenterCp1, points.backCCenter)
-    .curve(points.backCCenterCp2, points.sbArmpitDartCp2Dart, points.sbArmpitDartDartLeft)
+    .curve(points.backCCenterCp2, points.sbArmpitCp2Dart, points.sbArmpitDartLeft)
     .curve(points.sbDart, points.sbDart, points.sbHemDartRight)
     .close()
+
+  paths.backHem = new Path()
+    .move(points.sbHemDartRight)
+    .curve_(points.sbHemCp2Dart, points.cbHem)
+    .hide()
+
+  paths.backStrap = new Path().move(points.strapBackLeft).line(points.strapBackRight).hide()
+
+  paths.backSideJoin = new Path()
+    .move(points.sbArmpitDartLeft)
+    .curve(points.sbDart, points.sbDart, points.sbHemDartRight)
+    .hide()
 
   paths.side = new Path()
     .move(points.sfHemDartRight)
     .curve(points.sfHemCp2Dart, points.sbHemCp1Dart, points.sbHemDartLeft)
-    .curve(points.sbDartSide, points.sbDartSide, points.sbArmpitDartDartRight)
-    .curve(points.sbArmpitDartCp1Dart, points.sfArmpitDartCp1Dart, points.sfArmpitDartDartLeft)
+    .curve(points.sbDartSide, points.sbDartSide, points.sbArmpitDartRight)
+    .curve(points.sbArmpitCp1Dart, points.sfArmpitCp1Dart, points.sfArmpitDartLeft)
     .curve(points.sfDartSide, points.sfDartSide, points.sfHemDartRight)
     .close()
+
+  paths.sideFrontJoin = new Path()
+    .move(points.sfArmpitDartLeft)
+    .curve(points.sfDartSide, points.sfDartSide, points.sfHemDartRight)
+    .hide()
+
+  paths.sideBackJoin = new Path()
+    .move(points.sbHemDartLeft)
+    .curve(points.sbDartSide, points.sbDartSide, points.sbArmpitDartRight)
+    .hide()
+
+  paths.sideHem = new Path()
+    .move(points.sfHemDartRight)
+    .curve(points.sfHemCp2Dart, points.sbHemCp1Dart, points.sbHemDartLeft)
+    .hide()
 
   return part
 }
@@ -263,7 +309,7 @@ export const base = {
     'bustSpan',
   ],
   options: {
-    length: { pct: 30, min: 0, max: 100, menu: 'fit' },
+    length: { pct: 22.5, min: 0, max: 100, menu: 'fit' },
     neckWidthFront: 0.17,
     neckHeightFront: 0.35,
     neckHeightBack: 0.17,
@@ -275,6 +321,7 @@ export const base = {
     backWidth: { pct: 9, min: 5, max: 20, menu: 'fit' },
     strapAngle: { deg: 25, min: 0, max: 45, menu: 'fit' },
     frontDartDistance: { pct: 0, min: -50, max: 100, menu: 'fit' },
+    backDartAngle: { deg: 10, min: 0, max: 30, menu: 'fit' },
   },
   draft: draftBase,
 }
