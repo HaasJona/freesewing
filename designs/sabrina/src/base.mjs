@@ -12,6 +12,7 @@ function draftBase({
   sa,
   macro,
   utils,
+  store,
   part,
 }) {
   const bustDist = (measurements.bustSpan / 2) * (1 + options.horizontalEase)
@@ -287,6 +288,11 @@ function draftBase({
     .move(points.sfHemDartRight)
     .curve(points.sfHemCp2Dart, points.sbHemCp1Dart, points.sbHemDartLeft)
     .hide()
+
+  store.set(
+    'waistband',
+    2 * (paths.frontHem.length() + paths.sideHem.length() + paths.backHem.length())
+  )
 
   return part
 }

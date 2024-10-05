@@ -8,12 +8,13 @@ import { base } from './base.mjs'
 import { front } from './front.mjs'
 import { side } from './side.mjs'
 import { back } from './back.mjs'
+import { waistband } from './waistband.mjs'
 
 // Create new design
 const Sabrina = new Design({
   data,
-  parts: [base, front, side, back],
+  parts: [base, front, side, back, waistband],
 })
 
 // Named exports
-export { base, front, side, back, i18n, Sabrina }
+export { base, front, side, back, waistband, i18n, Sabrina }

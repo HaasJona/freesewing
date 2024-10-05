@@ -19,7 +19,7 @@ function draftSide({
   paths.front.hide()
   paths.side.addClass('fabric')
 
-  points.titleAnchor = points.sfChest.translate(10, 10)
+  points.titleAnchor = points.sfChest.translate(10, 40)
 
   store.cutlist.setCut({ cut: 4, from: 'fabric' })
 

@@ -17,9 +17,18 @@ function draftBack({
 }) {
   paths.front.hide()
   paths.side.hide()
-  paths.back.addClass('fabric')
+  paths.back.hide()
 
-  points.titleAnchor = points.sbHemDartRight.shiftFractionTowards(points.sbArmpitCp2, 0.3)
+  macro('mirror', {
+    clone: true,
+    mirror: [points.cbNeck, points.cbHem],
+    paths: ['back'],
+    points: Object.keys(points),
+  })
+
+  paths.mirroredBack.unhide().addClass('fabric')
+
+  points.titleAnchor = points.cbHem.shiftFractionTowards(points.cbNeck, 0.1).translate(20, 0)
 
   store.cutlist.setCut({ cut: 2, from: 'fabric', onFold: true })
 
@@ -37,8 +46,8 @@ function draftBack({
   }
 
   macro('cutonfold', {
-    from: points.cbHem,
-    to: points.cbNeck,
+    from: points.cbNeck,
+    to: points.cbHem,
     grainline: true,
   })
 
