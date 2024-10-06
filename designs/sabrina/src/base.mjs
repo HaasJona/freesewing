@@ -319,7 +319,7 @@ export const base = {
     neckWidthFront: 0.17,
     neckHeightFront: 0.35,
     neckHeightBack: 0.17,
-    horizontalEase: { pct: -19, min: -35, max: 0, menu: 'fit' },
+    horizontalEase: { pct: -16, min: -35, max: 0, menu: 'fit' },
     extraHemEase: { pct: 0, min: -20, max: 0, menu: 'fit' },
     armpitAdjustment: { pct: -1.5, min: -10, max: 10, menu: 'fit' },
     strapPosition: { pct: 40, min: 20, max: 60, menu: 'fit' },

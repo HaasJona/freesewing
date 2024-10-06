@@ -22,11 +22,15 @@ function draftBack({
   macro('mirror', {
     clone: true,
     mirror: [points.cbNeck, points.cbHem],
-    paths: ['back'],
+    paths: ['back', 'backSideJoin', 'backHem', 'backStrap'],
     points: Object.keys(points),
   })
 
-  paths.mirroredBack.unhide().addClass('fabric')
+  // mirror plugin doesn't reverse paths
+  paths.mirroredBack = paths.mirroredBack.reverse().addClass('fabric')
+  paths.mirroredBackSideJoin = paths.mirroredBackSideJoin.reverse().hide()
+  paths.mirroredBackHem = paths.mirroredBackHem.reverse().hide()
+  paths.mirroredBackStrap = paths.mirroredBackStrap.reverse().hide()
 
   points.titleAnchor = points.cbHem.shiftFractionTowards(points.cbNeck, 0.1).translate(20, 0)
 
@@ -41,7 +45,7 @@ function draftBack({
 
   if (sa) {
     paths.sa = macro('sa', {
-      paths: ['backSideJoin', 'backHem', null, 'backStrap', null],
+      paths: ['mirroredBackHem', 'mirroredBackSideJoin', null, 'mirroredBackStrap', null],
     })
   }
 
