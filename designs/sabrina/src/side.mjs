@@ -23,6 +23,9 @@ function draftSide({
 
   store.cutlist.setCut({ cut: 4, from: 'fabric' })
 
+  snippets.frontJoin = new Snippet('notch', points.frontJoin)
+  snippets.backJoin = new Snippet('bnotch', points.backJoin)
+
   macro('title', {
     at: points.titleAnchor,
     nr: 3,

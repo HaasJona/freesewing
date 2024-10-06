@@ -117,15 +117,15 @@ function draftBase({
   points.backCCenter = points.cbCenter.translate(-backWidth / 2, 0)
   points.backCCenterCp1 = points.backCCenter.translate(
     0,
-    points.strapBackRight.dy(points.backCCenter) * -0.6
+    points.strapBackRight.dy(points.backCCenter) * -options.upperBackShape
   )
   points.backCCenterCp2 = points.backCCenter.translate(
     0,
-    points.strapBackRight.dy(points.backCCenter) * 0.3
+    points.strapBackRight.dy(points.backCCenter) * options.lowerBackShape
   )
 
   points.cfNeckCp = points.cfNeck.translate(80, 0)
-  points.cbNeckCp = points.cbNeck.translate(-40, 0)
+  points.cbNeckCp = points.cbNeck.translate(-20, 0)
 
   const frontArmpitAngle = -60
   const backArmpitAngle = points.backCCenterCp2.angle(points.armpitBottom)
@@ -154,7 +154,7 @@ function draftBase({
     points[nextCpPointName + 'Dart'] = points[nextCpPointName].rotate(dartAngle, dartPoint)
   }
 
-  function adjustDart(dartPoint, referencePath, tester, adjust = 10) {
+  function adjustDart(dartPoint, referencePath, tester, collisionPointName = null, adjust = 10) {
     let dist = adjust
     let offset = 0
     let lastCollision = false
@@ -163,11 +163,15 @@ function draftBase({
 
     for (let step = 0; step < 15; step++) {
       let testPath = tester(probe)
-      let collision = testPath.intersects(referencePath).length > 0
+      const intersections = testPath.intersects(referencePath)
+      let collision = intersections.length > 0
       // paths['refPath' + adjust + "-" + step] = testPath
       // if(collision) paths['refPath' + adjust + "-" + step].addClass('mark')
       if (collision !== lastCollision) {
         dist *= 1 / 3
+      }
+      if (collision && collisionPointName) {
+        points[collisionPointName] = intersections[0]
       }
       lastCollision = collision
       offset += collision ? -dist : dist
@@ -191,6 +195,7 @@ function draftBase({
         .move(points.sfHemDartLeft)
         .curve(points.sfDart, points.sfDart, points.sfArmpitDartRight),
       (p) => new Path().move(points.sfArmpitDartLeft).curve(p, p, points.sfHemDartRight),
+      'frontJoin',
       -10
     )
 
@@ -200,11 +205,14 @@ function draftBase({
         .move(points.sbHemDartRight)
         .curve(points.sbDart, points.sbDart, points.sbArmpitDartLeft),
       (p) => new Path().move(points.sbArmpitDartRight).curve(p, p, points.sbHemDartLeft),
+      'backJoin',
       10
     )
   } else {
     points.sfDartSide = points.sfDart
     points.sbDartSide = points.sbDart
+    points.frontJoin = points.sfHem
+    points.backJoin = points.sbHem
   }
 
   points.strapBackLeft = points.strapBackLeft.rotate(-options.backDartAngle, points.backCCenter)
@@ -323,11 +331,13 @@ export const base = {
     extraHemEase: { pct: 0, min: -20, max: 0, menu: 'fit' },
     armpitAdjustment: { pct: -1.5, min: -10, max: 10, menu: 'fit' },
     strapPosition: { pct: 40, min: 20, max: 60, menu: 'fit' },
-    strapWidth: { pct: 33, min: 20, max: 50, menu: 'fit' },
-    backWidth: { pct: 9, min: 5, max: 20, menu: 'fit' },
+    strapWidth: { pct: 33, min: 15, max: 50, menu: 'fit' },
+    backWidth: { pct: 9, min: 2.5, max: 20, menu: 'fit' },
     strapAngle: { deg: 25, min: 0, max: 45, menu: 'fit' },
     frontDartDistance: { pct: 0, min: -50, max: 100, menu: 'fit' },
     backDartAngle: { deg: 10, min: 0, max: 30, menu: 'fit' },
+    upperBackShape: { pct: 40, min: 20, max: 60, menu: 'fit' },
+    lowerBackShape: { pct: 65, min: 20, max: 80, menu: 'fit' },
   },
   draft: draftBase,
 }

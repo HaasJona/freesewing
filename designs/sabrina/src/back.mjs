@@ -34,6 +34,8 @@ function draftBack({
 
   points.titleAnchor = points.cbHem.shiftFractionTowards(points.cbNeck, 0.1).translate(20, 0)
 
+  snippets.backJoin = new Snippet('bnotch', points.mirroredBackJoin)
+
   store.cutlist.setCut({ cut: 2, from: 'fabric', onFold: true })
 
   macro('title', {

@@ -31,6 +31,7 @@ function draftFront({
   })
 
   snippets.bustPoint = new Snippet('notch', points.bustPoint)
+  snippets.frontJoin = new Snippet('notch', points.frontJoin)
 
   if (sa) {
     paths.sa = macro('sa', {
