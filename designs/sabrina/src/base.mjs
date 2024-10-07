@@ -45,7 +45,7 @@ function draftBase({
   points.sfChest = points.cfBust.translate(bustFront / 2, 0)
   points.sfDart = points.sfHem
     .translate(0, -bustToHem)
-    .shiftFractionTowards(points.bustPoint, options.frontDartDistance)
+    .shiftFractionTowards(points.bustPoint, options.bustPointFocus)
   points.armpit = new Point(
     points.sfChest.x,
     points.cfWaist.y - measurements.waistToArmpit * (1 - options.armpitAdjustment)
@@ -334,7 +334,7 @@ export const base = {
     strapWidth: { pct: 33, min: 15, max: 50, menu: 'fit' },
     backWidth: { pct: 9, min: 2.5, max: 20, menu: 'fit' },
     strapAngle: { deg: 25, min: 0, max: 45, menu: 'fit' },
-    frontDartDistance: { pct: 0, min: -50, max: 100, menu: 'fit' },
+    bustPointFocus: { pct: 0, min: -50, max: 100, menu: 'fit' },
     backDartAngle: { deg: 10, min: 0, max: 30, menu: 'fit' },
     upperBackShape: { pct: 40, min: 20, max: 60, menu: 'fit' },
     lowerBackShape: { pct: 65, min: 20, max: 80, menu: 'fit' },
