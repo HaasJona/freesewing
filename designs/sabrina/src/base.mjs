@@ -337,7 +337,7 @@ export const base = {
     bustPointFocus: { pct: 0, min: -50, max: 100, menu: 'fit' },
     backDartAngle: { deg: 10, min: 0, max: 30, menu: 'fit' },
     upperBackShape: { pct: 40, min: 20, max: 60, menu: 'fit' },
-    lowerBackShape: { pct: 65, min: 20, max: 80, menu: 'fit' },
+    lowerBackShape: { pct: 40, min: 20, max: 80, menu: 'fit' },
   },
   draft: draftBase,
 }
