@@ -287,7 +287,7 @@ function draftBase({ options, measurements, Point, Path, points, paths, utils, s
 }
 
 export const base = {
-  name: 'base',
+  name: 'sabrina.base',
   measurements: [
     'neck',
     'chest',

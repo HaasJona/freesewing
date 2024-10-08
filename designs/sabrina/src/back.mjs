@@ -47,7 +47,7 @@ function draftBack({ points, paths, Snippet, snippets, sa, macro, store, part })
 }
 
 export const back = {
-  name: 'back',
+  name: 'sabrina.back',
   from: base,
   hide: { from: true },
   draft: draftBack,

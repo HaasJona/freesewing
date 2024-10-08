@@ -1,5 +1,6 @@
 import { pctBasedOn } from '@freesewing/core'
 import { base } from './base.mjs'
+import { capitalize } from '@freesewing/core'
 
 function draftWaistband({
   options,
@@ -25,11 +26,11 @@ function draftWaistband({
     // Expand is off, do not draw the part but flag this to the user
     const extraSa = sa ? 2 * sa : 0
     store.flag.note({
-      msg: '', // `sabrina:cut${capitalize(part.name.split('.')[1])}`,
+      msg: `sabrina:cut${capitalize(part.name.split('.')[1])}`,
       notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
       replace: {
-        w: units(2 * waist + extraSa),
-        l: units(height + extraSa),
+        w: units(waist + extraSa),
+        l: units(2 * height + extraSa),
       },
       suggest: {
         text: 'flag:show',
@@ -102,7 +103,7 @@ function draftWaistband({
 }
 
 export const waistband = {
-  name: 'waistband',
+  name: 'sabrina.waistband',
   measurements: ['chest'],
   after: base,
   options: {

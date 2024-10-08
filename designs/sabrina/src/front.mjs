@@ -35,7 +35,7 @@ function draftFront({ points, paths, Snippet, snippets, sa, macro, store, part }
 }
 
 export const front = {
-  name: 'front',
+  name: 'sabrina.front',
   from: base,
   hide: { from: true },
   draft: draftFront,

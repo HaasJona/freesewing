@@ -1,8 +1,17 @@
 {
   "t": "Sabrina",
   "d": "A FreeSewing pattern that needs a description",
-  "p": { },
-  "s": { },
+  "p": {
+    "base":"Base",
+    "front":"Front",
+    "side":"Side",
+    "back":"Back",
+    "waistband":"Waistband"
+  },
+  "s": {
+    "cutWaistband.t": "The waistband is not shown",
+    "cutWaistband.d": "The **waistband** is a rectangle {{{ w }}} wide and {{{ l }}} long."
+  },
   "o": {
   "length": {
     "t": "Length",

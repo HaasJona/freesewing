@@ -34,7 +34,7 @@ function draftSide({ Point, points, paths, Snippet, snippets, sa, macro, store, 
 }
 
 export const side = {
-  name: 'side',
+  name: 'sabrina.side',
   from: base,
   hide: { from: true },
   draft: draftSide,
