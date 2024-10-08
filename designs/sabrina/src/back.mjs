@@ -7,7 +7,10 @@ function draftBack({ points, paths, Snippet, snippets, sa, macro, store, part })
 
   macro('mirror', {
     clone: true,
-    mirror: [points.cbNeck, points.cbHem],
+    mirror: [
+      points.cbNeck.shiftFractionTowards(points.cfNeck, 0.5),
+      points.cbHem.shiftFractionTowards(points.cfHem, 0.5),
+    ],
     paths: ['back', 'backSideJoin', 'backHem', 'backStrap'],
     points: Object.keys(points),
   })
@@ -18,7 +21,9 @@ function draftBack({ points, paths, Snippet, snippets, sa, macro, store, part })
   paths.mirroredBackHem = paths.mirroredBackHem.reverse().hide()
   paths.mirroredBackStrap = paths.mirroredBackStrap.reverse().hide()
 
-  points.titleAnchor = points.cbHem.shiftFractionTowards(points.cbNeck, 0.1).translate(20, 0)
+  points.titleAnchor = points.mirroredCbHem
+    .shiftFractionTowards(points.mirroredCbNeck, 0.1)
+    .translate(20, 0)
 
   snippets.backJoin = new Snippet('bnotch', points.mirroredBackJoin)
 
@@ -38,8 +43,8 @@ function draftBack({ points, paths, Snippet, snippets, sa, macro, store, part })
   }
 
   macro('cutonfold', {
-    from: points.cbNeck,
-    to: points.cbHem,
+    from: points.mirroredCbNeck,
+    to: points.mirroredCbHem,
     grainline: true,
   })
 

@@ -1,8 +1,9 @@
 function draftBase({ options, measurements, Point, Path, points, paths, utils, store, part }) {
   const bustDist = (measurements.bustSpan / 2) * (1 + options.horizontalEase)
-  const bustCirc = measurements.chest * (1 + options.horizontalEase)
-  const chestCirc = measurements.highBust * (1 + options.horizontalEase)
-  const bustFront = measurements.bustFront * (1 + options.horizontalEase)
+  const ribcageFront = measurements.highBustFront * (1 + options.horizontalEase)
+  const chestFront = measurements.bustFront * (1 + options.horizontalEase)
+  const chestCirc = measurements.chest * (1 + options.horizontalEase)
+  const chestBack = chestCirc - chestFront
   const hemCirc =
     (measurements.waist * options.length + measurements.underbust * (1 - options.length)) *
     (1 + options.extraHemEase) *
@@ -13,7 +14,7 @@ function draftBase({ options, measurements, Point, Path, points, paths, utils, s
     points.hps.shift(measurements.shoulderSlope * -1, 100),
     measurements.shoulderToShoulder / 2
   )
-  const backOffset = bustCirc / 2
+  const backOffset = chestCirc / 2
   points.hpsBack = new Point(backOffset - points.hps.x, 0)
   points.shoulderBack = new Point(backOffset - points.shoulder.x, points.shoulder.y)
 
@@ -25,18 +26,18 @@ function draftBase({ options, measurements, Point, Path, points, paths, utils, s
   points.cfHem = points.cfUnderbust.shiftFractionTowards(points.cfWaist, options.length)
   const bustToHem = points.cfBust.dy(points.cfHem)
 
-  points.sfHem = points.cfHem.translate(bustCirc * 0.15, 0)
-  points.sfChest = points.cfBust.translate(bustFront / 2, 0)
+  points.sfHem = points.cfHem.translate(chestFront * 0.3, 0)
+  points.sfChest = points.cfBust.translate(chestFront / 2, 0)
   points.sfDart = points.sfHem
     .translate(0, -bustToHem)
     .shiftFractionTowards(points.bustPoint, options.bustPointFocus)
   points.armpit = new Point(
-    points.sfChest.x,
+    chestFront * 0.5,
     points.cfWaist.y - measurements.waistToArmpit * (1 - options.armpitAdjustment)
   )
 
-  const armpitWidth = bustCirc * 0.05
-  const backWidth = measurements.chest * options.backWidth
+  const armpitWidth = chestBack * 0.1
+  const backWidth = chestBack * options.backWidth
 
   const strapPositionAdj = options.strapPosition * (1 - options.strapWidth) + options.strapWidth / 2
   points.strapFrontLeft = points.hps.shiftFractionTowards(
@@ -76,9 +77,9 @@ function draftBase({ options, measurements, Point, Path, points, paths, utils, s
   points.sfArmpit = points.armpit.shift(180, armpitWidth)
   points.armpitBottom = points.armpit.shift(270, armpitWidth)
 
-  points.sbHem = points.cfHem.translate(bustCirc * 0.36, 0)
-  points.sbBust = points.cfBust.translate(bustCirc * 0.36, 0)
-  points.cbHem = points.cfHem.translate(bustCirc * 0.5, 0)
+  points.sbHem = points.cfHem.translate(chestCirc * 0.5 - chestBack * 0.28, 0)
+  points.sbBust = points.cfBust.translate(chestCirc * 0.5 - chestBack * 0.28, 0)
+  points.cbHem = points.cfHem.translate(chestCirc * 0.5, 0)
   points.cbNeck = new Point(backOffset, measurements.neck * options.neckHeightBack)
   points.sbDart = points.sbHem.translate(0, -bustToHem * 0.8)
 
@@ -125,9 +126,9 @@ function draftBase({ options, measurements, Point, Path, points, paths, utils, s
   points.sbHemCp1 = points.sbHem.shiftFractionTowards(points.sfHem, 1 / 3)
   points.sbHemCp2 = points.sbHem.shiftFractionTowards(points.cbHem, 1 / 3)
 
-  let bottomDartWidth = Math.max(0, (bustCirc - hemCirc) / 4)
-  let bustDartWidth = Math.max(0, (bustCirc - chestCirc) / 2) + bustCirc * 0.01
-  let backDartWidth = bustCirc * 0.01
+  let bottomDartWidth = Math.max(0, (chestCirc - hemCirc) / 4)
+  let bustDartWidth = Math.max(0, (chestFront - ribcageFront) / 2) + chestCirc * 0.01
+  let backDartWidth = chestCirc * 0.01
 
   function constructDart(dartPoint, centerPointName, prevCpPointName, nextCpPointName, dartWidth) {
     const centerPoint = points[centerPointName]
@@ -292,7 +293,7 @@ export const base = {
     'neck',
     'chest',
     'bustFront',
-    'highBust',
+    'highBustFront',
     'underbust',
     'waist',
     'hpsToBust',
@@ -314,7 +315,7 @@ export const base = {
     strapPosition: { pct: 40, min: 20, max: 60, menu: 'fit' },
     strapAngle: { deg: 25, min: 0, max: 45, menu: 'fit' },
     strapWidth: { pct: 33, min: 15, max: 50, menu: 'style' },
-    backWidth: { pct: 9, min: 2.5, max: 20, menu: 'style' },
+    backWidth: { pct: 18, min: 5, max: 40, menu: 'style' },
     bustPointFocus: { pct: 0, min: -50, max: 100, menu: 'fit' },
     backDartAngle: { deg: 10, min: 0, max: 30, menu: 'advanced' },
     upperBackShape: { pct: 40, min: 20, max: 60, menu: 'advanced' },
