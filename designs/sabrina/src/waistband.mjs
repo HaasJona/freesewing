@@ -1,5 +1,5 @@
-import { capitalize, pctBasedOn } from '@freesewing/core'
-import { base } from './base'
+import { pctBasedOn } from '@freesewing/core'
+import { base } from './base.mjs'
 
 function draftWaistband({
   options,
