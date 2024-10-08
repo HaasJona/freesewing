@@ -1,20 +1,6 @@
 import { base } from './base.mjs'
 
-function draftBack({
-  options,
-  measurements,
-  Point,
-  Path,
-  points,
-  paths,
-  Snippet,
-  snippets,
-  sa,
-  macro,
-  utils,
-  store,
-  part,
-}) {
+function draftBack({ points, paths, Snippet, snippets, sa, macro, store, part }) {
   paths.front.hide()
   paths.side.hide()
   paths.back.hide()

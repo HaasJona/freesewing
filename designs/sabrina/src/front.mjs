@@ -1,20 +1,6 @@
 import { base } from './base.mjs'
 
-function draftFront({
-  options,
-  measurements,
-  Point,
-  Path,
-  points,
-  paths,
-  Snippet,
-  snippets,
-  sa,
-  macro,
-  utils,
-  store,
-  part,
-}) {
+function draftFront({ points, paths, Snippet, snippets, sa, macro, store, part }) {
   paths.back.hide()
   paths.side.hide()
   paths.front.addClass('fabric')

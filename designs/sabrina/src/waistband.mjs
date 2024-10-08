@@ -3,16 +3,12 @@ import { base } from './base.mjs'
 
 function draftWaistband({
   options,
-  measurements,
   Point,
   Path,
   points,
   paths,
-  Snippet,
-  snippets,
   sa,
   macro,
-  utils,
   units,
   expand,
   complete,

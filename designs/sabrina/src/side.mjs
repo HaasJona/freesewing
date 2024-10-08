@@ -1,20 +1,6 @@
 import { base } from './base.mjs'
 
-function draftSide({
-  options,
-  measurements,
-  Point,
-  Path,
-  points,
-  paths,
-  Snippet,
-  snippets,
-  sa,
-  macro,
-  utils,
-  store,
-  part,
-}) {
+function draftSide({ Point, points, paths, Snippet, snippets, sa, macro, store, part }) {
   paths.back.hide()
   paths.front.hide()
   paths.side.addClass('fabric')

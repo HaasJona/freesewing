@@ -1,20 +1,4 @@
-import { bool } from 'prop-types'
-
-function draftBase({
-  options,
-  measurements,
-  Point,
-  Path,
-  points,
-  paths,
-  Snippet,
-  snippets,
-  sa,
-  macro,
-  utils,
-  store,
-  part,
-}) {
+function draftBase({ options, measurements, Point, Path, points, paths, utils, store, part }) {
   const bustDist = (measurements.bustSpan / 2) * (1 + options.horizontalEase)
   const bustCirc = measurements.chest * (1 + options.horizontalEase)
   const chestCirc = measurements.highBust * (1 + options.horizontalEase)
