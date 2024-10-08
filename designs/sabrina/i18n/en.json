@@ -3,5 +3,74 @@
   "d": "A FreeSewing pattern that needs a description",
   "p": { },
   "s": { },
-  "o": { }
+  "o": {
+  "length": {
+    "t": "Length",
+    "d": "The length of the garment"
+  },
+  "neckHeightFront": {
+    "t": "Neck depth front",
+    "d": "The depth of the neck hole at the front"
+  },
+   "neckHeightBack": {
+    "t": "Neck depth back",
+    "d": "The depth of the neck hole at the back"
+  },
+   "horizontalEase": {
+    "t": "Horizontal ease",
+    "d": "The (negative) ease around the ribcage"
+  },
+   "extraHemEase": {
+    "t": "Extra hem ease",
+    "d": "Extra compression around the hem"
+  },
+   "armpitAdjustment": {
+    "t": "Armpit adjustment",
+    "d": "Move the armpit up or down"
+  },
+   "strapPosition": {
+    "t": "Strap position",
+    "d": "Move the straps towards your shoulders or neck"
+  },
+   "strapAngle": {
+    "t": "Strap angle",
+    "d": "The angle of the straps on your shoulder line"
+  },
+   "strapWidth": {
+    "t": "Strap width",
+    "d": "The width of the shoulder straps"
+  },
+   "backWidth": {
+    "t": "Back width",
+    "d": "The width of narrow part on the back"
+  },
+   "bustPointFocus": {
+    "t": "Bust point focus",
+    "d": "How much the virtual bust darts aim at the bust point"
+  },
+   "backDartAngle": {
+    "t": "Back dart angle",
+    "d": "The angle of the virtual back dart"
+  },
+   "upperBackShape": {
+    "t": "Upper back shape",
+    "d": "The upper curve of the C shape on the back"
+  },
+   "lowerBackShape": {
+    "t": "Lower back shape",
+    "d": "The lower curve of the C shape on the back"
+  },
+   "strapCurveFront": {
+    "t": "Strap curve front",
+    "d": "How straight the shoulder straps are on the front"
+  },
+   "strapCurveBack": {
+    "t": "Strap curve back",
+    "d": "How straight the shoulder straps are on the back"
+  },
+   "elasticWidth": {
+    "t": "Elastic width",
+    "d": "The width of the elastic band you use for the underbust band"
+  }
+  }
 }

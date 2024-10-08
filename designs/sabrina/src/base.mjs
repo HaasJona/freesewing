@@ -58,19 +58,19 @@ function draftBase({ options, measurements, Point, Path, points, paths, utils, s
 
   points.strapFrontLeftCp = points.strapFrontLeft.shift(
     options.strapAngle - 90 - measurements.shoulderSlope,
-    40
+    measurements.chest * options.strapCurveFront
   )
   points.strapFrontRightCp = points.strapFrontRight.shift(
     options.strapAngle - 90 - measurements.shoulderSlope,
-    40
+    measurements.chest * options.strapCurveFront
   )
   points.strapBackLeftCp = points.strapBackLeft.shift(
     options.strapAngle - 90 + measurements.shoulderSlope,
-    40
+    measurements.chest * options.strapCurveBack
   )
   points.strapBackRightCp = points.strapBackRight.shift(
     options.strapAngle - 90 + measurements.shoulderSlope,
-    40
+    measurements.chest * options.strapCurveBack
   )
 
   points.sfArmpit = points.armpit.shift(180, armpitWidth)
@@ -199,13 +199,10 @@ function draftBase({ options, measurements, Point, Path, points, paths, utils, s
     points.backJoin = points.sbHem
   }
 
-  points.strapBackLeft = points.strapBackLeft.rotate(-options.backDartAngle, points.backCCenter)
-  points.strapBackLeftCp = points.strapBackLeftCp.rotate(-options.backDartAngle, points.backCCenter)
-  points.strapBackRight = points.strapBackRight.rotate(-options.backDartAngle, points.backCCenter)
-  points.strapBackRightCp = points.strapBackRightCp.rotate(
-    -options.backDartAngle,
-    points.backCCenter
-  )
+  points.strapBackLeft = points.strapBackLeft.rotate(-options.backDartAngle, points.cbCenter)
+  points.strapBackLeftCp = points.strapBackLeftCp.rotate(-options.backDartAngle, points.cbCenter)
+  points.strapBackRight = points.strapBackRight.rotate(-options.backDartAngle, points.cbCenter)
+  points.strapBackRightCp = points.strapBackRightCp.rotate(-options.backDartAngle, points.cbCenter)
 
   points.cfHem = utils
     .beamIntersectsX(points.sfHemCp1Dart, points.sfHemDartLeft, 0)
@@ -309,19 +306,21 @@ export const base = {
   options: {
     length: { pct: 22.5, min: 0, max: 100, menu: 'fit' },
     neckWidthFront: 0.17,
-    neckHeightFront: 0.35,
-    neckHeightBack: 0.17,
+    neckHeightFront: { pct: 35, min: 25, max: 50, menu: 'style' },
+    neckHeightBack: { pct: 17, min: 10, max: 25, menu: 'style' },
     horizontalEase: { pct: -16, min: -35, max: 0, menu: 'fit' },
     extraHemEase: { pct: 0, min: -20, max: 0, menu: 'fit' },
     armpitAdjustment: { pct: -1.5, min: -10, max: 10, menu: 'fit' },
     strapPosition: { pct: 40, min: 20, max: 60, menu: 'fit' },
-    strapWidth: { pct: 33, min: 15, max: 50, menu: 'fit' },
-    backWidth: { pct: 9, min: 2.5, max: 20, menu: 'fit' },
     strapAngle: { deg: 25, min: 0, max: 45, menu: 'fit' },
+    strapWidth: { pct: 33, min: 15, max: 50, menu: 'style' },
+    backWidth: { pct: 9, min: 2.5, max: 20, menu: 'style' },
     bustPointFocus: { pct: 0, min: -50, max: 100, menu: 'fit' },
-    backDartAngle: { deg: 10, min: 0, max: 30, menu: 'fit' },
-    upperBackShape: { pct: 40, min: 20, max: 60, menu: 'fit' },
-    lowerBackShape: { pct: 40, min: 20, max: 80, menu: 'fit' },
+    backDartAngle: { deg: 10, min: 0, max: 30, menu: 'advanced' },
+    upperBackShape: { pct: 40, min: 20, max: 60, menu: 'advanced' },
+    lowerBackShape: { pct: 40, min: 20, max: 80, menu: 'advanced' },
+    strapCurveFront: { pct: 5, min: 2, max: 10, menu: 'advanced' },
+    strapCurveBack: { pct: 3, min: 1, max: 4, menu: 'advanced' },
   },
   draft: draftBase,
 }

@@ -114,9 +114,7 @@ export const waistband = {
         metric: 1,
         imperial: 1.27,
       },
-      menu: 'fit',
-      // Pass the measurement name as parameter
-      // and spread the return value into your option
+      menu: 'construction',
       ...pctBasedOn('chest'),
     },
     waistbandEase: 0.05,
