@@ -10,7 +10,7 @@
   },
   "s": {
     "cutWaistband.t": "The waistband is not shown",
-    "cutWaistband.d": "The **waistband** is a rectangle {{{ w }}} wide and {{{ l }}} long."
+    "cutWaistband.d": "The **waistband** is a rectangular piece of main fabric {{{ w }}} wide and {{{ l }}} long."
   },
   "o": {
   "length": {
