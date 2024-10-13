@@ -3,29 +3,27 @@ import { base } from './base.mjs'
 function draftBack({ points, paths, Snippet, snippets, sa, macro, store, part }) {
   paths.front.hide()
   paths.side.hide()
-  paths.back.hide()
+  paths.back.addClass('fabric')
 
-  macro('mirror', {
-    clone: true,
-    mirror: [
-      points.cbNeck.shiftFractionTowards(points.cfNeck, 0.5),
-      points.cbHem.shiftFractionTowards(points.cfHem, 0.5),
-    ],
-    paths: ['back', 'backSideJoin', 'backHem', 'backStrap'],
-    points: Object.keys(points),
-  })
+  // macro('mirror', {
+  //   clone: true,
+  //   mirror: [
+  //     points.cbNeck.shiftFractionTowards(points.cfNeck, 0.5),
+  //     points.cbHem.shiftFractionTowards(points.cfHem, 0.5),
+  //   ],
+  //   paths: ['back', 'backSideJoin', 'backHem', 'backStrap'],
+  //   points: Object.keys(points),
+  // })
+  //
+  // // mirror plugin doesn't reverse paths
+  // paths.mirroredBack = paths.mirroredBack.reverse().addClass('fabric')
+  // paths.mirroredBackSideJoin = paths.mirroredBackSideJoin.reverse().hide()
+  // paths.mirroredBackHem = paths.mirroredBackHem.reverse().hide()
+  // paths.mirroredBackStrap = paths.mirroredBackStrap.reverse().hide()
 
-  // mirror plugin doesn't reverse paths
-  paths.mirroredBack = paths.mirroredBack.reverse().addClass('fabric')
-  paths.mirroredBackSideJoin = paths.mirroredBackSideJoin.reverse().hide()
-  paths.mirroredBackHem = paths.mirroredBackHem.reverse().hide()
-  paths.mirroredBackStrap = paths.mirroredBackStrap.reverse().hide()
+  points.titleAnchor = points.cbHem.shiftFractionTowards(points.cbNeck, 0.1).translate(-80, 0)
 
-  points.titleAnchor = points.mirroredCbHem
-    .shiftFractionTowards(points.mirroredCbNeck, 0.1)
-    .translate(20, 0)
-
-  snippets.backJoin = new Snippet('bnotch', points.mirroredBackJoin)
+  snippets.backJoin = new Snippet('bnotch', points.backJoin)
 
   store.cutlist.setCut({ cut: 2, from: 'fabric', onFold: true })
 
@@ -38,13 +36,13 @@ function draftBack({ points, paths, Snippet, snippets, sa, macro, store, part })
 
   if (sa) {
     paths.sa = macro('sa', {
-      paths: ['mirroredBackHem', 'mirroredBackSideJoin', null, 'mirroredBackStrap', null],
+      paths: ['backSideJoin', 'backHem', null, 'backStrap', null],
     })
   }
 
   macro('cutonfold', {
-    from: points.mirroredCbNeck,
-    to: points.mirroredCbHem,
+    from: points.cbHem,
+    to: points.cbNeck,
     grainline: true,
   })
 

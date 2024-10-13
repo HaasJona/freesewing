@@ -17,7 +17,7 @@ function draftWaistband({
   store,
   part,
 }) {
-  const waist = store.get('waistband')
+  const halfWaist = store.get('waistband') / 2
   const height = absoluteOptions.elasticWidth * (1 + options.waistbandEase)
 
   if (expand) {
@@ -29,7 +29,7 @@ function draftWaistband({
       msg: `sabrina:cut${capitalize(part.name.split('.')[1])}`,
       notes: [sa ? 'flag:saIncluded' : 'flag:saExcluded', 'flag:partHiddenByExpand'],
       replace: {
-        w: units(waist + extraSa),
+        w: units(2 * halfWaist + extraSa),
         l: units(2 * height + extraSa),
       },
       suggest: {
@@ -49,9 +49,9 @@ function draftWaistband({
   points.topLeft = new Point(0, 0)
   points.topRight = new Point(height * 2, 0)
   points.topFold = new Point(height, 0)
-  points.bottomLeft = new Point(0, waist)
-  points.bottomRight = new Point(points.topRight.x, waist)
-  points.bottomFold = new Point(points.topFold.x, waist)
+  points.bottomLeft = new Point(0, halfWaist)
+  points.bottomRight = new Point(points.topRight.x, halfWaist)
+  points.bottomFold = new Point(points.topFold.x, halfWaist)
 
   paths.seam = new Path()
     .move(points.bottomRight)
@@ -66,7 +66,14 @@ function draftWaistband({
 
   if (sa) {
     paths.sa = macro('sa', {
-      paths: ['seam'],
+      paths: [
+        new Path()
+          .move(points.topLeft)
+          .line(points.bottomLeft)
+          .line(points.bottomRight)
+          .line(points.topRight),
+        null,
+      ],
     })
   }
   /*
@@ -89,7 +96,7 @@ function draftWaistband({
     y: points.topRight.y - sa - 15,
   })
 
-  store.cutlist.setCut({ cut: 1, from: 'fabric' })
+  store.cutlist.setCut({ cut: 1, from: 'fabric', onFold: true })
 
   macro('title', {
     at: points.title,
@@ -97,6 +104,13 @@ function draftWaistband({
     scale: height / 45,
     rotation: 90,
     title: 'waistband',
+  })
+
+  macro('cutonfold', {
+    from: points.topRight,
+    to: points.topLeft,
+    grainline: true,
+    scale: 0.5,
   })
 
   return part
