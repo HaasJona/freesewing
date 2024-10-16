@@ -30,6 +30,23 @@ function draftSide({ Point, points, paths, Snippet, snippets, sa, macro, store, 
     to: new Point(points.armpitBottom.x, points.cfHem.y),
   })
 
+  macro('pd', {
+    id: 'sideHem',
+    path: paths.sideHem,
+    d: sa + 15,
+  })
+
+  macro('pd', {
+    id: 'sideFrontJoin',
+    path: paths.sideFrontJoin,
+    d: sa + 15,
+  })
+  macro('pd', {
+    id: 'sideBackJoin',
+    path: paths.sideBackJoin,
+    d: sa + 15,
+  })
+
   return part
 }
 

@@ -31,6 +31,52 @@ function draftFront({ points, paths, Snippet, snippets, sa, macro, store, part }
     grainline: true,
   })
 
+  macro('pd', {
+    id: 'frontHem',
+    path: paths.frontHem,
+    d: sa + 15,
+  })
+
+  macro('pd', {
+    id: 'frontSideJoin',
+    path: paths.frontSideJoin,
+    d: sa + 15,
+  })
+
+  macro('pd', {
+    id: 'frontStrap',
+    path: paths.frontStrap.reverse(),
+    d: -sa - 15,
+  })
+
+  macro('vd', {
+    id: 'frontFold',
+    from: points.cfNeck,
+    to: points.cfHem,
+    x: -15,
+  })
+
+  macro('vd', {
+    id: 'frontNeck',
+    from: points.strapFrontLeft,
+    to: points.cfNeck,
+    x: -15,
+  })
+
+  macro('vd', {
+    id: 'frontSide',
+    from: points.strapFrontRight,
+    to: points.sfArmpitDartRight,
+    x: Math.max(points.strapFrontRight.x, points.sfArmpitDartRight.x) + 15,
+  })
+
+  macro('hd', {
+    id: 'frontNeck',
+    from: points.cfNeck,
+    to: points.strapFrontLeft,
+    y: points.strapFrontLeft.y - 15,
+  })
+
   return part
 }
 

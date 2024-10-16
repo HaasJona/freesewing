@@ -46,6 +46,52 @@ function draftBack({ points, paths, Snippet, snippets, sa, macro, store, part })
     grainline: true,
   })
 
+  macro('pd', {
+    id: 'backHem',
+    path: paths.backHem,
+    d: sa + 15,
+  })
+
+  macro('pd', {
+    id: 'backSideJoin',
+    path: paths.backSideJoin,
+    d: sa + 15,
+  })
+
+  macro('pd', {
+    id: 'backStrap',
+    path: paths.backStrap.reverse(),
+    d: -sa - 15,
+  })
+
+  macro('vd', {
+    id: 'backFold',
+    from: points.cbNeck,
+    to: points.cbHem,
+    x: points.cbHem.x + 15,
+  })
+
+  macro('vd', {
+    id: 'backNeck',
+    from: points.strapBackLeft,
+    to: points.cbNeck,
+    x: points.cbHem.x + 15,
+  })
+
+  macro('vd', {
+    id: 'backSide',
+    from: points.strapBackRight,
+    to: points.sbArmpitDartRight,
+    x: Math.min(points.strapBackRight.x, points.sbArmpitDartRight.x) - 15,
+  })
+
+  macro('hd', {
+    id: 'backNeck',
+    from: points.strapBackLeft,
+    to: points.cbNeck,
+    y: points.strapBackLeft.y - 15,
+  })
+
   return part
 }
 
