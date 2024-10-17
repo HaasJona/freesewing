@@ -26,13 +26,9 @@ function draftPaulFlyFacing({ points, Point, paths, Path, macro, snippets, store
     .addClass('fabric')
 
   if (sa)
-    paths.sa = paths.saBase
-      .offset(sa)
-      .line(points.flyTop)
-      .reverse()
-      .line(points.flyBottom)
-      .unhide()
-      .addClass('sa fabric')
+    paths.sa = macro('sa', {
+      paths: ['saBase', null],
+    })
 
   /*
    * Annotations

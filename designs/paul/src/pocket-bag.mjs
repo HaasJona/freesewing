@@ -85,7 +85,10 @@ function draftPaulPocketBag({
     .addClass('lining')
 
   if (sa) {
-    paths.sa = paths.pocketBagCurve.offset(sa).addClass('lining sa')
+    paths.sa = macro('sa', {
+      paths: ['pocketBagCurve'],
+      class: 'lining sa',
+    })
   }
 
   if (complete) {

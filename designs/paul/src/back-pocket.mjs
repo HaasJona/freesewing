@@ -71,7 +71,7 @@ function draftPaulBackPocket({
       mirror: [points.mirroredIntersect3, points.mirroredIntersect4],
     })
 
-    paths.sa = new Path()
+    const saBase = new Path()
       .move(points.pocketTopIn)
       .line(points.pocketBottomIn)
       .line(points.pocketBottomCenter)
@@ -82,9 +82,9 @@ function draftPaulBackPocket({
       .move(points.mirroredPocketTopIn)
       .line(points.mirroredIntersect3)
       .line(points.pocketTopIn)
-      .offset(sa)
-      .close()
-      .setClass('fabric sa')
+    paths.sa = macro('sa', {
+      paths: [saBase],
+    })
 
     if (complete)
       paths.fold = new Path()

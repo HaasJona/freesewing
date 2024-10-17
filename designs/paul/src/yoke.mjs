@@ -87,7 +87,7 @@ function draftPaulYoke({
     .setClass('fabric')
 
   if (sa) {
-    paths.sa = paths.yoke.offset(sa).setClass('fabric sa')
+    paths.sa = macro('sa', { paths: ['yoke'] })
   }
 
   points.titleAnchor = points.styleWaistIn

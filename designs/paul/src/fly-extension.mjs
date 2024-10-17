@@ -25,12 +25,9 @@ function draftPaulFlyExtension({ points, paths, Path, Snippet, macro, store, sa,
   paths.seam = paths.saBase.clone().line(points.flyCorner).close().unhide().attr('class', 'fabric')
 
   if (sa)
-    paths.sa = paths.saBase
-      .offset(sa)
-      .line(points.flyTop)
-      .reverse()
-      .line(points.flyCorner)
-      .addClass('fabric sa')
+    paths.sa = macro('sa', {
+      paths: ['saBase', null],
+    })
 
   /*
    * Annotations

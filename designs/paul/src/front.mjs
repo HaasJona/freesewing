@@ -181,22 +181,20 @@ function draftPaulFront({
   paths.seam = drawPath(options.frontPockets).close().attr('class', 'fabric')
 
   if (sa) {
-    paths.sa = drawPath(options.frontPockets)
-      .offset(sa)
-      .join(
-        new Path()
-          .move(points.floorOut)
-          .line(points.floorIn)
-          .offset(sa * 6)
-      )
-      .close()
-      .trim()
-      .addClass('fabric sa')
+    paths.sa = macro('sa', {
+      paths: [
+        drawPath(options.frontPockets),
+        { p: new Path().move(points.floorOut).line(points.floorIn), offset: sa * 6 },
+      ],
+    })
 
-    let FlyRightLegExtensionSa = paths.flyRightLegExtension.offset(sa)
-    paths.flyRightLegExtensionSa = FlyRightLegExtensionSa.split(
-      FlyRightLegExtensionSa.intersects(paths.sa)[0]
-    )[1].setClass('sa')
+    let FlyRightLegExtensionSa = macro('sa', {
+      paths: ['flyRightLegExtension', null],
+    })
+    const ints = FlyRightLegExtensionSa.intersects(paths.sa)
+    paths.flyRightLegExtensionSa = FlyRightLegExtensionSa.split(ints[0])[1]
+      .split(ints[1])[0]
+      .setClass('sa')
   }
 
   // Store waistband length
