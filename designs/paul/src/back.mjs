@@ -412,7 +412,7 @@ export const back = {
   after: front,
   hide: hidePresets.HIDE_TREE,
   options: {
-    backPockets: { bool: false, menu: 'construction' },
+    backPockets: { bool: true, menu: 'construction' },
     yokeHorizontalCenter: { pct: 55, min: 48, max: 62, menu: 'style.yoke' },
     yokeAngle: { deg: 8.66, min: 0, max: 15, menu: 'style.yoke' },
     yokeHeight: { pct: 25, min: 15, max: 75, menu: 'style.yoke' },
