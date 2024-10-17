@@ -24,7 +24,7 @@ const constraintCheck = [
       { m: 'chest', coefficient: 1 },
       { m: 'bustFront', coefficient: -1 },
     ],
-    tolerance: 0.025,
+    tolerance: 0.05,
     key: 'backChest',
   },
   {
@@ -119,9 +119,15 @@ function checkConstraint(t, constraint, warnings, measies, imperial) {
     return
   }
   const difference = Math.abs(((lhsSum - rhsSum) / (lhsSum + rhsSum)) * 2)
-  if (difference > constraint.tolerance) {
-    warnings.push(formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial))
-  } else if (constraint.lhsMustBeSmaller && lhsSum > rhsSum) {
+  if (difference <= constraint.tolerance) {
+    // minor difference
+    return
+  }
+  if (constraint.lhsMustBeSmaller) {
+    if (lhsSum > rhsSum) {
+      warnings.push(formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial))
+    }
+  } else {
     warnings.push(formatWarningMessage(t, constraint, lhsSum, rhsSum, imperial))
   }
 }
