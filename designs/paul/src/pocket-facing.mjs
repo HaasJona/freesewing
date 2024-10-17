@@ -33,23 +33,6 @@ function draftPaulPocketFacing({
     points.styleWaistOut.dx(points.pocketFacingRightCorner),
     points.styleWaistOut.dy(points.pocketFacingRightCorner)
   )
-  //
-  // points.pocketFacingInnerCornerCurveStart = points.pocketFacingBottomCorner.shiftTowards(
-  //   points.pocketFacingInnerCorner,
-  //   height * options.pocketFacingBonus
-  // )
-  // points.pocketFacingInnerCornerCurveEnd = points.pocketFacingRightCorner.shiftTowards(
-  //   points.pocketFacingInnerCorner,
-  //   height * options.pocketFacingBonus
-  // )
-  // points.pocketFacingInnerCornerCp1 = points.pocketFacingInnerCorner.shiftTowards(
-  //   points.pocketFacingBottomCorner,
-  //   height * options.pocketCurveShape
-  // )
-  // points.pocketFacingInnerCornerCp2 = points.pocketFacingInnerCorner.shiftTowards(
-  //   points.pocketFacingRightCorner,
-  //   height * options.pocketCurveShape
-  // )
 
   const curve = paths.pocketCurve.reverse().offset(bonusHeight - height)
   const sideSeam = paths.sideSeam.split(points.pocketFacingBottomCorner)[0]
@@ -62,16 +45,9 @@ function draftPaulPocketFacing({
     .setClass('fabric')
 
   if (sa) {
-    paths.sa = new Path()
-      .move(curve.end())
-      .line(points.styleWaistOut)
-      .join(sideSeam)
-      .offset(sa)
-      .line(curve.start())
-      .reverse()
-      .line(curve.end())
-      .reverse()
-      .setClass('fabric sa')
+    paths.sa = macro('sa', {
+      paths: [new Path().move(curve.end()).line(points.styleWaistOut).join(sideSeam), null],
+    })
   }
 
   // Title

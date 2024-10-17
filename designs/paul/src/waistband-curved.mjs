@@ -87,7 +87,7 @@ function draftPaulWaistbandCurved({
     .hide()
   paths.seam = paths.saBase.clone().attr('class', 'fabric').unhide()
 
-  if (sa) paths.sa = paths.saBase.offset(sa).close().attr('class', 'fabric sa')
+  if (sa) paths.sa = macro('sa', { paths: ['saBase'] })
 
   if (complete) {
     paths.cf = new Path()

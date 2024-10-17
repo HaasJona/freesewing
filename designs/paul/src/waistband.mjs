@@ -75,24 +75,23 @@ function draftPaulWaistband({
   points.lsLeft = new Point(0, points.lsRight.y)
 
   paths.saBase = new Path()
-    .move(points.topLeft)
-    .line(points.topRight)
+    .move(points.bottomLeft)
     .line(points.bottomRight)
-    .line(points.bottomLeft)
+    .line(points.topRight)
+    .line(points.topLeft)
     .hide()
   paths.seam = paths.saBase.clone().close().attr('class', 'fabric').unhide()
 
   if (sa)
-    paths.sa = paths.saBase
-      .offset(sa * -1)
-      .join(
-        new Path()
-          .move(points.bottomLeft)
-          .line(points.topLeft)
-          .offset(sa * -2)
-      )
-      .close()
-      .addClass('fabric sa')
+    paths.sa = macro('sa', {
+      paths: [
+        paths.saBase,
+        {
+          p: new Path().move(points.topLeft).line(points.bottomLeft),
+          offset: 2 * sa,
+        },
+      ],
+    })
 
   if (complete) {
     paths.cf = new Path()

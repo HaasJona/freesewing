@@ -47,7 +47,7 @@
 
 # @freesewing/paul
 
-A FreeSewing pattern for summer pants
+A FreeSewing pattern for pants
 
 
 

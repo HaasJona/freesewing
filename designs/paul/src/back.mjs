@@ -249,16 +249,12 @@ function draftPaulBack({
   paths.saBase.hide()
 
   if (sa)
-    paths.sa = paths.saBase
-      .offset(sa)
-      .join(
-        new Path()
-          .move(points.floorIn)
-          .line(points.floorOut)
-          .offset(sa * 6)
-      )
-      .close()
-      .addClass('fabric sa')
+    paths.sa = macro('sa', {
+      paths: [
+        'saBase',
+        { p: new Path().move(points.floorIn).line(points.floorOut), offset: sa * 6 },
+      ],
+    })
 
   // Sanity check, to make sure inseams and outseams match front and back
   const backInseamLength = drawInseam().length()
