@@ -130,7 +130,7 @@ function draftUmbraBase({
     // If the waistband is somehow above the waistline, continue to use the waist measurement
     // This is mostly to prevent errors when the user entered an abnormally low distance between waist and hips
     // together with a very high rise
-    points.sideWaistbandBase = new Point(points.sideWaist.x, points.cfWaistband.y)
+    points.sideWaistbandBase = points.sideWaist
   } else {
     points.sideWaistbandBase = intersection[0]
   }
@@ -380,7 +380,10 @@ function draftUmbraBase({
     points.cfBulgeSplit = points.cfWaistbandDipFront.shift(-90, minFabricWidth)
   }
 
-  points.rotationOrigin = new Point(points.sideGusset.x, points.cfBulgeSplit.y)
+  points.rotationOrigin = points.sideLegFront.shiftFractionTowards(
+    new Point(points.sideGusset.x, points.cfBulgeSplit.y),
+    options.bulgeLength
+  )
 
   for (const pid of [
     'backGussetSplit',
@@ -697,7 +700,7 @@ export const base = {
      * The bulge option allows you to create room in the front
      * to keep for a snack, or other things you might want to carry there.
      */
-    bulge: { deg: 0, min: 0, max: 30, menu: 'fit' },
+    bulge: { deg: 0, min: 0, max: 60, menu: 'fit' },
 
     /*
      * This option allows you to create extra room in the bulge
@@ -813,6 +816,8 @@ export const base = {
       extraNote:
         'Select if the back part should be flipped into upright orientation, set to false for development and easier debugging of control points',
     },
+
+    bulgeLength: 0.5,
   },
   draft: draftUmbraBase,
   hide: { self: true },
